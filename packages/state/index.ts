@@ -1,4 +1,5 @@
 export * from './contracts'
+export * from './graphql'
 export * from './indexer'
 export * from './recoil'
-export * from './graphql'
+export * from './utils'

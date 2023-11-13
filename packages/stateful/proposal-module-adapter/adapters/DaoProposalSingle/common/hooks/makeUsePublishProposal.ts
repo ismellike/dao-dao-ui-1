@@ -58,7 +58,7 @@ export const makeUsePublishProposal =
     const anyoneCanPropose = useRecoilValue(
       anyoneCanProposeSelector({
         chainId: chainId,
-        preProposeAddress: proposalModule.preProposeAddress,
+        preProposeAddress: proposalModule.prePropose?.address ?? null,
       })
     )
 
@@ -86,7 +86,7 @@ export const makeUsePublishProposal =
                 // If pre-propose address set, give that one deposit allowance
                 // instead of proposal module.
                 spender:
-                  proposalModule.preProposeAddress || proposalModule.address,
+                  proposalModule.prePropose?.address || proposalModule.address,
               },
             ],
           })
@@ -160,7 +160,7 @@ export const makeUsePublishProposal =
       sender: walletAddress ?? '',
     })
     const doProposePrePropose = useProposePrePropose({
-      contractAddress: proposalModule.preProposeAddress ?? '',
+      contractAddress: proposalModule.prePropose?.address ?? '',
       sender: walletAddress ?? '',
     })
 
@@ -253,7 +253,7 @@ export const makeUsePublishProposal =
                 spender:
                   // If pre-propose address set, give that one deposit allowance
                   // instead of proposal module.
-                  proposalModule.preProposeAddress || proposalModule.address,
+                  proposalModule.prePropose?.address || proposalModule.address,
               })
 
               // Allowances will not update until the next block has been added.
@@ -298,7 +298,7 @@ export const makeUsePublishProposal =
           )
           // Every other version supports pre-propose.
         } else {
-          response = proposalModule.preProposeAddress
+          response = proposalModule.prePropose
             ? await doProposePrePropose(
                 {
                   msg: {
