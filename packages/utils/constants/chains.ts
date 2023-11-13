@@ -36,6 +36,8 @@ export const SUPPORTED_CHAINS: Partial<Record<ChainId, SupportedChainConfig>> =
         CwVesting: 3825,
         DaoCore: 3826,
         DaoMigrator: 3827,
+        // TODO(approver)
+        DaoPreProposeApprovalSingle: 999999,
         DaoPreProposeMultiple: 3828,
         DaoPreProposeSingle: 3829,
         DaoProposalMultiple: 3830,

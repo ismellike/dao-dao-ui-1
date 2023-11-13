@@ -1,5 +1,3 @@
-import { Buffer } from 'buffer'
-
 import {
   ChainId,
   DaoCreationGetInstantiateInfo,
@@ -14,6 +12,7 @@ import {
   DaoProposalMultipleAdapterId,
   convertDenomToMicroDenomWithDecimals,
   convertDurationWithUnitsToDuration,
+  encodeMessageAsBase64,
 } from '@dao-dao/utils'
 import { makeValidateMsg } from '@dao-dao/utils/validation/makeValidateMsg'
 
@@ -91,11 +90,8 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
           admin: { core_module: {} },
           code_id: codeIds.DaoPreProposeMultiple,
           label: `DAO_${name.trim()}_pre-propose-${DaoProposalMultipleAdapterId}`,
-          msg: Buffer.from(
-            JSON.stringify(preProposeMultipleInstantiateMsg),
-            'utf8'
-          ).toString('base64'),
-          // TODO(neutron-2.3.0): add back in here
+          msg: encodeMessageAsBase64(preProposeMultipleInstantiateMsg),
+          // TODO(neutron-2.3.0): add back in here and in instantiate schema.
           ...(chainId !== ChainId.NeutronMainnet &&
             !omitFunds && {
               funds: [],
@@ -117,8 +113,8 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
     admin: { core_module: {} },
     code_id: codeIds.DaoProposalMultiple,
     label: `DAO_${name.trim()}_${DaoProposalMultipleAdapterId}`,
-    msg: Buffer.from(JSON.stringify(msg), 'utf8').toString('base64'),
-    // TODO(neutron-2.3.0): add back in here
+    msg: encodeMessageAsBase64(msg),
+    // TODO(neutron-2.3.0): add back in here and in instantiate schema.
     ...(chainId !== ChainId.NeutronMainnet &&
       !omitFunds && {
         funds: [],

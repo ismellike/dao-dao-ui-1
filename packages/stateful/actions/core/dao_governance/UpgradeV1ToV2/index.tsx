@@ -25,7 +25,11 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/types'
 import { PreProposeInfo } from '@dao-dao/types/contracts/DaoProposalSingle.v2'
-import { makeWasmMessage, objectMatchesStructure } from '@dao-dao/utils'
+import {
+  encodeMessageAsBase64,
+  makeWasmMessage,
+  objectMatchesStructure,
+} from '@dao-dao/utils'
 
 import { AddressInput, EntityDisplay } from '../../../../components'
 import {
@@ -286,24 +290,21 @@ export const makeUpgradeV1ToV2Action: ActionMaker<UpgradeV1ToV2Data> = ({
                     label: `DAO_${name.trim()}_pre-propose-${
                       DaoProposalSingleAdapter.id
                     }`,
-                    msg: Buffer.from(
-                      JSON.stringify({
-                        deposit_info: depositInfo
-                          ? {
-                              amount: depositInfo.amount,
-                              denom: {
-                                token: {
-                                  denom: depositInfo.denom,
-                                },
+                    msg: encodeMessageAsBase64({
+                      deposit_info: depositInfo
+                        ? {
+                            amount: depositInfo.amount,
+                            denom: {
+                              token: {
+                                denom: depositInfo.denom,
                               },
-                              refund_policy: depositInfo.refund_policy,
-                            }
-                          : null,
-                        extension: {},
-                        open_proposal_submission: false,
-                      }),
-                      'utf8'
-                    ).toString('base64'),
+                            },
+                            refund_policy: depositInfo.refund_policy,
+                          }
+                        : null,
+                      extension: {},
+                      open_proposal_submission: false,
+                    }),
                   },
                 },
               },
