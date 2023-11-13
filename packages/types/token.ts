@@ -1,7 +1,7 @@
 import { ComponentType } from 'react'
 
 import { Validator } from './chain'
-import { AmountWithTimestamp } from './state'
+import { TokenInfoResponse } from './contracts/Cw20Base'
 import {
   ButtonLinkProps,
   ButtonPopupSection,
@@ -121,4 +121,18 @@ export type TokenCardProps = TokenCardInfo & {
 export type TokenLineProps<T extends TokenCardInfo = TokenCardInfo> = T & {
   transparentBackground?: boolean
   TokenCard: ComponentType<T>
+}
+
+export type TokenInfoResponseWithAddressAndLogo = TokenInfoResponse & {
+  address: string
+  logoUrl?: string
+}
+
+export type AmountWithTimestamp = {
+  amount: number
+  timestamp: Date
+}
+
+export type AmountWithTimestampAndDenom = AmountWithTimestamp & {
+  denom: string
 }

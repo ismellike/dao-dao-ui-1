@@ -18,8 +18,8 @@ import {
 
 import { NestedActionsEditorFormData } from './actions'
 import { Coin, CosmosMsgFor_Empty } from './contracts'
+import { ProcessedTQ } from './proposal'
 import { LoadingData } from './stateless'
-import { ProcessedTQ } from './utils'
 
 export { ProposalV1Beta1, ProposalV1 }
 

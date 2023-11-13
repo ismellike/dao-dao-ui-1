@@ -1,6 +1,6 @@
+import { PolytoneConnection } from './chain'
 import { CosmosMsgFor_Empty } from './contracts'
 import { ProposalCardProps } from './stateless/ProposalCard'
-import { PolytoneConnection } from './utils'
 
 export type ProposalCreatedCardProps = Omit<
   ProposalCardProps,
@@ -44,3 +44,23 @@ export type DecodedPolytoneMsgNoMatch = {
 export type DecodedPolytoneMsg =
   | DecodedPolytoneMsgNoMatch
   | DecodedPolytoneMsgMatch
+
+export enum ProcessedTQType {
+  Majority,
+  Absolute,
+  Percent,
+}
+
+export type ProcessedTQ = { display: string } & (
+  | { type: ProcessedTQType.Majority }
+  | { type: ProcessedTQType.Absolute | ProcessedTQType.Percent; value: number }
+)
+
+export type ProcessedThresholdQuorum = {
+  threshold: ProcessedTQ
+  quorum?: ProcessedTQ
+}
+
+export type ProcessedQuorum = {
+  quorum: ProcessedTQ
+}

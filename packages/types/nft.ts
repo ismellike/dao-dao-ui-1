@@ -1,8 +1,7 @@
 import { ComponentType, ReactNode, RefAttributes } from 'react'
 
-import { ChainId } from './chain'
+import { ChainId, WithChainId } from './chain'
 import { ContractInfoResponse } from './contracts/Cw721Base'
-import { WithChainId } from './state'
 import {
   ButtonLinkProps,
   ButtonPopupSection,

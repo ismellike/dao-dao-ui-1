@@ -12,6 +12,7 @@ import {
   UseFormSetValue,
 } from 'react-hook-form'
 
+import { CodeIdConfig } from './chain'
 import {
   ActiveThreshold,
   DepositRefundPolicy,
@@ -27,7 +28,6 @@ import {
 import { DaoCardProps, LoadingData, SuspenseLoaderProps } from './stateless'
 import { GenericToken, TokenCardInfo } from './token'
 import { DurationWithUnits } from './units'
-import { CodeIdConfig } from './utils'
 
 // Used in DaoInfoContext in @dao-dao/stateful/components/DaoPageWrapper
 export type DaoInfo = {
