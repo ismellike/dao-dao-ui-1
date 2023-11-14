@@ -19,6 +19,7 @@ import {
 } from '@dao-dao/types/actions'
 import { PercentageThreshold } from '@dao-dao/types/contracts/DaoProposalMultiple'
 import {
+  ContractName,
   DaoProposalMultipleAdapterId,
   convertMicroDenomToDenomWithDecimals,
   getNativeTokenForChainId,
@@ -90,9 +91,17 @@ export const makeEnableMultipleChoiceAction: ActionMaker<
     config: { codeIds },
   },
 }) => {
+  // Only show for DAOs that don't have an approver. Disallows creation if
+  // multiple choice proposal module already exists, down at the bottom of this
+  // function, or if a module is using the approval flow since multiple choice
+  // doesn't support it yet.
   if (
     context.type !== ActionContextType.Dao ||
-    !context.info.supportedFeatures[Feature.MultipleChoiceProposals]
+    !context.info.supportedFeatures[Feature.MultipleChoiceProposals] ||
+    context.info.proposalModules.some(
+      ({ prePropose }) =>
+        prePropose?.contractName === ContractName.PreProposeApprovalSingle
+    )
   ) {
     return null
   }
@@ -199,6 +208,10 @@ export const makeEnableMultipleChoiceAction: ActionMaker<
         },
         anyoneCanPropose,
         allowRevoting: config.allow_revoting,
+        approver: {
+          enabled: false,
+          address: '',
+        },
       },
       t
     )
@@ -223,6 +236,14 @@ export const makeEnableMultipleChoiceAction: ActionMaker<
     )
   }
 
+  // Do not allow using this action if the DAO already has a multiple choice
+  // proposal module setup.
+  const hideFromPicker = context.info.proposalModules.some(({ contractName }) =>
+    DaoProposalMultipleAdapter.contractNames.some((name) =>
+      contractName.includes(name)
+    )
+  )
+
   return {
     key: ActionKey.EnableMultipleChoice,
     Icon: NumbersEmoji,
@@ -233,12 +254,6 @@ export const makeEnableMultipleChoiceAction: ActionMaker<
     useDefaults,
     useTransformToCosmos,
     useDecodedCosmosMsg,
-    // Do not allow using this action if the DAO already has a multiple choice
-    // proposal module setup.
-    hideFromPicker: context.info.proposalModules.some(({ contractName }) =>
-      DaoProposalMultipleAdapter.contractNames.some((name) =>
-        contractName.includes(name)
-      )
-    ),
+    hideFromPicker,
   }
 }

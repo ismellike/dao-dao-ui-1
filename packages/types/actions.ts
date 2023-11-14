@@ -57,6 +57,7 @@ export enum ActionKey {
   WyndSwap = 'wyndSwap',
   DaoAdminExec = 'daoAdminExec',
   EnableMultipleChoice = 'enableMultipleChoice',
+  SetUpApprover = 'setUpApprover',
   ManageWidgets = 'manageWidgets',
   FeeShare = 'feeShare',
   ManageMembers = 'manageMembers',

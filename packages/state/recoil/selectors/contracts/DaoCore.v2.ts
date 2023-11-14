@@ -1187,7 +1187,7 @@ export const polytoneProxiesSelector = selectorFamily<
     },
 })
 
-export const coreAddressForPolytoneProxy = selectorFamily<
+export const coreAddressForPolytoneProxySelector = selectorFamily<
   string | undefined,
   { chainId: string; voice: string; proxy: string }
 >({
@@ -1203,6 +1203,27 @@ export const coreAddressForPolytoneProxy = selectorFamily<
           args: {
             address: proxy,
           },
+          required: true,
+        })
+      ),
+})
+
+export const approvalDaosSelector = selectorFamily<
+  {
+    dao: string
+    preProposeAddress: string
+  }[],
+  QueryClientParams
+>({
+  key: 'daoCoreV2ApprovalDaos',
+  get:
+    ({ chainId, contractAddress }) =>
+    ({ get }) =>
+      get(
+        queryContractIndexerSelector({
+          chainId,
+          contractAddress,
+          formula: 'daoCore/approvalDaos',
           required: true,
         })
       ),
