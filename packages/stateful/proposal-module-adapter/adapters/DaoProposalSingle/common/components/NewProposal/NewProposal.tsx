@@ -51,7 +51,7 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
-import { useWallet, useWalletInfo } from '../../../../../../hooks'
+import { useEntity, useWallet, useWalletInfo } from '../../../../../../hooks'
 import { NewProposalData, NewProposalForm } from '../../../types'
 
 enum ProposeSubmitValue {
@@ -130,7 +130,8 @@ export const NewProposal = ({
   const [submitError, setSubmitError] = useState('')
 
   const { isWalletConnecting } = useWallet()
-  const { walletAddress = '', walletProfileData } = useWalletInfo()
+  const { walletAddress = '' } = useWalletInfo()
+  const entity = useEntity(walletAddress)
 
   const proposalDescription = watch('description')
   const proposalTitle = watch('title')
@@ -401,12 +402,11 @@ export const NewProposal = ({
           <div className="mt-4 rounded-md border border-border-secondary p-6">
             <ProposalContentDisplay
               EntityDisplay={EntityDisplay}
+              approval={false}
               createdAt={new Date()}
               creator={{
                 address: walletAddress,
-                name: walletProfileData.loading
-                  ? { loading: true }
-                  : { loading: false, data: walletProfileData.profile.name },
+                entity,
               }}
               description={proposalDescription}
               innerContentDisplay={

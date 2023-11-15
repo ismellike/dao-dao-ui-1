@@ -7,6 +7,7 @@ import {
   ContractVersion,
   DaoInfo,
   DaoInfoSerializable,
+  PreProposeModuleType,
 } from '@dao-dao/types'
 import { getSupportedFeatures } from '@dao-dao/utils'
 
@@ -27,6 +28,7 @@ export const makeDaoInfo = (): DaoInfo => ({
         contractName: 'crates.io:dao-pre-propose-single',
         version: ContractVersion.V2Alpha,
         address: 'preProposeModuleAddress',
+        type: PreProposeModuleType.Other,
       },
     },
   ],
