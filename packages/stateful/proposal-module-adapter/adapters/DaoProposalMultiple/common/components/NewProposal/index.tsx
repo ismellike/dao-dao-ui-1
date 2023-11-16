@@ -116,6 +116,7 @@ export const NewProposal = ({
             ...options,
             proposalNumber,
             proposalId,
+            isPreProposeProposal: false,
           })()
           const expirationDate =
             proposalInfo &&

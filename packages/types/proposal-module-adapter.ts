@@ -21,9 +21,7 @@ import {
   SelfRelayExecuteModalProps,
 } from './stateless'
 
-export interface IProposalModuleAdapterCommon<
-  FormData extends FieldValues = any
-> {
+export type IProposalModuleAdapterCommon<FormData extends FieldValues = any> = {
   // Fields
   fields: {
     // Make this a function so it doesn't return the same instance of the form
@@ -36,6 +34,8 @@ export interface IProposalModuleAdapterCommon<
   // Selectors
   selectors: {
     reverseProposalInfos: ReverseProposalInfosSelector
+    reversePreProposePendingProposalInfos?: ReversePreProposePendingProposalInfosSelector
+    reversePreProposeCompletedProposalInfos?: ReversePreProposeCompletedProposalInfosSelector
     depositInfo: DepositInfoSelector
   }
 
@@ -50,7 +50,7 @@ export interface IProposalModuleAdapterCommon<
   }
 }
 
-export interface IProposalModuleAdapter<Vote extends unknown = any> {
+export type IProposalModuleAdapter<Vote extends unknown = any> = {
   // Functions
   functions: {
     getProposalInfo: () => Promise<CommonProposalInfo | undefined>
@@ -80,6 +80,7 @@ export interface IProposalModuleAdapter<Vote extends unknown = any> {
     ProposalWalletVote: ComponentType<BaseProposalWalletVoteProps<Vote>>
     ProposalVotes: ComponentType
     ProposalVoteTally: ComponentType
+    PreProposeProposalLine?: ComponentType<BaseProposalLineProps>
     ProposalLine: ComponentType<BaseProposalLineProps>
   }
 }
@@ -139,14 +140,18 @@ export type IProposalModuleAdapterOptions = {
   proposalModule: ProposalModule
   proposalId: string
   proposalNumber: number
+  // Whether or not this refers to a pre-propose proposal. If this is true, the
+  // proposal ID should contain an asterisk (*) between the proposal module
+  // prefix and proposal number.
+  isPreProposeProposal: boolean
 }
 
 export type IProposalModuleAdapterInitialOptions = Omit<
   IProposalModuleAdapterOptions,
-  'proposalModule' | 'proposalId' | 'proposalNumber'
+  'proposalModule' | 'proposalId' | 'proposalNumber' | 'isPreProposeProposal'
 >
 
-export interface IProposalModuleContext {
+export type IProposalModuleContext = {
   id: string
   options: IProposalModuleAdapterOptions
   adapter: IProposalModuleAdapter
@@ -166,18 +171,32 @@ export type ReverseProposalInfosSelector = (data: {
   limit: number | undefined
 }) => RecoilValueReadOnly<CommonProposalListInfo[]>
 
+export type ReversePreProposePendingProposalInfosSelector = (data: {
+  startBefore: number | undefined
+  limit: number | undefined
+}) => RecoilValueReadOnly<CommonProposalListInfo[]>
+
+export type ReversePreProposeCompletedProposalInfosSelector = (data: {
+  startBefore: number | undefined
+  limit: number | undefined
+}) => RecoilValueReadOnly<CommonProposalListInfo[]>
+
 export type DepositInfoSelector = RecoilValueReadOnly<
   CheckedDepositInfo | undefined
 >
 
-export interface CommonProposalListInfo {
+export type CommonProposalListInfo = {
   id: string
   proposalNumber: number
   timestamp: Date | undefined
   isOpen: boolean
+  // If true, will be not be shown in the proposal list. This is used for
+  // example to hide completed pre-propose proposals that were approved, since
+  // those show up as normal proposals. No need to double count.
+  hideFromList?: boolean
 }
 
-export interface CommonProposalInfo {
+export type CommonProposalInfo = {
   id: string
   title: string
   description: string
@@ -186,7 +205,7 @@ export interface CommonProposalInfo {
   createdByAddress: string
 }
 
-export interface BaseProposalStatusAndInfoProps {
+export type BaseProposalStatusAndInfoProps = {
   inline?: boolean
   // Open self-relay modal to execute a proposal and relay polytone IBC packets.
   openSelfRelayExecute: (
@@ -203,9 +222,9 @@ export interface BaseProposalStatusAndInfoProps {
   seenAllActionPages: boolean
 }
 
-export interface BaseProposalInnerContentDisplayProps<
+export type BaseProposalInnerContentDisplayProps<
   FormData extends FieldValues = any
-> {
+> = {
   setDuplicateFormData: (data: FormData) => void
   actionsForMatching: CategorizedAction[]
   // Called when the user has viewed all action pages.
@@ -217,17 +236,17 @@ export type BasePreProposeApprovalInnerContentDisplayProps = Omit<
   'setDuplicateFormData'
 >
 
-export interface BaseProposalWalletVoteProps<T> {
+export type BaseProposalWalletVoteProps<T> = {
   vote: T | undefined
   fallback: 'pending' | 'hasNoVote'
 }
 
-export interface BaseProposalLineProps {
+export type BaseProposalLineProps = {
   href: string
   LinkWrapper: ComponentType<LinkWrapperProps>
 }
 
-export interface BaseNewProposalProps<FormData extends FieldValues = any> {
+export type BaseNewProposalProps<FormData extends FieldValues = any> = {
   onCreateSuccess: (props: ProposalCreatedCardProps) => void
   draft?: ProposalDraft<FormData>
   saveDraft: () => void
@@ -242,7 +261,7 @@ export interface BaseNewProposalProps<FormData extends FieldValues = any> {
   actionsReadOnlyMode?: boolean
 }
 
-export interface WalletVoteInfo<T> {
+export type WalletVoteInfo<T> = {
   // Present if voted.
   vote: T | undefined
   couldVote: boolean
@@ -250,20 +269,20 @@ export interface WalletVoteInfo<T> {
   votingPowerPercent: number
 }
 
-export interface ProposalRefreshers {
+export type ProposalRefreshers = {
   refreshProposal: () => void
   refreshProposalAndAll: () => void
   refreshing: boolean
 }
 
-export interface ProposalVoteOption<Vote> {
+export type ProposalVoteOption<Vote> = {
   Icon: ComponentType<{ className: string; style?: CSSProperties }>
   label: string
   value: Vote
   color?: string
 }
 
-export interface ProfileNewProposalCardInfoLine {
+export type ProfileNewProposalCardInfoLine = {
   Icon: ComponentType<{ className: string }>
   label: string
   value: string
