@@ -402,7 +402,6 @@ export const NewProposal = ({
           <div className="mt-4 rounded-md border border-border-secondary p-6">
             <ProposalContentDisplay
               EntityDisplay={EntityDisplay}
-              approval={false}
               createdAt={new Date()}
               creator={{
                 address: walletAddress,
