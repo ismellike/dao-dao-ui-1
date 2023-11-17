@@ -24,7 +24,7 @@ import { useLoadedActionsAndCategories } from '../../../../../../actions'
 import { EntityDisplay } from '../../../../../../components/EntityDisplay'
 import { SuspenseLoader } from '../../../../../../components/SuspenseLoader'
 import { useMembership, useWallet } from '../../../../../../hooks'
-import { proposalSelector } from '../../../contracts/DaoProposalSingle.common.recoil'
+import { configSelector } from '../../../contracts/DaoProposalSingle.common.recoil'
 import { makeGetProposalInfo } from '../../../functions'
 import {
   NewProposalData,
@@ -103,23 +103,19 @@ export const NewProposal = ({
 
         setLoading(true)
         try {
-          const { proposalNumber, proposalId } = await publishProposal(
-            newProposalData,
-            {
+          const { proposalNumber, proposalId, isPreProposeApprovalProposal } =
+            await publishProposal(newProposalData, {
               // On failed simulation, allow the user to bypass the simulation
               // and create the proposal anyway for 3 seconds.
               failedSimulationBypassSeconds: 3,
-            }
-          )
-
-          // TODO(approval): show something else and get pre-propose ID from TX
+            })
 
           // Get proposal info to display card.
           const proposalInfo = await makeGetProposalInfo({
             ...options,
             proposalNumber,
             proposalId,
-            isPreProposeApprovalProposal: false,
+            isPreProposeApprovalProposal,
           })()
           const expirationDate =
             proposalInfo?.expiration &&
@@ -129,21 +125,14 @@ export const NewProposal = ({
               (await (await getStargateClient()).getBlock()).header.height
             )
 
-          const proposal = (
-            await snapshot.getPromise(
-              proposalSelector({
-                chainId,
-                contractAddress: options.proposalModule.address,
-                params: [
-                  {
-                    proposalId: proposalNumber,
-                  },
-                ],
-              })
-            )
-          ).proposal
+          const config = await snapshot.getPromise(
+            configSelector({
+              chainId,
+              contractAddress: options.proposalModule.address,
+            })
+          )
 
-          const { threshold, quorum } = processTQ(proposal.threshold)
+          const { threshold, quorum } = processTQ(config.threshold)
 
           onCreateSuccess(
             proposalInfo
