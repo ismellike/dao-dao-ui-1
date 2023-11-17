@@ -5,7 +5,7 @@ import { RecoilValueReadOnly } from 'recoil'
 
 import { ActionCategoryMaker, CategorizedAction } from './actions'
 import { Expiration } from './contracts'
-import { CheckedDepositInfo } from './contracts/common'
+import { CheckedDepositInfo, ProposalStatus } from './contracts/common'
 import { ProposalStatus as DaoPreProposeApprovalProposalStatus } from './contracts/DaoPreProposeApprovalSingle'
 import {
   DaoCreationGetInstantiateInfo,
@@ -61,6 +61,7 @@ export type IProposalModuleAdapter<Vote extends unknown = any> = {
   hooks: {
     useProposalRefreshers: () => ProposalRefreshers
     useLoadingProposalExecutionTxHash: () => LoadingData<string | undefined>
+    useLoadingProposalStatus: () => LoadingData<ProposalStatus | undefined>
     useLoadingVoteOptions: () => LoadingData<ProposalVoteOption<Vote>[]>
     // Return when no wallet connected.
     useLoadingWalletVoteInfo: () =>
