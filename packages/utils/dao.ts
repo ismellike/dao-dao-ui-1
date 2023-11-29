@@ -4,6 +4,8 @@ import {
   DaoParentInfo,
   DaoWebSocketChannelInfo,
   PolytoneProxies,
+  ProposalStatus,
+  ProposalStatusKey,
 } from '@dao-dao/types'
 import { InstantiateMsg as DaoCoreV2InstantiateMsg } from '@dao-dao/types/contracts/DaoCore.v2'
 
@@ -63,3 +65,20 @@ export const getFundsFromDaoInstantiateMsg = ({
   // TODO(neutron-2.3.0): remove once non-optional
   ...proposal_modules_instantiate_info.flatMap(({ funds }) => funds || []),
 ]
+
+/**
+ * Returns the flattened key of the proposal status.
+ *
+ * @param {ProposalStatus} status - The proposal status.
+ * @return {ProposalStatusKey} The flattened key of the proposal status.
+ */
+export const getProposalStatusKey = (
+  status: ProposalStatus
+): ProposalStatusKey =>
+  typeof status === 'string'
+    ? status
+    : typeof status === 'object' && status
+    ? (Object.keys(status)[0] as any)
+    : (() => {
+        throw new Error('Invalid proposal status.')
+      })()

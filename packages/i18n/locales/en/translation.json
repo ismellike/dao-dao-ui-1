@@ -1142,7 +1142,8 @@
     "execution_failed": "Execution failed",
     "open": "Open",
     "passed": "Passed",
-    "rejected": "Rejected"
+    "rejected": "Rejected",
+    "veto_timelock": "Veto Timelock"
   },
   "proposalStatusTitleShort": {
     "closed": "Closed",
@@ -1150,7 +1151,9 @@
     "execution_failed": "Exec. fail",
     "open": "Open",
     "passed": "Passed",
-    "rejected": "Rejected"
+    "rejected": "Rejected",
+    "veto_timelock": "Veto Lock",
+    "vetoed": "Vetoed"
   },
   "proposalVoteTitle": {
     "abstain": "Abstain",
