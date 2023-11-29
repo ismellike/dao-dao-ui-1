@@ -62,6 +62,10 @@ export enum Feature {
    * adding proposal modules).
    */
   ModuleInstantiateFunds,
+  /**
+   * Veto was added.
+   */
+  Veto,
 }
 
 /**
