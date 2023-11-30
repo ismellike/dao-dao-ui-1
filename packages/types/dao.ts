@@ -19,7 +19,7 @@ import {
   ModuleInstantiateInfo,
 } from './contracts/common'
 import { InstantiateMsg as DaoCoreV2InstantiateMsg } from './contracts/DaoCore.v2'
-import { Veto } from './contracts/DaoProposalSingle.v2'
+import { VetoConfig } from './contracts/DaoProposalSingle.v2'
 import { DaoCreator } from './creators'
 import { ContractVersion, SupportedFeatureMap } from './features'
 import {
@@ -121,7 +121,7 @@ export enum ProposalModuleType {
 }
 
 export type ProposalModuleSingleConfig = {
-  veto: Veto | null
+  veto: VetoConfig | null
 }
 export type ProposalModuleMultipleConfig = ProposalModuleSingleConfig
 
