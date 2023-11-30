@@ -2,18 +2,80 @@ import uniq from 'lodash.uniq'
 import { selectorFamily, waitForAll } from 'recoil'
 
 import {
+  Cw1WhitelistSelectors,
   CwPayrollFactorySelectors,
   CwVestingSelectors,
   genericTokenSelector,
+  isContractSelector,
   nativeDelegationInfoSelector,
+  queryWalletIndexerSelector,
   refreshVestingAtom,
   validatorSlashesSelector,
 } from '@dao-dao/state/recoil'
-import { TokenType, WithChainId } from '@dao-dao/types'
-import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
+import {
+  OldVestingPaymentFactory,
+  TokenType,
+  VestingInfo,
+  VestingStep,
+  WithChainId,
+} from '@dao-dao/types'
+import {
+  convertMicroDenomToDenomWithDecimals,
+  getChainForChainId,
+  getVestingValidatorSlashes,
+  isValidContractAddress,
+} from '@dao-dao/utils'
 
-import { VestingInfo, VestingStep } from '../types'
-import { getVestingValidatorSlashes } from './utils'
+export const vestingPaymentsOwnedBySelector = selectorFamily<
+  string[],
+  WithChainId<{ address: string }>
+>({
+  key: 'vestingPaymentsOwnedBy',
+  get:
+    ({ chainId, address }) =>
+    ({ get }) => {
+      const vestingPayments: string[] = get(
+        queryWalletIndexerSelector({
+          chainId,
+          walletAddress: address,
+          formula: 'vesting/ownerOf',
+          required: true,
+        })
+      )
+
+      return vestingPayments && Array.isArray(vestingPayments)
+        ? vestingPayments
+        : []
+    },
+})
+
+export const vestingInfosOwnedBySelector = selectorFamily<
+  VestingInfo[],
+  WithChainId<{ address: string }>
+>({
+  key: 'vestingInfosOwnedBy',
+  get:
+    ({ chainId, address }) =>
+    ({ get }) => {
+      const vestingPaymentContracts = get(
+        vestingPaymentsOwnedBySelector({
+          chainId,
+          address,
+        })
+      )
+
+      return get(
+        waitForAll(
+          vestingPaymentContracts.map((vestingContractAddress) =>
+            vestingInfoSelector({
+              vestingContractAddress,
+              chainId,
+            })
+          )
+        )
+      )
+    },
+})
 
 export const vestingFactoryOwnerSelector = selectorFamily<
   string | undefined,
@@ -35,20 +97,28 @@ export const vestingFactoryOwnerSelector = selectorFamily<
     },
 })
 
-export const vestingInfosSelector = selectorFamily<
+export const vestingInfosForFactorySelector = selectorFamily<
   VestingInfo[],
-  WithChainId<{ factory: string }>
+  WithChainId<{ factory: string; oldFactories?: OldVestingPaymentFactory[] }>
 >({
-  key: 'vestingInfo',
+  key: 'vestingInfosForFactory',
   get:
-    ({ chainId, factory }) =>
+    ({ chainId, factory, oldFactories }) =>
     ({ get }) => {
       const vestingPaymentContracts = get(
-        CwPayrollFactorySelectors.allVestingContractsSelector({
-          contractAddress: factory,
-          chainId,
-        })
-      )
+        waitForAll([
+          CwPayrollFactorySelectors.allVestingContractsSelector({
+            contractAddress: factory,
+            chainId,
+          }),
+          ...(oldFactories?.map(({ address }) =>
+            CwPayrollFactorySelectors.allVestingContractsSelector({
+              contractAddress: address,
+              chainId,
+            })
+          ) ?? []),
+        ])
+      ).flat()
 
       return get(
         waitForAll(
@@ -125,6 +195,28 @@ export const vestingInfoSelector = selectorFamily<
         ])
       )
 
+      const ownerIsCw1Whitelist =
+        owner &&
+        isValidContractAddress(owner, getChainForChainId(chainId).bech32_prefix)
+          ? get(
+              isContractSelector({
+                chainId,
+                contractAddress: owner,
+                name: 'cw1-whitelist',
+              })
+            )
+          : false
+      const cw1WhitelistAdmins =
+        owner && ownerIsCw1Whitelist
+          ? get(
+              Cw1WhitelistSelectors.adminListSelector({
+                contractAddress: owner,
+                chainId,
+                params: [],
+              })
+            ).admins
+          : undefined
+
       const token = get(
         genericTokenSelector({
           type: 'cw20' in vest.denom ? TokenType.Cw20 : TokenType.Native,
@@ -200,7 +292,10 @@ export const vestingInfoSelector = selectorFamily<
               actualSlashed
             ).toString()
 
-      const completed = vest.status === 'funded' && vest.claimed === total
+      const completed =
+        (vest.status === 'funded' ||
+          (typeof vest.status === 'object' && 'canceled' in vest.status)) &&
+        vest.claimed === total
 
       const startTimeMs = Number(vest.start_time) / 1e6
       const startDate = new Date(startTimeMs)
@@ -270,7 +365,19 @@ export const vestingInfoSelector = selectorFamily<
         vestingContractAddress,
         vest,
         token,
-        owner: owner || undefined,
+        owner: owner
+          ? {
+              address: owner,
+              ...(ownerIsCw1Whitelist && cw1WhitelistAdmins
+                ? {
+                    isCw1Whitelist: true,
+                    cw1WhitelistAdmins,
+                  }
+                : {
+                    isCw1Whitelist: false,
+                  }),
+            }
+          : undefined,
         vested,
         distributable,
         total,
