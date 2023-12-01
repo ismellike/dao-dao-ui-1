@@ -4,7 +4,11 @@ import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { useRecoilCallback, useRecoilValue } from 'recoil'
 
-import { DaoCoreV2Selectors, blocksPerYearSelector } from '@dao-dao/state'
+import {
+  DaoCoreV2Selectors,
+  DaoProposalSingleCommonSelectors,
+  blocksPerYearSelector,
+} from '@dao-dao/state'
 import {
   useCachedLoadable,
   useChain,
@@ -24,7 +28,6 @@ import { useLoadedActionsAndCategories } from '../../../../../../actions'
 import { EntityDisplay } from '../../../../../../components/EntityDisplay'
 import { SuspenseLoader } from '../../../../../../components/SuspenseLoader'
 import { useMembership, useWallet } from '../../../../../../hooks'
-import { configSelector } from '../../../contracts/DaoProposalSingle.common.recoil'
 import { makeGetProposalInfo } from '../../../functions'
 import {
   NewProposalData,
@@ -126,7 +129,7 @@ export const NewProposal = ({
             )
 
           const config = await snapshot.getPromise(
-            configSelector({
+            DaoProposalSingleCommonSelectors.configSelector({
               chainId,
               contractAddress: options.proposalModule.address,
             })

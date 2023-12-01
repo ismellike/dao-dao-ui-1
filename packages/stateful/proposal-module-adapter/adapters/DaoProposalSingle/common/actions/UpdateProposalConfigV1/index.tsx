@@ -1,7 +1,11 @@
 import { useCallback } from 'react'
 import { constSelector, useRecoilValue } from 'recoil'
 
-import { Cw20BaseSelectors, isContractSelector } from '@dao-dao/state'
+import {
+  Cw20BaseSelectors,
+  CwProposalSingleV1Selectors,
+  isContractSelector,
+} from '@dao-dao/state'
 import { BallotDepositEmoji } from '@dao-dao/stateless'
 import {
   ActionComponent,
@@ -24,7 +28,6 @@ import {
 
 import { useVotingModuleAdapter } from '../../../../../../voting-module-adapter'
 import { CONTRACT_NAMES } from '../../../constants'
-import { configSelector } from '../../../contracts/CwProposalSingle.v1.recoil'
 import { UpdateProposalConfigComponent } from './UpdateProposalConfigComponent'
 
 export interface UpdateProposalConfigData {
@@ -159,7 +162,7 @@ export const makeUpdateProposalConfigV1ActionMaker =
 
     const useDefaults: UseDefaults<UpdateProposalConfigData> = () => {
       const proposalModuleConfig = useRecoilValue(
-        configSelector({
+        CwProposalSingleV1Selectors.configSelector({
           chainId,
           contractAddress: proposalModuleAddress,
         })
@@ -214,7 +217,7 @@ export const makeUpdateProposalConfigV1ActionMaker =
       UpdateProposalConfigData
     > = () => {
       const proposalModuleConfig = useRecoilValue(
-        configSelector({
+        CwProposalSingleV1Selectors.configSelector({
           chainId,
           contractAddress: proposalModuleAddress,
         })

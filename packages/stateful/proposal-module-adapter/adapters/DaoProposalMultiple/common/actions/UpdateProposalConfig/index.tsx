@@ -1,7 +1,10 @@
 import { useCallback } from 'react'
 import { constSelector, useRecoilValue } from 'recoil'
 
-import { isContractSelector } from '@dao-dao/state/recoil'
+import {
+  DaoProposalMultipleSelectors,
+  isContractSelector,
+} from '@dao-dao/state/recoil'
 import { BallotDepositEmoji } from '@dao-dao/stateless'
 import {
   ActionContextType,
@@ -20,7 +23,6 @@ import {
 import { makeWasmMessage, objectMatchesStructure } from '@dao-dao/utils'
 
 import { CONTRACT_NAMES } from '../../../constants'
-import { configSelector } from '../../../contracts/DaoProposalMultiple.recoil'
 import { UpdateProposalConfigComponent as Component } from './UpdateProposalConfigComponent'
 
 export interface UpdateProposalConfigData {
@@ -97,7 +99,7 @@ export const makeUpdateProposalConfigActionMaker =
   ({ t, context, chain: { chain_id: chainId } }) => {
     const useDefaults: UseDefaults<UpdateProposalConfigData> = () => {
       const proposalModuleConfig = useRecoilValue(
-        configSelector({
+        DaoProposalMultipleSelectors.configSelector({
           chainId,
           contractAddress: proposalModuleAddress,
         })
@@ -126,7 +128,7 @@ export const makeUpdateProposalConfigActionMaker =
       UpdateProposalConfigData
     > = () => {
       const proposalModuleConfig = useRecoilValue(
-        configSelector({
+        DaoProposalMultipleSelectors.configSelector({
           chainId,
           contractAddress: proposalModuleAddress,
         })
