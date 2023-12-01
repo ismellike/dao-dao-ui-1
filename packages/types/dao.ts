@@ -12,14 +12,21 @@ import {
   UseFormSetValue,
 } from 'react-hook-form'
 
-import { CodeIdConfig } from './chain'
+import { CodeIdConfig, WithChainId } from './chain'
 import {
   ActiveThreshold,
   DepositRefundPolicy,
   ModuleInstantiateInfo,
 } from './contracts/common'
-import { InstantiateMsg as DaoCoreV2InstantiateMsg } from './contracts/DaoCore.v2'
-import { VetoConfig } from './contracts/DaoProposalSingle.v2'
+import {
+  InstantiateMsg as DaoCoreV2InstantiateMsg,
+  ProposalModuleWithInfo,
+} from './contracts/DaoCore.v2'
+import { ProposalResponse as MultipleChoiceProposalResponse } from './contracts/DaoProposalMultiple'
+import {
+  ProposalResponse as SingleChoiceProposalResponse,
+  VetoConfig,
+} from './contracts/DaoProposalSingle.v2'
 import { DaoCreator } from './creators'
 import { ContractVersion, SupportedFeatureMap } from './features'
 import {
@@ -400,3 +407,17 @@ export type DaoApp = {
   imageUrl: string
   url: string
 }
+
+export type IndexerDaoWithVetoableProposals = {
+  dao: string
+  proposalsWithModule: {
+    proposalModule: ProposalModuleWithInfo
+    proposals: (SingleChoiceProposalResponse | MultipleChoiceProposalResponse)[]
+  }[]
+}
+
+export type DaoWithVetoableProposals = WithChainId<
+  IndexerDaoWithVetoableProposals & {
+    proposalModules: ProposalModule[]
+  }
+>
