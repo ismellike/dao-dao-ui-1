@@ -35,6 +35,7 @@ import {
   ContractName,
   DAO_CORE_ACCENT_ITEM_KEY,
   DAO_STATIC_PROPS_CACHE_SECONDS,
+  LEGACY_DAO_CONTRACT_NAMES,
   LEGACY_URL_PREFIX,
   MAX_META_CHARS_PROPOSAL_DESCRIPTION,
   addressIsModule,
@@ -541,7 +542,6 @@ const loadParentDaoInfo = async (
   }
 }
 
-const LEGACY_DAO_CONTRACT_NAMES = ['crates.io:sg_dao', 'crates.io:cw3_dao']
 const ITEM_LIST_LIMIT = 30
 
 interface DaoCoreDumpState {

@@ -25,6 +25,7 @@ import {
   WithChainId,
 } from '@dao-dao/types'
 import {
+  DAO_CORE_CONTRACT_NAMES,
   DaoVotingCw20StakedAdapterId,
   POLYTONE_CONFIG_PER_CHAIN,
   getChainForChainId,
@@ -139,13 +140,7 @@ export const daoPotentialSubDaosSelector = selectorFamily<
         .filter(
           ({ contractAddress, info }) =>
             contractAddress !== coreAddress &&
-            [
-              // V1
-              'cw-core',
-              // V2
-              'cwd-core',
-              'dao-core',
-            ].some((name) => info.contract.includes(name))
+            DAO_CORE_CONTRACT_NAMES.some((name) => info.contract.includes(name))
         )
         .map(({ contractAddress }) => contractAddress)
     },
@@ -267,13 +262,7 @@ export const daoInfoSelector: (param: {
             isContractSelector({
               contractAddress: admin,
               chainId,
-              names: [
-                // V1
-                'cw-core',
-                // V2
-                'cwd-core',
-                'dao-core',
-              ],
+              names: DAO_CORE_CONTRACT_NAMES,
             })
           ) &&
           !ignoreAdmins?.includes(admin)

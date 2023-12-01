@@ -11,6 +11,7 @@ import {
 import { useCachedLoading } from '@dao-dao/stateless'
 import { TokenType } from '@dao-dao/types'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/Cw20Base'
+import { ContractName } from '@dao-dao/utils'
 
 import { useWallet } from '../../../../hooks/useWallet'
 import { useVotingModuleAdapterOptions } from '../../../react/context'
@@ -74,7 +75,7 @@ export const useGovernanceTokenInfo = ({
       ? isContractSelector({
           contractAddress: tfIssuer,
           chainId,
-          name: 'cw-tokenfactory-issuer',
+          name: ContractName.CwTokenfactoryIssuer,
         })
       : constSelector(false)
   )

@@ -10,6 +10,7 @@ import {
   WithChainId,
 } from '@dao-dao/types'
 import {
+  DAO_CORE_CONTRACT_NAMES,
   MAINNET,
   getChainForChainId,
   getChainForChainName,
@@ -270,13 +271,7 @@ export const genericTokenBalancesSelector = selectorFamily<
                     isContractSelector({
                       contractAddress: address,
                       chainId,
-                      names: [
-                        // V1
-                        'cw-core',
-                        // V2
-                        'cwd-core',
-                        'dao-core',
-                      ],
+                      names: DAO_CORE_CONTRACT_NAMES,
                     })
                   )
                   ? [

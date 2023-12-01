@@ -1,6 +1,7 @@
 import { ImageRounded, PeopleAltOutlined } from '@mui/icons-material'
 
 import { DaoTabId, VotingModuleAdapter } from '@dao-dao/types'
+import { DAO_VOTING_CW721_STAKED_CONTRACT_NAMES } from '@dao-dao/utils'
 
 import {
   MembersTab,
@@ -15,13 +16,7 @@ import {
 
 export const DaoVotingCw721StakedAdapter: VotingModuleAdapter = {
   id: 'DaoVotingCw721Staked',
-  contractNames: [
-    // V1
-    //'Cw721-staked-balance-voting',
-    // V2
-    'cw721_stake', //temporary while testing
-    'dao-voting-cw721-staked',
-  ],
+  contractNames: DAO_VOTING_CW721_STAKED_CONTRACT_NAMES,
 
   load: () => ({
     // Hooks

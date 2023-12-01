@@ -28,6 +28,7 @@ import {
   DumpStateResponse as DaoCoreV2DumpStateResponse,
 } from '@dao-dao/types/contracts/DaoCore.v2'
 import {
+  DAO_CORE_CONTRACT_NAMES,
   getChainForChainId,
   getDisplayNameForChainId,
   getFallbackImage,
@@ -133,13 +134,7 @@ export const daoCardInfoSelector = selectorFamily<
               isContractSelector({
                 contractAddress: admin,
                 chainId,
-                names: [
-                  // V1
-                  'cw-core',
-                  // V2
-                  'cwd-core',
-                  'dao-core',
-                ],
+                names: DAO_CORE_CONTRACT_NAMES,
               })
             )
           ) {

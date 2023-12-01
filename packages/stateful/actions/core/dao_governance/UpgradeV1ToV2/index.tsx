@@ -26,6 +26,7 @@ import {
 } from '@dao-dao/types'
 import { PreProposeInfo } from '@dao-dao/types/contracts/DaoProposalSingle.v2'
 import {
+  DAO_CORE_CONTRACT_NAMES,
   encodeMessageAsBase64,
   makeWasmMessage,
   objectMatchesStructure,
@@ -63,13 +64,7 @@ const useV1SubDaos = () => {
             isContractSelector({
               contractAddress,
               chainId,
-              names: [
-                // V1
-                'cw-core',
-                // V2
-                'cwd-core',
-                'dao-core',
-              ],
+              names: DAO_CORE_CONTRACT_NAMES,
             })
           )
         )

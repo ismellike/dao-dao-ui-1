@@ -18,6 +18,7 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
 import {
+  ContractName,
   convertDenomToMicroDenomStringWithDecimals,
   encodeMessageAsBase64,
   makeWasmMessage,
@@ -186,14 +187,17 @@ const useTransformToCosmos: UseTransformToCosmos<PerformTokenSwapData> = () => {
 const useDecodedCosmosMsg: UseDecodedCosmosMsg<PerformTokenSwapData> = (
   msg: Record<string, any>
 ) => {
-  const isTokenSwapExecute = useMsgExecutesContract(msg, 'cw-token-swap')
+  const isTokenSwapExecute = useMsgExecutesContract(
+    msg,
+    ContractName.CwTokenSwap,
+    {
+      fund: {},
+    }
+  )
 
   // Native
   if (
     isTokenSwapExecute &&
-    objectMatchesStructure(msg.wasm.execute.msg, {
-      fund: {},
-    }) &&
     Array.isArray(msg.wasm.execute.funds) &&
     msg.wasm.execute.funds.length === 1
   ) {
