@@ -67,6 +67,7 @@ export enum ActionKey {
   CreateCrossChainAccount = 'createCrossChainAccount',
   CrossChainExecute = 'crossChainExecute',
   VetoOrEarlyExecuteDaoProposal = 'vetoOrEarlyExecuteDaoProposal',
+  ManageVetoableDaos = 'manageVetoableDaos',
   // DaoProposalSingle
   UpdatePreProposeSingleConfig = 'updatePreProposeSingleConfig',
   UpdateProposalSingleConfig = 'updateProposalSingleConfig',

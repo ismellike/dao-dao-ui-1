@@ -65,3 +65,6 @@ export const NEUTRON_GOVERNANCE_DAO =
 
 // DAOs with these names will be excluded from search.
 export const INACTIVE_DAO_NAMES = ['[archived]', '[deleted]']
+
+// The namespace (prefix) of enabled vetoable DAOs stored in the items list.
+export const VETOABLE_DAOS_ITEM_KEY_PREFIX = 'showVetoableDao:'
