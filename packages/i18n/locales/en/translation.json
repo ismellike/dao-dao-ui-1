@@ -1168,7 +1168,8 @@
     "open": "Open",
     "passed": "Passed",
     "rejected": "Rejected",
-    "veto_timelock": "Veto Timelock"
+    "veto_timelock": "Veto Timelock",
+    "vetoed": "Vetoed"
   },
   "proposalStatusTitleShort": {
     "closed": "Closed",
