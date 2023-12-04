@@ -172,6 +172,7 @@ export const makeEnableMultipleChoiceAction: ActionMaker<
         name: context.info.name,
       },
       {
+        ...makeDefaultNewDao(chainId).votingConfig,
         enableMultipleChoice: true,
         omitFunds:
           !context.info.supportedFeatures[Feature.ModuleInstantiateFunds],
@@ -210,10 +211,6 @@ export const makeEnableMultipleChoiceAction: ActionMaker<
         },
         anyoneCanPropose,
         allowRevoting: config.allow_revoting,
-        approver: {
-          enabled: false,
-          address: '',
-        },
       },
       t
     )
