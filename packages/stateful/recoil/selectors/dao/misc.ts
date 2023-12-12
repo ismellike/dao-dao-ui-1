@@ -31,6 +31,7 @@ import {
   DAO_CORE_CONTRACT_NAMES,
   DaoVotingCw20StakedAdapterId,
   POLYTONE_CONFIG_PER_CHAIN,
+  VETOABLE_DAOS_ITEM_KEY_PREFIX,
   getChainForChainId,
   getDisplayNameForChainId,
   getImageUrlForChainId,
@@ -418,6 +419,7 @@ export const daoVetoableProposalsSelector = selectorFamily<
   get:
     ({ chainId, coreAddress }) =>
     ({ get }) => {
+      // TODO: use accounts once refactor is complete
       const accounts = [
         [chainId, coreAddress],
         ...Object.entries(
@@ -429,6 +431,15 @@ export const daoVetoableProposalsSelector = selectorFamily<
           )
         ),
       ]
+
+      // Load DAOs this DAO has enabled vetoable proposals listings for.
+      const vetoableDaos = get(
+        DaoCoreV2Selectors.listAllItemsWithPrefixSelector({
+          chainId,
+          contractAddress: coreAddress,
+          prefix: VETOABLE_DAOS_ITEM_KEY_PREFIX,
+        })
+      ).map(([key]) => key.substring(VETOABLE_DAOS_ITEM_KEY_PREFIX.length))
 
       const daoVetoableProposalsPerChain = (
         get(
@@ -443,12 +454,16 @@ export const daoVetoableProposalsSelector = selectorFamily<
             )
           )
         ) as IndexerDaoWithVetoableProposals[][]
-      ).flatMap((data, index) =>
-        data.map((d) => ({
-          chainId: accounts[index][0],
-          ...d,
-        }))
       )
+        .flatMap((data, index) =>
+          data.map((d) => ({
+            chainId: accounts[index][0],
+            ...d,
+          }))
+        )
+        .filter(({ chainId, dao }) =>
+          vetoableDaos.includes(`${chainId}:${dao}`)
+        )
 
       const uniqueDaos = uniq(
         daoVetoableProposalsPerChain.map(({ dao }) => dao)
