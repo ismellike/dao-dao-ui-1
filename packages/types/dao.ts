@@ -33,7 +33,12 @@ import {
   PercentOrMajorityValue,
   ProposalModuleAdapter,
 } from './proposal-module-adapter'
-import { DaoCardProps, LoadingData, SuspenseLoaderProps } from './stateless'
+import {
+  DaoCardProps,
+  DaoDropdownInfo,
+  LoadingData,
+  SuspenseLoaderProps,
+} from './stateless'
 import { GenericToken, TokenCardInfo } from './token'
 import { DurationWithUnits } from './units'
 
@@ -435,3 +440,8 @@ export type DaoWithVetoableProposals = WithChainId<
     proposalModules: ProposalModule[]
   }
 >
+
+export type DaoWithDropdownVetoableProposalList<T> = {
+  dao: DaoDropdownInfo
+  proposals: T[]
+}
