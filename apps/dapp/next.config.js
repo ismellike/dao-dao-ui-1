@@ -1,5 +1,6 @@
 // GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
 // See the "LICENSE" file in the root directory of this package for more copyright information.
+const million = require('million/compiler')
 
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
@@ -117,17 +118,24 @@ const config = {
   },
 }
 
-module.exports = withSentryConfig(
-  withBundleAnalyzer(
-    withInterceptStdout(
-      config,
-      // Silence Recoil duplicate warnings on dev.
-      (text) =>
-        process.env.NODE_ENV === 'development' &&
-        text.includes('Expectation Violation: Duplicate atom key')
-          ? ''
-          : text
-    )
+const millionConfig = {
+  auto: true,
+}
+
+module.exports = million.next(
+  withSentryConfig(
+    withBundleAnalyzer(
+      withInterceptStdout(
+        config,
+        // Silence Recoil duplicate warnings on dev.
+        (text) =>
+          process.env.NODE_ENV === 'development' &&
+          text.includes('Expectation Violation: Duplicate atom key')
+            ? ''
+            : text
+      )
+    ),
+    sentryWebpackPluginOptions
   ),
-  sentryWebpackPluginOptions
+  millionConfig
 )
