@@ -180,7 +180,7 @@ export const InnerCreateDaoForm = ({
       name: chainGovName,
       factoryContractAddress,
       latestVersion,
-      codeIds: { DaoCore: daoCoreCodeId },
+      codeIds: { DaoDaoCore: daoDaoCoreCodeId },
       codeHashes,
       createViaGovernance,
       noInstantiate2Create,
@@ -497,7 +497,7 @@ export const InnerCreateDaoForm = ({
   const predictedDaoAddress = useGenerateInstantiate2({
     chainId,
     creator: factoryContractAddress,
-    codeId: daoCoreCodeId,
+    codeId: daoDaoCoreCodeId,
     salt: uuid,
   })
 
@@ -550,7 +550,7 @@ export const InnerCreateDaoForm = ({
       return await instantiateSmartContract(
         getSigningClient,
         walletAddress,
-        daoCoreCodeId,
+        daoDaoCoreCodeId,
         contractLabel,
         instantiateMsg,
         instantiateFunds,
@@ -560,15 +560,15 @@ export const InnerCreateDaoForm = ({
         supportsInstantiate2 ? toUtf8(uuid) : undefined
       )
     } else if (isSecret) {
-      if (!codeHashes?.DaoCore) {
+      if (!codeHashes?.DaoDaoCore) {
         throw new Error('Code hash not found for DAO core contract')
       }
 
       const { events } = await secretInstantiateWithSelfAdmin(
         {
           instantiateMsg: encodeJsonToBase64(instantiateMsg),
-          codeId: daoCoreCodeId,
-          codeHash: codeHashes.DaoCore,
+          codeId: daoDaoCoreCodeId,
+          codeHash: codeHashes.DaoDaoCore,
           label: contractLabel,
         },
         SECRET_GAS.DAO_CREATION,
@@ -589,7 +589,7 @@ export const InnerCreateDaoForm = ({
       const { events } = await (supportsInstantiate2
         ? instantiate2WithSelfAdmin(
             {
-              codeId: daoCoreCodeId,
+              codeId: daoDaoCoreCodeId,
               instantiateMsg: encodeJsonToBase64(instantiateMsg),
               label: contractLabel,
               salt: toBase64(toUtf8(uuid)),
@@ -601,7 +601,7 @@ export const InnerCreateDaoForm = ({
           )
         : instantiateWithSelfAdmin(
             {
-              codeId: daoCoreCodeId,
+              codeId: daoDaoCoreCodeId,
               instantiateMsg: encodeJsonToBase64(instantiateMsg),
               label: contractLabel,
             },
@@ -691,7 +691,7 @@ export const InnerCreateDaoForm = ({
                               ? 'instantiate2'
                               : 'instantiate']: {
                               admin: instantiateMsg.admin,
-                              code_id: daoCoreCodeId,
+                              code_id: daoDaoCoreCodeId,
                               funds:
                                 getFundsFromDaoInstantiateMsg(instantiateMsg),
                               label: contractLabel,
@@ -724,7 +724,7 @@ export const InnerCreateDaoForm = ({
                                 [supportsInstantiate2
                                   ? 'instantiate2_contract_with_self_admin'
                                   : 'instantiate_contract_with_self_admin']: {
-                                  code_id: daoCoreCodeId,
+                                  code_id: daoDaoCoreCodeId,
                                   instantiate_msg:
                                     encodeJsonToBase64(instantiateMsg),
                                   label: contractLabel,

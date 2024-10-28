@@ -130,7 +130,7 @@ export class SecretSingleChoiceProposalModule extends ProposalModuleBase<
         allow_revoting: config.allowRevoting,
         close_proposal_on_execution_failure:
           config.closeProposalOnExecutionFailure ?? true,
-        dao_code_hash: codeHashes.DaoCore,
+        dao_code_hash: codeHashes.DaoDaoCore,
         max_voting_period: config.maxVotingPeriod,
         min_voting_period: config.minVotingPeriod,
         only_members_execute: config.onlyMembersExecute ?? true,

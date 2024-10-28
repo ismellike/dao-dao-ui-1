@@ -113,7 +113,7 @@ export class CwDao extends DaoBase {
   ): InstantiateInfo {
     return {
       admin: config.admin || null,
-      codeId: mustGetSupportedChainConfig(chainId).codeIds.DaoCore,
+      codeId: mustGetSupportedChainConfig(chainId).codeIds.DaoDaoCore,
       label: `DAO DAO DAO (${Date.now()})`,
       msg: encodeJsonToBase64({
         admin: config.admin,

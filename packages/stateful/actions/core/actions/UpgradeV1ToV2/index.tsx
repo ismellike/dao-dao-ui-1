@@ -221,7 +221,7 @@ export class UpgradeV1ToV2Action extends ActionBase<UpgradeV1ToV2Data> {
     )
 
     const {
-      DaoCore,
+      DaoDaoCore,
       DaoMigrator,
       DaoPreProposeSingle,
       DaoProposalSingle,
@@ -275,7 +275,7 @@ export class UpgradeV1ToV2Action extends ActionBase<UpgradeV1ToV2Data> {
       wasm: {
         migrate: {
           contract_addr: targetAddress,
-          new_code_id: DaoCore,
+          new_code_id: DaoDaoCore,
           msg: {
             from_v1: {
               dao_uri: `https://daodao.zone/dao/${targetAddress}`,
