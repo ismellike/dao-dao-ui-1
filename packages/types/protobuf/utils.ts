@@ -33,6 +33,8 @@ import {
   google,
   ibcAminoConverters,
   ibcProtoRegistry,
+  interchainSecurityAminoConverters,
+  interchainSecurityProtoRegistry,
   junoAminoConverters,
   junoProtoRegistry,
   kujiraAminoConverters,
@@ -694,6 +696,7 @@ export const getProtobufTypes = (): ReadonlyArray<[string, GeneratedType]> => [
   ...bitsongProtoRegistry,
   ...secretProtoRegistry,
   ...omniFlixProtoRegistry,
+  ...interchainSecurityProtoRegistry,
   // Not a query or TX so it isn't included in any of the registries. But we
   // want to decode this because it appears in gov props. We need to find a
   // better way to collect all generated types in a single registry...
@@ -738,6 +741,7 @@ export const getAminoTypes = () =>
     ...bitsongAminoConverters,
     ...secretAminoConverters,
     ...omniFlixAminoConverters,
+    ...interchainSecurityAminoConverters,
 
     // gaia.metaprotocols
     [ExtensionData.typeUrl]: {
