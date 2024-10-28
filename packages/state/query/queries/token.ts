@@ -1,20 +1,15 @@
 import { QueryClient, queryOptions } from '@tanstack/react-query'
 
 import {
-  AstroportToken,
   ChainId,
   GenericToken,
   GenericTokenSource,
   GenericTokenWithUsdPrice,
   TokenType,
-  WhiteWhalePool,
 } from '@dao-dao/types'
 import { FanToken } from '@dao-dao/types/protobuf/codegen/bitsong/fantoken/v1beta1/fantoken'
 import {
-  ASTROPORT_PRICES_API,
   MAINNET,
-  OSMOSIS_API_BASE,
-  WHITE_WHALE_PRICES_API,
   bitsongProtoRpcClientRouter,
   convertChainRegistryAssetToGenericToken,
   getChainForChainName,
@@ -24,7 +19,6 @@ import {
   ibcProtoRpcClientRouter,
   isSecretNetwork,
   isValidUrl,
-  objectMatchesStructure,
   transformIpfsUrlToHttpsIfNecessary,
 } from '@dao-dao/utils'
 
@@ -444,165 +438,7 @@ export const fetchBitSongFantoken = async ({
 }
 
 /**
- * Fetch the Coin Gecko price for a token.
- */
-export const fetchCoinGeckoPrice = async (
-  queryClient: QueryClient,
-  options: GenericTokenSource
-): Promise<GenericTokenWithUsdPrice> => {
-  const token = await queryClient.fetchQuery(
-    tokenQueries.info(queryClient, options)
-  )
-
-  const asset = await queryClient.fetchQuery(
-    skipQueries.asset(queryClient, options)
-  )
-
-  if (!asset?.coingecko_id) {
-    throw new Error('No Coin Gecko ID found')
-  }
-
-  const usdPrice: number | null = await queryClient.fetchQuery(
-    indexerQueries.snapper({
-      query: 'coingecko-price',
-      parameters: {
-        id: asset.coingecko_id,
-      },
-    })
-  )
-
-  if (usdPrice === null) {
-    throw new Error('No Coin Gecko price found')
-  }
-
-  return {
-    token,
-    usdPrice,
-    timestamp: new Date(),
-  }
-}
-
-/**
- * Fetch the Osmosis price for a token.
- */
-export const fetchOsmosisPrice = async (
-  queryClient: QueryClient,
-  options: GenericTokenSource
-): Promise<GenericTokenWithUsdPrice> => {
-  const token = await queryClient.fetchQuery(
-    tokenQueries.info(queryClient, options)
-  )
-
-  const { price } = await (
-    await fetch(OSMOSIS_API_BASE + '/tokens/v2/price/' + token.symbol)
-  ).json()
-
-  if (typeof price !== 'number') {
-    throw new Error('No Osmosis price found')
-  }
-
-  return {
-    token,
-    usdPrice: price,
-    timestamp: new Date(),
-  }
-}
-
-/**
- * Fetch the Astroport price for a token.
- */
-export const fetchAstroportPrice = async (
-  queryClient: QueryClient,
-  options: GenericTokenSource
-): Promise<GenericTokenWithUsdPrice> => {
-  let denom = options.denomOrAddress
-  if (options.chainId !== ChainId.NeutronMainnet) {
-    const asset = await queryClient.fetchQuery(
-      skipQueries.recommendedAssetForGenericToken(queryClient, {
-        fromChainId: options.chainId,
-        toChainId: ChainId.NeutronMainnet,
-        type: options.type,
-        denomOrAddress: options.denomOrAddress,
-      })
-    )
-    if (!asset) {
-      throw new Error('No Neutron asset found for Astroport price')
-    }
-    denom = asset.denom
-  }
-
-  const token = await queryClient.fetchQuery(
-    tokenQueries.info(queryClient, options)
-  )
-
-  const response = await fetch(ASTROPORT_PRICES_API.replace('DENOM', denom))
-  if (response.status !== 200) {
-    throw new Error('No Astroport price found')
-  }
-
-  const astroportToken: AstroportToken = await response.json()
-  if (
-    !objectMatchesStructure(astroportToken, {
-      priceUSD: {},
-    })
-  ) {
-    throw new Error('No Astroport price found')
-  }
-
-  return {
-    token,
-    usdPrice: astroportToken.priceUSD,
-    timestamp: new Date(),
-  }
-}
-
-/**
- * Fetch the White Whale price for a token.
- */
-export const fetchWhiteWhalePrice = async (
-  queryClient: QueryClient,
-  options: GenericTokenSource
-): Promise<GenericTokenWithUsdPrice> => {
-  // Get WHALE USD price from Osmosis.
-  const whaleUsdPrice = await queryClient.fetchQuery(
-    tokenQueries.osmosisPrice(queryClient, {
-      type: TokenType.Native,
-      chainId: ChainId.MigalooMainnet,
-      denomOrAddress: 'uwhale',
-    })
-  )
-
-  if (whaleUsdPrice.usdPrice === undefined) {
-    throw new Error('No Osmosis WHALE price found')
-  }
-
-  const token = await queryClient.fetchQuery(
-    tokenQueries.info(queryClient, options)
-  )
-
-  const pools: WhiteWhalePool[] = await (
-    await fetch(WHITE_WHALE_PRICES_API)
-  ).json()
-
-  // Find SYMBOL-WHALE pool.
-  const pool = pools.find((pool) => pool.pool_id === `${token.symbol}-WHALE`)
-  if (!pool) {
-    throw new Error('No White Whale pool found')
-  }
-
-  // Amount of WHALE for 1 token.
-  const priceInWhale = Number(pool.Price)
-  const usdPrice = priceInWhale * whaleUsdPrice.usdPrice
-
-  return {
-    token,
-    usdPrice,
-    timestamp: new Date(),
-  }
-}
-
-/**
- * Fetch the USD price for a token.
+ * Fetch the USD price for a token from Snapper.
  */
 export const fetchUsdPrice = async (
   queryClient: QueryClient,
@@ -612,31 +448,27 @@ export const fetchUsdPrice = async (
     throw new Error('USD prices are only available on mainnet')
   }
 
-  const priceQueries = [
-    tokenQueries.coinGeckoPrice,
-    tokenQueries.osmosisPrice,
-    tokenQueries.astroportPrice,
-    tokenQueries.whiteWhalePrice,
-  ]
-
-  const errors: Error[] = []
-
-  // Return the first successful price query.
-  return await Promise.race(
-    priceQueries.map((query) =>
-      queryClient.fetchQuery(query(queryClient, options)).catch((error) => {
-        errors.push(error)
-
-        // If this is the last query and it failed, throw the aggregate error.
-        if (errors.length === priceQueries.length) {
-          throw new AggregateError(errors, 'All price queries failed')
-        }
-
-        // Return a never-resolving promise to keep the race going.
-        return new Promise<GenericTokenWithUsdPrice>(() => {})
-      })
-    )
+  const token = await queryClient.fetchQuery(
+    tokenQueries.info(queryClient, options)
   )
+
+  const usdPrice =
+    (await queryClient.fetchQuery(
+      indexerQueries.snapper({
+        query: 'daodao-price',
+        parameters: {
+          chainId: options.chainId,
+          denom: options.denomOrAddress,
+          cw20: (options.type === TokenType.Cw20).toString(),
+        },
+      })
+    )) ?? undefined
+
+  return {
+    token,
+    usdPrice,
+    timestamp: new Date(),
+  }
 }
 
 export const tokenQueries = {
@@ -681,50 +513,6 @@ export const tokenQueries = {
     queryOptions({
       queryKey: ['token', 'bitSongFantoken', options],
       queryFn: () => fetchBitSongFantoken(options),
-    }),
-  /**
-   * Fetch the Coin Gecko price for a token.
-   */
-  coinGeckoPrice: (
-    queryClient: QueryClient,
-    options: Parameters<typeof fetchCoinGeckoPrice>[1]
-  ) =>
-    queryOptions({
-      queryKey: ['token', 'coinGeckoPrice', options],
-      queryFn: () => fetchCoinGeckoPrice(queryClient, options),
-    }),
-  /**
-   * Fetch the Osmosis price for a token.
-   */
-  osmosisPrice: (
-    queryClient: QueryClient,
-    options: Parameters<typeof fetchOsmosisPrice>[1]
-  ) =>
-    queryOptions({
-      queryKey: ['token', 'osmosisPrice', options],
-      queryFn: () => fetchOsmosisPrice(queryClient, options),
-    }),
-  /**
-   * Fetch the Astroport price for a token.
-   */
-  astroportPrice: (
-    queryClient: QueryClient,
-    options: Parameters<typeof fetchAstroportPrice>[1]
-  ) =>
-    queryOptions({
-      queryKey: ['token', 'astroportPrice', options],
-      queryFn: () => fetchAstroportPrice(queryClient, options),
-    }),
-  /**
-   * Fetch the White Whale price for a token.
-   */
-  whiteWhalePrice: (
-    queryClient: QueryClient,
-    options: Parameters<typeof fetchWhiteWhalePrice>[1]
-  ) =>
-    queryOptions({
-      queryKey: ['token', 'whiteWhalePrice', options],
-      queryFn: () => fetchWhiteWhalePrice(queryClient, options),
     }),
   /**
    * Fetch the USD price for a token.
