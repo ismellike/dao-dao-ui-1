@@ -176,20 +176,25 @@ export const FormSwitchCard = <
   BooleanFieldName extends BooleanFieldNames<FV>
 >({
   fieldName,
-  value,
+  value: _value,
+  watch,
   setValue,
   onToggle,
   ...props
-}: FormSwitchWrapperProps<SwitchCardProps, FV, BooleanFieldName>) => (
-  <SwitchCard
-    enabled={!!value}
-    onClick={() => {
-      const newValue = !value
-      setValue(fieldName, newValue as any)
-      onToggle?.(newValue)
-    }}
-    sizing="sm"
-    tooltipIconSize="sm"
-    {...props}
-  />
-)
+}: FormSwitchWrapperProps<SwitchCardProps, FV, BooleanFieldName>) => {
+  const value = _value ?? watch?.(fieldName)
+
+  return (
+    <SwitchCard
+      enabled={!!value}
+      onClick={() => {
+        const newValue = !value
+        setValue(fieldName, newValue as any)
+        onToggle?.(newValue)
+      }}
+      sizing="sm"
+      tooltipIconSize="sm"
+      {...props}
+    />
+  )
+}
