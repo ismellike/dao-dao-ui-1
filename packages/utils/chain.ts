@@ -28,7 +28,10 @@ import {
   bondStatusToJSON,
 } from '@dao-dao/types/protobuf/codegen/cosmos/staking/v1beta1/staking'
 
-import { getChainAssets } from './assets'
+import {
+  convertChainRegistryAssetToGenericToken,
+  getChainAssets,
+} from './assets'
 import {
   CHAIN_ENDPOINTS,
   CONFIGURED_CHAINS,
@@ -284,29 +287,10 @@ export const getNativeTokenForChainId = (chainId: string): GenericToken => {
       throw new Error(`Chain ${chainId} has no asset for fee token ${feeDenom}`)
     }
 
-    cachedNativeTokens[chainId] = Object.freeze({
+    cachedNativeTokens[chainId] = convertChainRegistryAssetToGenericToken(
       chainId,
-      type: TokenType.Native,
-      denomOrAddress: feeDenom,
-      symbol: asset.symbol,
-      decimals:
-        asset.denom_units.find(({ denom }) => denom === asset.display)
-          ?.exponent ??
-        asset.denom_units.find(({ exponent }) => exponent > 0)?.exponent ??
-        asset.denom_units[0]?.exponent ??
-        0,
-      // Use asset images.
-      imageUrl:
-        asset.logo_URIs?.png ??
-        asset.logo_URIs?.jpeg ??
-        asset.logo_URIs?.svg ??
-        // Fallback.
-        getFallbackImage(feeDenom),
-      source: {
-        chainId,
-        denomOrAddress: feeDenom,
-      },
-    } as GenericToken)
+      asset
+    )
   }
 
   return cachedNativeTokens[chainId]!
