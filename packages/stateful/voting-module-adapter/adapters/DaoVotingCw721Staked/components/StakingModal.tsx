@@ -198,15 +198,16 @@ const InnerStakingModal = ({
 
   const onDeselectAll = () => setCurrentTokenIds([])
 
-  const nfts =
-    (mode === StakingMode.Stake
-      ? loadingWalletUnstakedNfts
-      : mode === StakingMode.Unstake
-      ? loadingWalletStakedNfts
-      : undefined) ??
-    ({ loading: false, errored: true } as LoadingDataWithError<
-      LazyNftCardInfo[]
-    >)
+  const nfts: LoadingDataWithError<LazyNftCardInfo[]> = (mode ===
+  StakingMode.Stake
+    ? loadingWalletUnstakedNfts
+    : mode === StakingMode.Unstake
+    ? loadingWalletStakedNfts
+    : undefined) ?? {
+    loading: false,
+    errored: true,
+    error: new Error('Unexpected failure to load NFTs'),
+  }
 
   const onSelectAll = () =>
     setCurrentTokenIds(
