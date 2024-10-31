@@ -365,6 +365,9 @@ const BASE_SUPPORTED_CHAINS: Omit<
       'bitsong1vdqwdy564mz4cl23nmlgma3c336tsla9vzpw2qrdj5f8w5qgp7pq39h464',
     tokenCreationFactoryAddress:
       'bitsong16jp4jd68hzpc9a88mqcg3mnktjhgrlyv96shx4zvt522zzq99afsdldd04',
+    subDaos: [
+      'bitsong1qfwdjcmxgjr9jwa2grhf7pce87afx57j2664tvhh29j7r68a9tgqj9kuf3',
+    ],
     explorerUrlTemplates: {
       tx: 'https://ping.pub/bitsong/tx/REPLACE',
       gov: 'https://ping.pub/bitsong/gov',
