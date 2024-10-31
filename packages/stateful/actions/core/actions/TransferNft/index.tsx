@@ -1,10 +1,10 @@
+import { useQueryClient } from '@tanstack/react-query'
 import JSON5 from 'json5'
 import { useFormContext } from 'react-hook-form'
-import { constSelector } from 'recoil'
 
+import { nftQueries } from '@dao-dao/state/query'
 import {
   lazyNftCardInfosForDaoSelector,
-  nftCardInfoSelector,
   walletLazyNftCardInfosSelector,
 } from '@dao-dao/state/recoil'
 import {
@@ -35,6 +35,7 @@ import {
 } from '@dao-dao/utils'
 
 import { AddressInput, NftSelectionModal } from '../../../../components'
+import { useQueryLoadingDataWithError } from '../../../../hooks'
 import { useCw721CommonGovernanceTokenInfoIfExists } from '../../../../voting-module-adapter'
 import { TransferNftComponent, TransferNftData } from './Component'
 
@@ -44,6 +45,7 @@ const Component: ActionComponent = (props) => {
     address,
     chain: { chainId: currentChainId },
   } = useActionOptions()
+  const queryClient = useQueryClient()
   const { watch } = useFormContext<TransferNftData>()
   const { denomOrAddress: governanceCollectionAddress } =
     useCw721CommonGovernanceTokenInfoIfExists() ?? {}
@@ -68,10 +70,10 @@ const Component: ActionComponent = (props) => {
           })
       : undefined
   )
-  const nftInfo = useCachedLoadingWithError(
+  const nftInfo = useQueryLoadingDataWithError(
     chainId && collection && tokenId
-      ? nftCardInfoSelector({ chainId, collection, tokenId })
-      : constSelector(undefined)
+      ? nftQueries.cardInfo(queryClient, { chainId, collection, tokenId })
+      : undefined
   )
 
   const allChainOptions =
@@ -88,7 +90,7 @@ const Component: ActionComponent = (props) => {
       {...props}
       options={{
         options: allChainOptions,
-        nftInfo,
+        nftInfo: chainId && tokenId && collection ? nftInfo : undefined,
         AddressInput,
         NftSelectionModal,
       }}

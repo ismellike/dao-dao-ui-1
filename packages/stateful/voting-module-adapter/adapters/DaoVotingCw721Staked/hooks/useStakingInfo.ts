@@ -1,10 +1,6 @@
+import { useQueryClient } from '@tanstack/react-query'
 import { useCallback } from 'react'
-import {
-  constSelector,
-  useRecoilValue,
-  useSetRecoilState,
-  waitForAll,
-} from 'recoil'
+import { useRecoilValue, useSetRecoilState, waitForAll } from 'recoil'
 
 import { HugeDecimal } from '@dao-dao/math'
 import {
@@ -12,12 +8,12 @@ import {
   DaoVotingCw721StakedSelectors,
   blockHeightSelector,
   contractVersionSelector,
+  daoVotingCw721StakedQueries,
   refreshClaimsIdAtom,
   refreshWalletBalancesIdAtom,
 } from '@dao-dao/state'
 import {
   useCachedLoadable,
-  useCachedLoading,
   useCachedLoadingWithError,
   useDao,
 } from '@dao-dao/stateless'
@@ -25,7 +21,7 @@ import { LazyNftCardInfo } from '@dao-dao/types'
 import { NftClaim } from '@dao-dao/types/contracts/DaoVotingCw721Staked'
 import { claimAvailable, getNftKey } from '@dao-dao/utils'
 
-import { useWallet } from '../../../../hooks/useWallet'
+import { useQueryLoadingDataWithError, useWallet } from '../../../../hooks'
 import { UseStakingInfoOptions, UseStakingInfoResponse } from '../types'
 import { useGovernanceCollectionInfo } from './useGovernanceCollectionInfo'
 
@@ -36,7 +32,8 @@ export const useStakingInfo = ({
   fetchWalletUnstakedNfts = false,
 }: UseStakingInfoOptions = {}): UseStakingInfoResponse => {
   const dao = useDao()
-  const { address: walletAddress } = useWallet()
+  const { address: walletAddress = '' } = useWallet()
+  const queryClient = useQueryClient()
 
   const { collectionAddress: governanceTokenAddress } =
     useGovernanceCollectionInfo()
@@ -88,18 +85,16 @@ export const useStakingInfo = ({
     [_setClaimsId]
   )
 
-  const loadingClaims = useCachedLoading(
-    fetchClaims && walletAddress
-      ? DaoVotingCw721StakedSelectors.nftClaimsSelector({
-          chainId: dao.chainId,
-          contractAddress: dao.votingModule.address,
-          params: [{ address: walletAddress }],
-        })
-      : constSelector(undefined),
-    undefined
-  )
+  const loadingClaims = useQueryLoadingDataWithError({
+    ...daoVotingCw721StakedQueries.nftClaims(queryClient, {
+      chainId: dao.chainId,
+      contractAddress: dao.votingModule.address,
+      args: { address: walletAddress },
+    }),
+    enabled: !!fetchClaims && !!walletAddress,
+  })
   const claims =
-    loadingClaims.loading || !loadingClaims.data
+    loadingClaims.loading || loadingClaims.errored
       ? []
       : loadingClaims.data.nft_claims
   const nftClaims = claims.map(
@@ -118,26 +113,25 @@ export const useStakingInfo = ({
   const sumClaimsAvailable = HugeDecimal.from(claimsAvailable?.length || 0)
 
   // Total staked value
-  const loadingTotalStakedValue = useCachedLoading(
-    fetchTotalStakedValue
-      ? DaoVotingCw721StakedSelectors.totalPowerAtHeightSelector({
-          chainId: dao.chainId,
-          contractAddress: dao.votingModule.address,
-          params: [{}],
-        })
-      : constSelector(undefined),
-    undefined
-  )
+  const loadingTotalStakedValue = useQueryLoadingDataWithError({
+    ...daoVotingCw721StakedQueries.totalPowerAtHeight(queryClient, {
+      chainId: dao.chainId,
+      contractAddress: dao.votingModule.address,
+      args: {},
+    }),
+    enabled: !!fetchTotalStakedValue,
+  })
 
   // Wallet staked value
-  const loadingWalletStakedNfts = useCachedLoadingWithError(
-    fetchWalletStakedValue && walletAddress
-      ? DaoVotingCw721StakedSelectors.stakedNftsSelector({
-          chainId: dao.chainId,
-          contractAddress: dao.votingModule.address,
-          params: [{ address: walletAddress }],
-        })
-      : undefined,
+  const loadingWalletStakedNfts = useQueryLoadingDataWithError(
+    {
+      ...daoVotingCw721StakedQueries.stakedNfts(queryClient, {
+        chainId: dao.chainId,
+        contractAddress: dao.votingModule.address,
+        args: { address: walletAddress },
+      }),
+      enabled: !!fetchWalletStakedValue && !!walletAddress,
+    },
     (data) =>
       data.map(
         (tokenId): LazyNftCardInfo => ({
@@ -187,7 +181,7 @@ export const useStakingInfo = ({
     // Total staked value
     loadingTotalStakedValue: loadingTotalStakedValue.loading
       ? { loading: true }
-      : !loadingTotalStakedValue.data
+      : loadingTotalStakedValue.errored
       ? undefined
       : {
           loading: false,

@@ -45,8 +45,9 @@ export type TransferNftData = {
 export interface TransferNftOptions {
   // The set of NFTs that may be transfered as part of this action.
   options: LoadingDataWithError<LazyNftCardInfo[]>
-  // Information about the NFT currently selected.
-  nftInfo: LoadingDataWithError<NftCardInfo | undefined>
+  // Information about the NFT currently selected. If undefined, no NFT is
+  // selected.
+  nftInfo: LoadingDataWithError<NftCardInfo> | undefined
 
   AddressInput: ComponentType<AddressInputProps<TransferNftData>>
   NftSelectionModal: ComponentType<NftSelectionModalProps>
@@ -184,19 +185,22 @@ export const TransferNftComponent: ActionComponent<TransferNftOptions> = ({
         </div>
 
         <div className="flex grow flex-col gap-2">
-          {nftInfo.loading ? (
-            <HorizontalNftCardLoader />
-          ) : nftInfo.errored ? (
-            <ErrorPage error={nftInfo.error} />
-          ) : (
-            nftInfo.data && <HorizontalNftCard {...nftInfo.data} />
-          )}
+          {nftInfo &&
+            (nftInfo.loading ? (
+              <HorizontalNftCardLoader />
+            ) : nftInfo.errored ? (
+              <ErrorPage error={nftInfo.error} />
+            ) : (
+              <HorizontalNftCard {...nftInfo.data} />
+            ))}
 
           {isCreating && (
             <Button
               className={clsx(
                 'text-text-tertiary',
-                nftInfo ? 'self-end' : 'self-start'
+                nftInfo && !nftInfo.loading && !nftInfo.errored
+                  ? 'self-end'
+                  : 'self-start'
               )}
               onClick={() => setShowModal(true)}
               variant="secondary"

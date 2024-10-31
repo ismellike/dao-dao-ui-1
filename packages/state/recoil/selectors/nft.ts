@@ -7,22 +7,18 @@ import {
   LoadingDataWithError,
   LoadingNfts,
   NftCardInfo,
-  NftUriData,
   TokenType,
   WithChainId,
 } from '@dao-dao/types'
 import {
   MAINNET,
-  STARGAZE_URL_BASE,
   combineLoadingDataWithErrors,
   getNftKey,
   nftCardInfoFromStargazeIndexerNft,
-  transformIpfsUrlToHttpsIfNecessary,
 } from '@dao-dao/utils'
 
 import {
   stargazeIndexerClient,
-  stargazeTokenQuery,
   stargazeTokensForOwnerQuery,
 } from '../../graphql'
 import { omniflixQueries } from '../../query'
@@ -36,79 +32,6 @@ import { CommonNftSelectors, DaoDaoCoreSelectors } from './contracts'
 import { queryAccountIndexerSelector } from './indexer'
 import { stargazeWalletUsdValueSelector } from './stargaze'
 import { genericTokenSelector } from './token'
-
-// Tries to parse [EIP-721] metadata out of an NFT's metadata JSON.
-//
-// [EIP-721]: https://github.com/ethereum/EIPs/blob/master/EIPS/eip-721.md
-export const nftUriDataSelector = selectorFamily<
-  NftUriData | undefined,
-  string
->({
-  key: 'nftUriData',
-  get: (tokenUri) => async () => {
-    try {
-      // Transform IPFS url if necessary.
-      let response = await fetch(transformIpfsUrlToHttpsIfNecessary(tokenUri))
-
-      if (!response.ok) {
-        // Sometimes `tokenUri` is missing a `.json` extension, so try again on
-        // failure in that case.
-        if (!tokenUri.endsWith('.json')) {
-          response = await fetch(
-            transformIpfsUrlToHttpsIfNecessary(tokenUri + '.json')
-          )
-        }
-
-        if (!response.ok) {
-          return
-        }
-      }
-
-      const data = await response.json()
-
-      let name
-      let description
-      let imageUrl
-      let externalLink
-
-      if (typeof data.name === 'string' && !!data.name.trim()) {
-        name = data.name
-      }
-
-      if (typeof data.description === 'string' && !!data.description.trim()) {
-        description = data.description
-      }
-
-      if (typeof data.image === 'string' && !!data.image) {
-        imageUrl = transformIpfsUrlToHttpsIfNecessary(data.image)
-      }
-
-      if (typeof data.external_url === 'string' && !!data.external_url.trim()) {
-        const externalUrl = transformIpfsUrlToHttpsIfNecessary(
-          data.external_url
-        )
-        const externalUrlDomain = new URL(externalUrl).hostname
-        externalLink = {
-          href: externalUrl,
-          name: HostnameMap[externalUrlDomain] ?? externalUrlDomain,
-        }
-      }
-
-      return {
-        // Include all metadata.
-        ...data,
-
-        // Override specifics.
-        name,
-        description,
-        imageUrl,
-        externalLink,
-      }
-    } catch (err) {
-      console.error(err)
-    }
-  },
-})
 
 export const allNftUsdValueSelector = selectorFamily<
   number,
@@ -138,13 +61,6 @@ export const allNftUsdValueSelector = selectorFamily<
       return sum
     },
 })
-
-// Maps domain -> human readable name. If a domain is in this set, NFTs
-// associated with it will have their external links displayed using the human
-// readable name provided here.
-const HostnameMap: Record<string, string | undefined> = {
-  'stargaze.zone': 'Stargaze',
-}
 
 const STARGAZE_INDEXER_TOKENS_LIMIT = 100
 export const walletStargazeNftCardInfosSelector = selectorFamily<
@@ -243,163 +159,6 @@ export const walletStargazeNftCardInfosSelector = selectorFamily<
             : undefined,
           timestamp
         )
-      )
-    },
-})
-
-export const nftCardInfoWithUriSelector = selectorFamily<
-  NftCardInfo,
-  WithChainId<{
-    collection: string
-    tokenId: string
-    tokenUri?: string | null | undefined
-  }>
->({
-  key: 'nftCardInfo',
-  get:
-    ({ tokenId, collection, tokenUri, chainId }) =>
-    async ({ get }) => {
-      const collectionInfo = get(
-        CommonNftSelectors.contractInfoSelector({
-          contractAddress: collection,
-          chainId,
-          params: [],
-        })
-      )
-
-      const metadata =
-        (tokenUri && get(nftUriDataSelector(tokenUri))) || undefined
-      const { name = '', description, imageUrl, externalLink } = metadata || {}
-
-      const info: NftCardInfo = {
-        key: getNftKey(chainId, collection, tokenId),
-        collectionAddress: collection,
-        collectionName: collectionInfo.name,
-        tokenId,
-        externalLink:
-          externalLink ||
-          (chainId === ChainId.StargazeMainnet ||
-          chainId === ChainId.StargazeTestnet
-            ? {
-                href: `${STARGAZE_URL_BASE}/media/${collection}/${tokenId}`,
-                name: 'Stargaze',
-              }
-            : undefined),
-        // Default to tokenUri; this gets overwritten if tokenUri contains valid
-        // metadata and has an image.
-        imageUrl: imageUrl || tokenUri || undefined,
-        metadata,
-        name,
-        description,
-        chainId,
-      }
-
-      return info
-    },
-})
-
-// TODO(omniflix): move this to react-query and load ONFT JSON metadata URI
-export const nftCardInfoSelector = selectorFamily<
-  NftCardInfo,
-  WithChainId<{ tokenId: string; collection: string }>
->({
-  key: 'nftCardInfo',
-  get:
-    ({ tokenId, collection, chainId }) =>
-    async ({ get }) => {
-      // Use Stargaze indexer when possible. Fallback to contract query.
-      if (
-        chainId === ChainId.StargazeMainnet ||
-        chainId === ChainId.StargazeTestnet
-      ) {
-        let data
-        try {
-          data = (
-            await stargazeIndexerClient.query({
-              query: stargazeTokenQuery,
-              variables: {
-                collectionAddr: collection,
-                tokenId,
-              },
-            })
-          ).data
-        } catch (err) {
-          console.error(err)
-        }
-
-        if (data?.token) {
-          const genericToken = data.token?.highestOffer?.offerPrice?.denom
-            ? get(
-                genericTokenSelector({
-                  chainId,
-                  type: TokenType.Native,
-                  denomOrAddress: data.token.highestOffer.offerPrice.denom,
-                })
-              )
-            : undefined
-
-          return nftCardInfoFromStargazeIndexerNft(
-            chainId,
-            data.token,
-            genericToken
-          )
-        }
-      }
-
-      if (
-        chainId === ChainId.OmniflixHubMainnet ||
-        chainId === ChainId.OmniflixHubTestnet
-      ) {
-        const queryClient = get(queryClientAtom)
-
-        const [collectionInfo, onft] = await Promise.all([
-          queryClient.fetchQuery(
-            omniflixQueries.onftCollectionInfo({
-              chainId,
-              id: collection,
-            })
-          ),
-          queryClient.fetchQuery(
-            omniflixQueries.onft({
-              chainId,
-              collectionId: collection,
-              tokenId,
-            })
-          ),
-        ])
-
-        return {
-          chainId,
-          key: getNftKey(chainId, collection, tokenId),
-          collectionAddress: collection,
-          collectionName: collectionInfo.name,
-          tokenId,
-          owner: onft.owner,
-          externalLink: {
-            href: `https://omniflix.market/c/${collection}/${tokenId}`,
-            name: 'OmniFlix',
-          },
-          imageUrl: onft.metadata?.mediaUri,
-          name: onft.metadata?.name || tokenId,
-          description: onft.metadata?.description,
-        }
-      }
-
-      const tokenInfo = get(
-        CommonNftSelectors.nftInfoSelector({
-          contractAddress: collection,
-          chainId,
-          params: [{ tokenId }],
-        })
-      )
-
-      return get(
-        nftCardInfoWithUriSelector({
-          tokenId,
-          collection,
-          tokenUri: tokenInfo.token_uri,
-          chainId,
-        })
       )
     },
 })

@@ -28,7 +28,8 @@ export interface BurnNftOptions {
   // The set of NFTs that may be burned as part of this action.
   options: LoadingDataWithError<LazyNftCardInfo[]>
   // Information about the NFT currently selected. If errored, it may be burnt.
-  nftInfo: LoadingDataWithError<NftCardInfo | undefined>
+  // If undefined, no NFT is selected.
+  nftInfo: LoadingDataWithError<NftCardInfo> | undefined
   NftSelectionModal: ComponentType<NftSelectionModalProps>
 }
 
@@ -85,23 +86,26 @@ export const BurnNft: ActionComponent<BurnNftOptions> = ({
   return (
     <>
       <div className="flex flex-col gap-2">
-        {nftInfo.loading ? (
-          <HorizontalNftCardLoader />
-        ) : !nftInfo.errored && nftInfo.data ? (
-          <HorizontalNftCard {...nftInfo.data} />
-        ) : (
-          // If errored loading NFT and not creating, token likely burned.
-          nftInfo.errored &&
-          !isCreating && (
-            <p className="primary-text">{t('info.tokenBurned', { tokenId })}</p>
-          )
-        )}
+        {nftInfo &&
+          (nftInfo.loading ? (
+            <HorizontalNftCardLoader />
+          ) : !nftInfo.errored ? (
+            <HorizontalNftCard {...nftInfo.data} />
+          ) : (
+            // If errored loading NFT and not creating, token likely burned.
+            nftInfo.errored &&
+            !isCreating && (
+              <p className="primary-text">
+                {t('info.tokenBurned', { tokenId })}
+              </p>
+            )
+          ))}
 
         {isCreating && (
           <Button
             className={clsx(
               'text-text-tertiary',
-              !nftInfo.loading && !nftInfo.errored && nftInfo.data
+              nftInfo && !nftInfo.loading && !nftInfo.errored
                 ? 'self-end'
                 : 'self-start'
             )}

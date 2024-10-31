@@ -1,6 +1,6 @@
 import { useQueryClient, useSuspenseQueries } from '@tanstack/react-query'
 import { useCallback } from 'react'
-import { useSetRecoilState, waitForAll } from 'recoil'
+import { useSetRecoilState } from 'recoil'
 
 import { HugeDecimal } from '@dao-dao/math'
 import {
@@ -8,17 +8,13 @@ import {
   contractQueries,
   daoVotingOnftStakedQueries,
   daoVotingOnftStakedQueryKeys,
-  nftCardInfoSelector,
   omniflixQueries,
   refreshDaoVotingPowerAtom,
 } from '@dao-dao/state'
-import {
-  useCachedLoadable,
-  useCachedLoadingWithError,
-  useDao,
-} from '@dao-dao/stateless'
+import { useCachedLoadable, useDao } from '@dao-dao/stateless'
+import { LazyNftCardInfo } from '@dao-dao/types'
 import { NftClaim } from '@dao-dao/types/contracts/DaoVotingOnftStaked'
-import { claimAvailable, parseContractVersion } from '@dao-dao/utils'
+import { claimAvailable, getNftKey, parseContractVersion } from '@dao-dao/utils'
 
 import {
   useQueryLoadingData,
@@ -232,7 +228,7 @@ export const useStakingInfo = ({
   })
 
   // Wallet staked value
-  const loadingWalletStakedNftIds = useQueryLoadingDataWithError(
+  const loadingWalletStakedNfts = useQueryLoadingDataWithError(
     daoVotingOnftStakedQueries.stakedNfts(queryClient, {
       chainId: votingModule.chainId,
       contractAddress: votingModule.address,
@@ -242,46 +238,36 @@ export const useStakingInfo = ({
       options: {
         enabled: fetchWalletStakedValue && !!walletAddress,
       },
-    })
-  )
-
-  const loadingWalletStakedNfts = useCachedLoadingWithError(
-    !loadingWalletStakedNftIds.loading && !loadingWalletStakedNftIds.errored
-      ? waitForAll(
-          loadingWalletStakedNftIds.data.map((tokenId) =>
-            nftCardInfoSelector({
-              chainId: votingModule.chainId,
-              collection: collectionAddress,
-              tokenId,
-            })
-          )
-        )
-      : undefined
-  )
-
-  const loadingWalletUnstakedOnfts = useQueryLoadingDataWithError({
-    ...omniflixQueries.allOnfts(queryClient, {
-      chainId: votingModule.chainId,
-      id: collectionAddress,
-      owner: walletAddress ?? '',
     }),
-    enabled: fetchWalletUnstakedNfts && !!walletAddress,
-  })
+    (data) =>
+      data.map(
+        (tokenId): LazyNftCardInfo => ({
+          key: getNftKey(votingModule.chainId, collectionAddress, tokenId),
+          chainId: votingModule.chainId,
+          collectionAddress,
+          tokenId,
+        })
+      )
+  )
 
-  const loadingWalletUnstakedNfts = useCachedLoadingWithError(
-    !loadingWalletUnstakedOnfts.loading &&
-      !loadingWalletUnstakedOnfts.errored &&
-      loadingWalletUnstakedOnfts.data.length === 1
-      ? waitForAll(
-          loadingWalletUnstakedOnfts.data[0].onfts.map(({ id }) =>
-            nftCardInfoSelector({
-              chainId: votingModule.chainId,
-              collection: collectionAddress,
-              tokenId: id,
-            })
-          )
-        )
-      : undefined
+  const loadingWalletUnstakedNfts = useQueryLoadingDataWithError(
+    {
+      ...omniflixQueries.allOnfts(queryClient, {
+        chainId: votingModule.chainId,
+        id: collectionAddress,
+        owner: walletAddress ?? '',
+      }),
+      enabled: fetchWalletUnstakedNfts && !!walletAddress,
+    },
+    ([{ onfts }]) =>
+      onfts.map(
+        ({ id }): LazyNftCardInfo => ({
+          key: getNftKey(votingModule.chainId, collectionAddress, id),
+          chainId: votingModule.chainId,
+          collectionAddress,
+          tokenId: id,
+        })
+      )
   )
 
   return {
@@ -312,13 +298,13 @@ export const useStakingInfo = ({
           },
     // Wallet staked value
     loadingWalletStakedValue:
-      !fetchWalletStakedValue || loadingWalletStakedNftIds.errored
+      !fetchWalletStakedValue || loadingWalletStakedNfts.errored
         ? undefined
-        : loadingWalletStakedNftIds.loading
+        : loadingWalletStakedNfts.loading
         ? { loading: true }
         : {
             loading: false,
-            data: HugeDecimal.from(loadingWalletStakedNftIds.data.length),
+            data: HugeDecimal.from(loadingWalletStakedNfts.data.length),
           },
     loadingWalletStakedNfts,
     loadingWalletUnstakedNfts,
