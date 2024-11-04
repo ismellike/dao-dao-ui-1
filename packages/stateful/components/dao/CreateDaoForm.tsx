@@ -416,7 +416,7 @@ export const InnerCreateDaoForm = ({
 
   // Get available widgets.
   const availableWidgets: CreateDaoContext['availableWidgets'] = useMemo(
-    () => getWidgets(chainId),
+    () => getWidgets(chainId).filter((w) => w.supportsDaoCreation),
     [chainId]
   )
 
