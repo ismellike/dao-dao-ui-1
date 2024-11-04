@@ -279,32 +279,26 @@ export const InnerCreateDaoForm = ({
       cached.votingConfig
     )
 
-    // Ensure UUID is set.
-    if (!cached.uuid) {
-      cached.uuid = defaultNewDao.uuid
+    // If no UUID is set, or no widgets are configured, randomize the uuid.
+    // Sometimes uuid gets stuck in local storage, not cleared from a previous
+    // DAO creation, and it needs to be reset. However, this uuid controls the
+    // predicted DAO address which gets used when setting up widgets, so we can
+    // only randomize it if no widgets have been set up yet.
+    if (
+      !cached.uuid ||
+      !cached.widgets ||
+      Object.keys(cached.widgets).length === 0 ||
+      Object.values(cached.widgets).every((v) => v === null)
+    ) {
+      cached.uuid = nanoid()
     }
 
-    const final = merge(
+    return merge(
       // Merges into this object.
       cached,
       // Use overrides passed into component.
       override
     )
-
-    // If no widgets are configured, randomize the uuid. Sometimes uuid gets
-    // stuck in local storage, not cleared from a previous DAO creation, and it
-    // needs to be reset. However, this uuid controls the predicted DAO address
-    // which gets used when setting up widgets, so we can only randomize it if
-    // no widgets have been set up yet.
-    if (
-      !final.widgets ||
-      Object.keys(final.widgets).length === 0 ||
-      Object.values(final.widgets).every((v) => v === null)
-    ) {
-      final.uuid = nanoid()
-    }
-
-    return final
   }, [_newDaoAtom, chainContext.config, chainId, override])
 
   const form = useForm<NewDao>({
