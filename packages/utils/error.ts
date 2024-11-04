@@ -6,22 +6,28 @@ import {
 } from './constants'
 
 /**
+ * Whether or not an error contains a substring or any of a set of substrings.
+ */
+export const isErrorWithSubstring = (
+  error: unknown,
+  substringOrSubstrings: string | string[]
+): boolean =>
+  error instanceof Error &&
+  [substringOrSubstrings]
+    .flat()
+    .some((substring) => (error as Error).message.includes(substring))
+
+/**
  * Whether or not an error is a non-existent query error.
  */
 export const isNonexistentQueryError = (error: unknown): boolean =>
-  error instanceof Error &&
-  NONEXISTENT_QUERY_ERROR_SUBSTRINGS.some((substring) =>
-    (error as Error).message.includes(substring)
-  )
+  isErrorWithSubstring(error, NONEXISTENT_QUERY_ERROR_SUBSTRINGS)
 
 /**
  * Whether or not an error is an invalid contract error.
  */
 export const isInvalidContractError = (error: unknown): boolean =>
-  error instanceof Error &&
-  INVALID_CONTRACT_ERROR_SUBSTRINGS.some((substring) =>
-    (error as Error).message.includes(substring)
-  )
+  isErrorWithSubstring(error, INVALID_CONTRACT_ERROR_SUBSTRINGS)
 
 // Passing a map will allow common errors to be mapped to a custom error message
 // for the given context.

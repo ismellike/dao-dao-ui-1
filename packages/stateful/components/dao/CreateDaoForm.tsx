@@ -1,8 +1,9 @@
 import { toBase64, toUtf8 } from '@cosmjs/encoding'
-import { ArrowBack } from '@mui/icons-material'
+import { ArrowBack, Clear } from '@mui/icons-material'
 import { useQueryClient } from '@tanstack/react-query'
 import cloneDeep from 'lodash.clonedeep'
 import merge from 'lodash.merge'
+import { nanoid } from 'nanoid'
 import { useEffect, useMemo, useState } from 'react'
 import {
   FormProvider,
@@ -28,9 +29,11 @@ import {
   CreateDaoStart,
   CreateDaoVoting,
   DaoHeader,
+  IconButton,
   ImageSelector,
   Loader,
   StatusCard,
+  Tooltip,
   TooltipInfoIcon,
   useAppContext,
   useCachedLoadable,
@@ -74,6 +77,7 @@ import {
   getSupportedChains,
   getWidgetStorageItemKey,
   instantiateSmartContract,
+  isErrorWithSubstring,
   isSecretNetwork,
   makeWasmMessage,
   parseContractVersion,
@@ -280,12 +284,27 @@ export const InnerCreateDaoForm = ({
       cached.uuid = defaultNewDao.uuid
     }
 
-    return merge(
+    const final = merge(
       // Merges into this object.
       cached,
       // Use overrides passed into component.
       override
     )
+
+    // If no widgets are configured, randomize the uuid. Sometimes uuid gets
+    // stuck in local storage, not cleared from a previous DAO creation, and it
+    // needs to be reset. However, this uuid controls the predicted DAO address
+    // which gets used when setting up widgets, so we can only randomize it if
+    // no widgets have been set up yet.
+    if (
+      !final.widgets ||
+      Object.keys(final.widgets).length === 0 ||
+      Object.values(final.widgets).every((v) => v === null)
+    ) {
+      final.uuid = nanoid()
+    }
+
+    return final
   }, [_newDaoAtom, chainContext.config, chainId, override])
 
   const form = useForm<NewDao>({
@@ -325,6 +344,12 @@ export const InnerCreateDaoForm = ({
     const timeout = setTimeout(() => setNewDaoAtom(cloneDeep(newDao)), 10000)
     return () => clearTimeout(timeout)
   }, [newDao, setNewDaoAtom, daoCreatedCardProps])
+
+  const onClear = () => {
+    const newDao = makeDefaultNewDao(chainId)
+    form.reset(newDao)
+    setNewDaoAtom(cloneDeep(newDao))
+  }
 
   // Set accent color based on image provided.
   const { setAccentColor } = useThemeContext()
@@ -751,7 +776,22 @@ export const InnerCreateDaoForm = ({
           const coreAddress = await toast.promise(doCreateDao(), {
             loading: t('info.creatingDao'),
             success: t('success.daoCreatedPleaseWait'),
-            error: (err) => processError(err),
+            error: (err) => {
+              // If instantiate2 collision error, redirect to the first creation
+              // page and tell them to clear and restart.
+              if (
+                isErrorWithSubstring(err, [
+                  'contract address already exists, try a different combination of creator, checksum and salt',
+                  'instance with this code id, sender and label exists: try a different label',
+                ])
+              ) {
+                setPageIndex(initialPageIndex)
+
+                return t('error.daoCreationCollision')
+              }
+
+              return processError(err)
+            },
           })
 
           const { info } = await queryClient
@@ -1002,7 +1042,18 @@ export const InnerCreateDaoForm = ({
       >
         {/* Show image selector or DAO header depending on page. */}
         {pageIndex === 0 ? (
-          <div className="flex flex-col items-center pb-10">
+          <div className="relative flex flex-col items-center pb-10">
+            <Tooltip title={t('button.clear')}>
+              <IconButton
+                Icon={Clear}
+                circular
+                className="absolute -top-2 right-0"
+                confirm
+                onClick={onClear}
+                variant="ghost"
+              />
+            </Tooltip>
+
             <ImageSelector
               Trans={Trans}
               className="md:mt-10"
