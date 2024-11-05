@@ -17,18 +17,13 @@ import {
   useUpdatingRef,
 } from '@dao-dao/stateless'
 import {
-  ChainId,
   CommonProposalListInfo,
   ProposalStatus,
   ProposalStatusEnum,
   StatefulProposalLineProps,
   StatefulProposalListProps,
 } from '@dao-dao/types'
-import {
-  NEUTRON_GOVERNANCE_DAO,
-  chainIsIndexed,
-  webSocketChannelNameForDao,
-} from '@dao-dao/utils'
+import { chainIsIndexed, webSocketChannelNameForDao } from '@dao-dao/utils'
 
 import {
   useMembership,
@@ -288,18 +283,6 @@ export const ProposalList = ({
                 : undefined,
               status,
             })
-
-            // Remove erroneous Neutron proposals.
-            // TODO: remove this after october 9
-            newProposalInfos = newProposalInfos.filter(
-              (info) =>
-                !(
-                  info.proposalModule.chainId === ChainId.NeutronMainnet &&
-                  info.proposalModule.dao.coreAddress ===
-                    NEUTRON_GOVERNANCE_DAO &&
-                  (info.id === 'A47' || info.id === 'A48')
-                )
-            )
 
             newOpenProposals = [
               ...newOpenProposals,
