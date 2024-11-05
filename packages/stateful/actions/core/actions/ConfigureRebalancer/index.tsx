@@ -363,7 +363,7 @@ export class ConfigureRebalancerAction extends ActionBase<ConfigureRebalancerDat
       maxLimit:
         rebalancerConfig?.max_limit &&
         !isNaN(Number(rebalancerConfig.max_limit))
-          ? Number(rebalancerConfig.max_limit)
+          ? Number(rebalancerConfig.max_limit) * 100
           : 5,
       minBalance:
         minBalanceTarget?.min_balance && minBalanceToken
@@ -529,8 +529,6 @@ export class ConfigureRebalancerAction extends ActionBase<ConfigureRebalancerDat
                   // Common options.
                   ...({
                     base_denom: baseDenom,
-                    // BPS
-                    max_limit_bps: maxLimit && maxLimit * 100,
                     pid: {
                       p: pid.kp.toString(),
                       i: pid.ki.toString(),
@@ -560,9 +558,15 @@ export class ConfigureRebalancerAction extends ActionBase<ConfigureRebalancerDat
                   ...(rebalancerConfig
                     ? ({
                         trustee: trustee ? { set: trustee } : 'clear',
+                        // BPS
+                        max_limit_bps: maxLimit
+                          ? { set: maxLimit * 100 }
+                          : 'clear',
                       } as Partial<RebalancerUpdateData>)
                     : ({
                         trustee: trustee || null,
+                        // BPS
+                        max_limit_bps: maxLimit && maxLimit * 100,
                       } as Partial<RebalancerData>)),
                 }),
               },
