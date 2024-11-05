@@ -1,4 +1,5 @@
 import { Close, InfoOutlined } from '@mui/icons-material'
+import clsx from 'clsx'
 import { ComponentType, useEffect, useState } from 'react'
 import { useFieldArray, useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
@@ -318,58 +319,62 @@ export const ConfigureRebalancerComponent: ActionComponent<
               >
                 {t('button.addToken')}
               </Button>
-
-              <div className="flex flex-row gap-2 items-center mt-4">
-                <FormCheckbox
-                  fieldName={
-                    (fieldNamePrefix +
-                      'newValenceAccount.acknowledgedServiceFee') as 'newValenceAccount.acknowledgedServiceFee'
-                  }
-                  setValue={setValue}
-                  size="sm"
-                  value={acknowledgedServiceFee}
-                />
-
-                <p
-                  className="body-text cursor-pointer"
-                  onClick={() =>
-                    setValue(
-                      (fieldNamePrefix +
-                        'newValenceAccount.acknowledgedServiceFee') as 'newValenceAccount.acknowledgedServiceFee',
-                      !acknowledgedServiceFee
-                    )
-                  }
-                >
-                  {t('info.acknowledgeServiceFee', {
-                    fee: serviceFee.loading
-                      ? '...'
-                      : serviceFee.errored
-                      ? '<error>'
-                      : serviceFee.data
-                      ? t('format.token', {
-                          amount: HugeDecimal.from(
-                            serviceFee.data.balance
-                          ).toInternationalizedHumanReadableString({
-                            decimals: serviceFee.data.token.decimals,
-                          }),
-                          symbol: serviceFee.data.token.symbol,
-                        })
-                      : '',
-                    context:
-                      serviceFee.loading ||
-                      serviceFee.errored ||
-                      serviceFee.data
-                        ? undefined
-                        : 'none',
-                  })}
-                </p>
-              </div>
-
-              <InputErrorMessage
-                error={errors?.newValenceAccount?.acknowledgedServiceFee}
-              />
             </>
           )}
+
+          <div
+            className={clsx(
+              'flex flex-row gap-2 items-center',
+              isCreating ? 'mt-4' : 'mt-2'
+            )}
+          >
+            <FormCheckbox
+              fieldName={
+                (fieldNamePrefix +
+                  'newValenceAccount.acknowledgedServiceFee') as 'newValenceAccount.acknowledgedServiceFee'
+              }
+              readOnly={!isCreating}
+              setValue={setValue}
+              size="sm"
+              value={acknowledgedServiceFee}
+            />
+
+            <p
+              className="body-text cursor-pointer"
+              onClick={() =>
+                setValue(
+                  (fieldNamePrefix +
+                    'newValenceAccount.acknowledgedServiceFee') as 'newValenceAccount.acknowledgedServiceFee',
+                  !acknowledgedServiceFee
+                )
+              }
+            >
+              {t('info.acknowledgeServiceFee', {
+                fee: serviceFee.loading
+                  ? '...'
+                  : serviceFee.errored
+                  ? '<error>'
+                  : serviceFee.data
+                  ? t('format.token', {
+                      amount: HugeDecimal.from(
+                        serviceFee.data.balance
+                      ).toInternationalizedHumanReadableString({
+                        decimals: serviceFee.data.token.decimals,
+                      }),
+                      symbol: serviceFee.data.token.symbol,
+                    })
+                  : '',
+                context:
+                  serviceFee.loading || serviceFee.errored || serviceFee.data
+                    ? undefined
+                    : 'none',
+              })}
+            </p>
+          </div>
+
+          <InputErrorMessage
+            error={errors?.newValenceAccount?.acknowledgedServiceFee}
+          />
         </div>
       )}
 

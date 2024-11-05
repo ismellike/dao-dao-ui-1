@@ -750,8 +750,7 @@ export class ConfigureRebalancerAction extends ActionBase<ConfigureRebalancerDat
       : undefined
 
     const newValenceAccountFunds = isCreating
-      ? []
-      : await Promise.all(
+      ? await Promise.all(
           (
             messages[0].decodedMessage.stargate.value as MsgInstantiateContract2
           ).funds.map(async ({ denom, amount }) => {
@@ -772,11 +771,13 @@ export class ConfigureRebalancerAction extends ActionBase<ConfigureRebalancerDat
             }
           })
         )
+      : []
 
     return {
       newValenceAccount: {
         creating: isCreating,
         funds: newValenceAccountFunds,
+        acknowledgedServiceFee: true,
       },
       chainId,
       trustee:
