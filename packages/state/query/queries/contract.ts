@@ -509,6 +509,7 @@ export const contractQueries = {
       args: {
         key,
       },
+      noFallback: true,
     }),
   /**
    * List all vesting contracts owned by a given account.
