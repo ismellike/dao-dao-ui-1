@@ -463,6 +463,7 @@
     "insufficientBalance": "Insufficient balance of {{amount}} ${{tokenSymbol}}.",
     "insufficientFunds": "Insufficient funds.",
     "insufficientFundsWarning": "You currently have {{amount}} ${{tokenSymbol}}, which may not be sufficient unless another action transfers funds to the DAO before this one.",
+    "insufficientFundsWarningMinusServiceFee": "You currently have {{amount}} ${{tokenSymbol}} available (accounting for the service fee), which may not be sufficient unless another action transfers funds to the DAO before this one.",
     "insufficientWalletBalance": "Insufficient wallet balance of {{amount}} ${{tokenSymbol}}.",
     "invalidAccount": "At least one of the specified accounts is invalid.",
     "invalidActionKeys": "Invalid action keys found: {{keys}}",

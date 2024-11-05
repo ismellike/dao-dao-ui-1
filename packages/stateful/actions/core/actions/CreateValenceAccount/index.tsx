@@ -133,15 +133,17 @@ const Component: ActionComponent = (props) => {
                           !serviceFee.errored &&
                           serviceFee.data &&
                           tokensEqual(data.token, serviceFee.data.token)
-                            ? BigInt(_balance) - BigInt(serviceFee.data.balance)
-                            : BigInt(_balance)
-                        if (balance < 0n) {
-                          balance = 0n
+                            ? HugeDecimal.from(_balance).minus(
+                                serviceFee.data.balance
+                              )
+                            : HugeDecimal.from(_balance)
+                        if (balance.lt(0)) {
+                          balance = HugeDecimal.zero
                         }
 
                         return {
                           ...data,
-                          balance: balance.toString(),
+                          balance: balance.toFixed(0),
                         }
                       }
                     ),

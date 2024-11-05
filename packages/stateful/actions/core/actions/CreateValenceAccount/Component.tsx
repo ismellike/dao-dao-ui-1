@@ -117,6 +117,12 @@ export const CreateValenceAccountComponent: ActionComponent<
                 ? () => removeCoin(index)
                 : undefined
             }
+            overrideInsufficientFundsWarning={(amount, tokenSymbol) =>
+              t('error.insufficientFundsWarningMinusServiceFee', {
+                amount,
+                tokenSymbol,
+              })
+            }
             tokens={nativeBalances}
           />
         ))}
