@@ -141,7 +141,11 @@ const InnerProposalInnerContentDisplay = ({
             onLoad={onLoad}
           />
 
-          <Button onClick={() => setShowRaw((s) => !s)} variant="ghost">
+          <Button
+            className="self-start"
+            onClick={() => setShowRaw((s) => !s)}
+            variant="ghost"
+          >
             <DataObject className="text-icon-secondary" />
             <p className="secondary-text">
               {showRaw ? t('button.hideRawData') : t('button.showRawData')}
