@@ -124,6 +124,13 @@ export abstract class DaoBase implements IDaoBase {
   }
 
   /**
+   * DAO banner image URL.
+   */
+  get bannerImageUrl(): string | undefined {
+    return this.info.items['banner']
+  }
+
+  /**
    * Get the proposal module with the given address.
    */
   getProposalModule(address: string): IProposalModuleBase | undefined {

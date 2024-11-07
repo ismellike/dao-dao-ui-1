@@ -1,6 +1,7 @@
 import { toBase64, toUtf8 } from '@cosmjs/encoding'
 import { ArrowBack, Clear } from '@mui/icons-material'
 import { useQueryClient } from '@tanstack/react-query'
+import clsx from 'clsx'
 import cloneDeep from 'lodash.clonedeep'
 import merge from 'lodash.merge'
 import { nanoid } from 'nanoid'
@@ -312,6 +313,7 @@ export const InnerCreateDaoForm = ({
     name,
     description,
     imageUrl,
+    bannerImageUrl,
     creator: { id: creatorId, data: creatorData },
     proposalModuleAdapters,
     votingConfig,
@@ -445,25 +447,36 @@ export const InnerCreateDaoForm = ({
         )
       )
 
+    const initialItems: InitialItem[] = [
+      // Add banner image if set.
+      ...(bannerImageUrl?.trim()
+        ? [
+            {
+              key: 'banner',
+              value: bannerImageUrl.trim(),
+            },
+          ]
+        : []),
+      // Add widgets if configured.
+      ...(widgets && Object.keys(widgets).length > 0
+        ? Object.entries(widgets).flatMap(([id, values]): InitialItem | [] =>
+            values
+              ? {
+                  key: getWidgetStorageItemKey(id),
+                  value: JSON.stringify(values),
+                }
+              : []
+          )
+        : []),
+    ]
+
     const commonConfig = {
       // If parentDao exists, let's make a subDAO :D
       admin: parentDao?.coreAddress ?? null,
       name: name.trim(),
       description,
       imageUrl,
-      // Add widgets if configured.
-      ...(widgets &&
-        Object.keys(widgets).length > 0 && {
-          initialItems: Object.entries(widgets).flatMap(
-            ([id, values]): InitialItem | [] =>
-              values
-                ? {
-                    key: getWidgetStorageItemKey(id),
-                    value: JSON.stringify(values),
-                  }
-                : []
-          ),
-        }),
+      initialItems: initialItems.length > 0 ? initialItems : undefined,
     }
 
     if (isSecretNetwork(chainId)) {
@@ -1048,24 +1061,35 @@ export const InnerCreateDaoForm = ({
               />
             </Tooltip>
 
-            <ImageSelector
-              Trans={Trans}
-              className="md:mt-10"
-              error={form.formState.errors.imageUrl}
-              fieldName="imageUrl"
-              register={form.register}
-              setValue={form.setValue}
-              watch={form.watch}
-            />
+            <div className="relative flex flex-col justify-end items-center h-48 self-stretch mb-6 mt-10">
+              <ImageSelector
+                Trans={Trans}
+                className="absolute top-0 left-0 right-0 bottom-0"
+                error={form.formState.errors.bannerImageUrl}
+                fieldName="bannerImageUrl"
+                register={form.register}
+                setValue={form.setValue}
+                style="banner"
+                watch={form.watch}
+              />
 
-            <p className="primary-text text-text-tertiary mt-6">
-              {t('form.addAnImage')}
-            </p>
+              <ImageSelector
+                Trans={Trans}
+                className="-mb-8 relative"
+                error={form.formState.errors.imageUrl}
+                fieldName="imageUrl"
+                register={form.register}
+                setValue={form.setValue}
+                style="avatar"
+                watch={form.watch}
+              />
+            </div>
           </div>
         ) : (
           <DaoHeader
             LinkWrapper={LinkWrapper}
-            className="mb-8 md:mt-4 md:mb-12"
+            bannerImageUrl={bannerImageUrl}
+            className={clsx('mb-8 md:mb-12', !bannerImageUrl && 'md:mt-4')}
             description={description}
             imageUrl={imageUrl}
             name={name}

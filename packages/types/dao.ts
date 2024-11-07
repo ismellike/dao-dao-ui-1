@@ -284,6 +284,7 @@ export interface NewDao<
   name: string
   description: string
   imageUrl?: string
+  bannerImageUrl?: string
   creator: {
     id: string
     data: CreatorData

@@ -80,6 +80,11 @@ export interface IDaoBase {
   imageUrl: string
 
   /**
+   * DAO banner image URL.
+   */
+  bannerImageUrl: string | undefined
+
+  /**
    * Whether or not the client has been initialized. This only matters for some
    * functions, depending on the implementation.
    */
