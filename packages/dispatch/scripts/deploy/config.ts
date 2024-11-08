@@ -41,14 +41,14 @@ export const deploySets: DeploySet[] = [
     ],
   },
 
-  // the contracts to deploy on all chains once
+  // the external contracts to deploy on all chains once
   {
     name: 'external',
     type: 'once',
     contracts: ['cw1_whitelist', 'cw4_group'],
   },
 
-  // the contracts to deploy on all chains every time
+  // the core DAO contracts to deploy on all chains every time
   {
     name: 'core DAO stuff',
     type: 'always',
@@ -66,6 +66,14 @@ export const deploySets: DeploySet[] = [
       'dao_rewards_distributor',
       'dao_voting_cw4',
     ],
+  },
+
+  // the v1 to v2 migrator contract to deploy every time
+  {
+    name: 'migrator',
+    type: 'always',
+    contracts: ['dao_migrator'],
+    chainIds: [ChainId.JunoMainnet, ChainId.JunoTestnet],
   },
 
   // cw-vesting with staking, which all chains but Neutron support
