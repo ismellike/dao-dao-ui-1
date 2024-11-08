@@ -27,7 +27,7 @@ import {
 
 import { instantiateContract } from '../utils'
 import { CodeIdConfig } from './CodeIdConfig'
-import { deploySets } from './config'
+import { DeploySetContract, deploySets } from './config'
 
 const { log } = console
 
@@ -49,10 +49,19 @@ try {
   process.exit(1)
 }
 
-const { mnemonic, contract_dirs: contractDirs } = config
+const {
+  mnemonic,
+  contract_dirs: contractDirs,
+  indexer_ansible_group_vars_path: indexerAnsibleGroupVarsPath,
+} = config
 
 if (!mnemonic) {
   log(chalk.red('mnemonic not set'))
+  process.exit(1)
+}
+
+if (!indexerAnsibleGroupVarsPath) {
+  log(chalk.red('indexer_ansible_group_vars_path not set'))
   process.exit(1)
 }
 
@@ -107,7 +116,7 @@ const main = async () => {
     chainRegistry: { network_type: networkType, slip44 } = {},
   } = getChainForChainId(chainId)
 
-  const codeIds = new CodeIdConfig()
+  const codeIds = new CodeIdConfig(indexerAnsibleGroupVarsPath)
 
   await queryClient.prefetchQuery(chainQueries.dynamicGasPrice({ chainId }))
 
@@ -249,7 +258,12 @@ const main = async () => {
 
   log()
 
-  const getPathToContract = (contract: string) => {
+  const getContractFile = (contract: DeploySetContract) =>
+    typeof contract === 'string' ? contract : contract.file
+  const getContractName = (contract: DeploySetContract) =>
+    typeof contract === 'string' ? contract : contract.alias
+
+  const getContractPath = (contract: DeploySetContract) => {
     if (
       !contractDirs ||
       !Array.isArray(contractDirs) ||
@@ -260,7 +274,7 @@ const main = async () => {
     }
 
     for (const contractDir of contractDirs) {
-      const file = path.join(contractDir, `${contract}.wasm`)
+      const file = path.join(contractDir, `${getContractFile(contract)}.wasm`)
       if (fs.existsSync(file)) {
         return file
       }
@@ -274,9 +288,9 @@ const main = async () => {
   if (mode === Mode.Polytone) {
     const polytoneContracts = deploySets
       .find((s) => s.name === 'polytone')
-      ?.contracts?.map((id) => ({
-        id,
-        file: getPathToContract(id),
+      ?.contracts?.map((contract) => ({
+        id: getContractName(contract),
+        file: getContractPath(contract),
       }))
     if (!polytoneContracts) {
       log(chalk.red('polytone deploy set not found'))
@@ -317,7 +331,9 @@ const main = async () => {
     // brackets and longest ID suffix (CONTRACT).
     consolePrefixLength =
       Math.max(
-        ...chainDeploySets.flatMap((s) => s.contracts.map((c) => c.length))
+        ...chainDeploySets.flatMap((s) =>
+          s.contracts.map((c) => getContractName(c).length)
+        )
       ) + 14
 
     try {
@@ -326,7 +342,9 @@ const main = async () => {
       // available.
       const oneTimeDeploySets = chainDeploySets.filter((s) => s.type === 'once')
       for (const { contracts } of oneTimeDeploySets) {
-        for (const name of contracts) {
+        for (const contract of contracts) {
+          const name = getContractName(contract)
+
           // If exists, skip.
           const existingCodeId = await codeIds.getCodeId({
             chainId,
@@ -370,7 +388,7 @@ const main = async () => {
               // Otherwise, upload the contract.
               const codeId = await uploadContract({
                 id: name,
-                file: getPathToContract(name),
+                file: getContractPath(contract),
                 prefixLength: consolePrefixLength,
                 restrictInstantiation,
               })
@@ -391,7 +409,9 @@ const main = async () => {
         (s) => s.type === 'always'
       )
       for (const { contracts } of alwaysDeploySets) {
-        for (const name of contracts) {
+        for (const contract of contracts) {
+          const name = getContractName(contract)
+
           // If exists, skip.
           const existingCodeId = await codeIds.getCodeId({
             chainId,
@@ -412,7 +432,7 @@ const main = async () => {
             // Otherwise, upload the contract.
             const codeId = await uploadContract({
               id: name,
-              file: getPathToContract(name),
+              file: getContractPath(contract),
               prefixLength: consolePrefixLength,
               restrictInstantiation,
             })

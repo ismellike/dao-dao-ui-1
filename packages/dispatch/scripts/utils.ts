@@ -64,9 +64,7 @@ export const instantiateContract = async ({
     } catch (err) {
       log(
         chalk.red(
-          `[${id}.CONTRACT]${' '.repeat(
-            prefixLength - id.length - 11
-          )}instantiate failed`
+          `[${id}]${' '.repeat(prefixLength - id.length - 5)}instantiate failed`
         )
       )
       throw err
@@ -110,11 +108,7 @@ export const instantiateContract = async ({
 
     if (!contractAddress) {
       log(
-        chalk.red(
-          `[${id}.CONTRACT]${' '.repeat(
-            prefixLength - id.length - 11
-          )}not found`
-        )
+        chalk.red(`[${id}]${' '.repeat(prefixLength - id.length - 5)}not found`)
       )
       process.exit(1)
     }
@@ -122,9 +116,7 @@ export const instantiateContract = async ({
 
   log(
     chalk.green(
-      `[${id}.CONTRACT]${' '.repeat(
-        prefixLength - id.length - 11
-      )}${contractAddress}`
+      `[${id}]${' '.repeat(prefixLength - id.length - 5)}${contractAddress}`
     )
   )
 

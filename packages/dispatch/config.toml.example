@@ -6,3 +6,6 @@ contract_dirs = [
   "/Users/user/Developer/dao-contracts/artifacts",
   "/Users/user/Developer/polytone/artifacts",
 ]
+
+### The path to the ansible indexer group_vars folder in the ops repo.
+indexer_ansible_group_vars_path = "/Users/user/Developer/ops/ansible/group_vars"

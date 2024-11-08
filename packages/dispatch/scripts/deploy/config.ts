@@ -1,6 +1,19 @@
 import { ChainId } from '@dao-dao/types'
 
-type DeploySet = {
+export type DeploySetContract =
+  | string
+  | {
+      /**
+       * File name of the contract to deploy.
+       */
+      file: string
+      /**
+       * Actual alias to use as the name for the contract.
+       */
+      alias: string
+    }
+
+export type DeploySet = {
   name: string
   /**
    * The type of set to deploy.
@@ -14,7 +27,7 @@ type DeploySet = {
   /**
    * Contracts to deploy.
    */
-  contracts: string[]
+  contracts: DeploySetContract[]
   /**
    * If defined, only deploy the set for the given chain IDs.
    */
@@ -81,7 +94,12 @@ export const deploySets: DeploySet[] = [
   {
     name: 'cw-vesting with staking',
     type: 'always',
-    contracts: ['cw_vesting-staking'],
+    contracts: [
+      {
+        file: 'cw_vesting-staking',
+        alias: 'cw_vesting',
+      },
+    ],
     skipChainIds: [ChainId.NeutronMainnet, ChainId.NeutronTestnet],
   },
 
@@ -89,7 +107,12 @@ export const deploySets: DeploySet[] = [
   {
     name: 'cw-vesting without staking',
     type: 'always',
-    contracts: ['cw_vesting-no_staking'],
+    contracts: [
+      {
+        file: 'cw_vesting-no_staking',
+        alias: 'cw_vesting',
+      },
+    ],
     chainIds: [ChainId.NeutronMainnet, ChainId.NeutronTestnet],
   },
 
@@ -231,7 +254,12 @@ export const deploySets: DeploySet[] = [
   {
     name: 'token factory kujira',
     type: 'always',
-    contracts: ['cw_tokenfactory_issuer-kujira'],
+    contracts: [
+      {
+        file: 'cw_tokenfactory_issuer-kujira',
+        alias: 'cw_tokenfactory_issuer',
+      },
+    ],
     chainIds: [ChainId.KujiraMainnet, ChainId.KujiraTestnet],
   },
 
@@ -293,3 +321,31 @@ export const deploySets: DeploySet[] = [
     chainIds: [ChainId.OmniflixHubMainnet, ChainId.OmniflixHubTestnet],
   },
 ]
+
+/**
+ * Map chain ID to indexer ansible group_vars name.
+ */
+export const chainIdToIndexerGroupVarsName: Record<string, string> = {
+  [ChainId.BitsongMainnet]: 'bitsong_mainnet',
+  [ChainId.BitsongTestnet]: 'bitsong_testnet',
+  [ChainId.CosmosHubMainnet]: 'cosmosHub_mainnet',
+  [ChainId.CosmosHubProviderTestnet]: 'cosmosHubProvider_testnet',
+  [ChainId.CosmosHubThetaTestnet]: 'cosmosHubTheta_testnet',
+  [ChainId.JunoMainnet]: 'juno_mainnet',
+  [ChainId.JunoTestnet]: 'juno_testnet',
+  [ChainId.KujiraMainnet]: 'kujira_mainnet',
+  [ChainId.KujiraTestnet]: 'kujira_testnet',
+  [ChainId.MigalooMainnet]: 'migaloo_mainnet',
+  [ChainId.MigalooTestnet]: 'migaloo_testnet',
+  [ChainId.NeutronMainnet]: 'neutron_mainnet',
+  [ChainId.NeutronTestnet]: 'neutron_testnet',
+  [ChainId.OmniflixHubMainnet]: 'omniflix_mainnet',
+  [ChainId.OmniflixHubTestnet]: 'omniflix_testnet',
+  [ChainId.OraichainMainnet]: 'oraichain_mainnet',
+  [ChainId.OsmosisMainnet]: 'osmosis_mainnet',
+  [ChainId.OsmosisTestnet]: 'osmosis_testnet',
+  [ChainId.StargazeMainnet]: 'stargaze_mainnet',
+  [ChainId.StargazeTestnet]: 'stargaze_testnet',
+  [ChainId.TerraMainnet]: 'terra_mainnet',
+  [ChainId.TerraClassicMainnet]: 'terraClassic_mainnet',
+}
