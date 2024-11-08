@@ -1,0 +1,8 @@
+### The mnemonic to use for signing transactions.
+mnemonic = "abc def ghi"
+
+### The directories to look in for compiled contracts.
+contract_dirs = [
+  "/Users/user/Developer/dao-contracts/artifacts",
+  "/Users/user/Developer/polytone/artifacts",
+]

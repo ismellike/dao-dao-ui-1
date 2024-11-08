@@ -74,9 +74,7 @@ export const instantiateContract = async ({
 
     log(
       chalk.greenBright(
-        `[${id}.TX]${' '.repeat(
-          prefixLength - id.length - 5
-        )}${transactionHash}`
+        `[${id}]${' '.repeat(prefixLength - id.length - 5)}${transactionHash}`
       )
     )
 
@@ -98,9 +96,7 @@ export const instantiateContract = async ({
     if (!events) {
       log(
         chalk.red(
-          `[${id}.CONTRACT]${' '.repeat(
-            prefixLength - id.length - 11
-          )}TX not found`
+          `[${id}]${' '.repeat(prefixLength - id.length - 5)}TX not found`
         )
       )
       process.exit(1)

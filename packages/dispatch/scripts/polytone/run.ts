@@ -21,8 +21,8 @@ import {
   maybeGetChainForChainId,
 } from '@dao-dao/utils'
 
-import { chains } from './chains'
-import { getBlockMaxGas, instantiateContract } from './utils'
+import { getBlockMaxGas, instantiateContract } from '../utils'
+import { chains } from './config'
 
 const { log } = console
 
