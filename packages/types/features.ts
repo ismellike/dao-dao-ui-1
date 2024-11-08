@@ -33,7 +33,10 @@ export enum ContractVersion {
   V240 = '2.4.0',
   // https://github.com/DA0-DA0/dao-contracts/releases/tag/v2.4.2
   V242 = '2.4.2',
+  // https://github.com/DA0-DA0/dao-contracts/releases/tag/v2.5.0
   V250 = '2.5.0',
+  // https://github.com/DA0-DA0/dao-contracts/releases/tag/v2.6.0
+  V260 = '2.6.0',
 }
 
 /**
@@ -97,6 +100,11 @@ export enum Feature {
    * The ability to specify a more granular pre-propose submission policy.
    */
   GranularSubmissionPolicy,
+  /**
+   * The new NFT claim system was added that removes the limit on simultaneous
+   * outstanding claims.
+   */
+  UnlimitedNftClaims,
 }
 
 /**

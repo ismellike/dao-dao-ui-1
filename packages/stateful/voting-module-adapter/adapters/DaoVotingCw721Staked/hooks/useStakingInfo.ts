@@ -18,7 +18,6 @@ import {
   useDao,
 } from '@dao-dao/stateless'
 import { LazyNftCardInfo } from '@dao-dao/types'
-import { NftClaim } from '@dao-dao/types/contracts/DaoVotingCw721Staked'
 import { claimAvailable, getNftKey } from '@dao-dao/utils'
 
 import { useQueryLoadingDataWithError, useWallet } from '../../../../hooks'
@@ -93,16 +92,10 @@ export const useStakingInfo = ({
     }),
     enabled: !!fetchClaims && !!walletAddress,
   })
-  const claims =
+  const nftClaims =
     loadingClaims.loading || loadingClaims.errored
       ? []
       : loadingClaims.data.nft_claims
-  const nftClaims = claims.map(
-    ({ token_id, release_at }): NftClaim => ({
-      release_at,
-      token_id,
-    })
-  )
 
   const claimsPending = blockHeight
     ? nftClaims?.filter((c) => !claimAvailable(c, blockHeight))

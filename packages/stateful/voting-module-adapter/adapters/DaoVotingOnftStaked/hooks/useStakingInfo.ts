@@ -13,7 +13,7 @@ import {
 } from '@dao-dao/state'
 import { useCachedLoadable, useDao } from '@dao-dao/stateless'
 import { LazyNftCardInfo } from '@dao-dao/types'
-import { NftClaim } from '@dao-dao/types/contracts/DaoVotingOnftStaked'
+import { NftClaimsResponse } from '@dao-dao/types/contracts/DaoVotingOnftStaked'
 import { claimAvailable, getNftKey, parseContractVersion } from '@dao-dao/utils'
 
 import {
@@ -202,16 +202,9 @@ export const useStakingInfo = ({
         enabled: fetchClaims && !!walletAddress,
       },
     }),
-    { nft_claims: [] }
+    { nft_claims: [] } as NftClaimsResponse
   )
-  const nftClaims = (
-    loadingClaims.loading ? [] : loadingClaims.data.nft_claims
-  ).map(
-    ({ token_id, release_at }): NftClaim => ({
-      release_at,
-      token_id,
-    })
-  )
+  const nftClaims = loadingClaims.loading ? [] : loadingClaims.data.nft_claims
 
   const claimsPending = blockHeight
     ? nftClaims?.filter((c) => !claimAvailable(c, blockHeight))

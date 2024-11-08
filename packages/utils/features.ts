@@ -32,6 +32,8 @@ export const isFeatureSupportedByVersion = (
       return versionGte(version, ContractVersion.V240)
     case Feature.GranularSubmissionPolicy:
       return versionGte(version, ContractVersion.V250)
+    case Feature.UnlimitedNftClaims:
+      return versionGte(version, ContractVersion.V260)
     default:
       return true
   }

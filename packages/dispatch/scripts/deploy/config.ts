@@ -57,6 +57,7 @@ export const deploySets: DeploySet[] = [
       'cw_payroll_factory',
       'cw_token_swap',
       'dao_dao_core',
+      'dao_pre_propose_approval_multiple',
       'dao_pre_propose_approval_single',
       'dao_pre_propose_approver',
       'dao_pre_propose_multiple',
