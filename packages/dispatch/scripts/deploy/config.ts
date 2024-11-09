@@ -61,12 +61,20 @@ export const deploySets: DeploySet[] = [
     contracts: ['cw1_whitelist', 'cw4_group'],
   },
 
+  // the admin factory contract to deploy on all chains every time except Terra
+  // Classic since it doesn't support instantiate2
+  {
+    name: 'admin factory',
+    type: 'always',
+    contracts: ['cw_admin_factory'],
+    skipChainIds: [ChainId.TerraClassicMainnet],
+  },
+
   // the core DAO contracts to deploy on all chains every time
   {
     name: 'core DAO stuff',
     type: 'always',
     contracts: [
-      'cw_admin_factory',
       'cw_payroll_factory',
       'cw_token_swap',
       'dao_dao_core',
@@ -222,7 +230,12 @@ export const deploySets: DeploySet[] = [
   {
     name: 'token factory',
     type: 'always',
-    contracts: ['cw_tokenfactory_issuer'],
+    contracts: [
+      {
+        file: 'cw_tokenfactory_issuer-osmosis',
+        alias: 'cw_tokenfactory_issuer',
+      },
+    ],
     chainIds: [
       ChainId.JunoMainnet,
       ChainId.JunoTestnet,
@@ -273,7 +286,6 @@ export const deploySets: DeploySet[] = [
       ChainId.BitsongTestnet,
 
       ChainId.CosmosHubMainnet,
-      ChainId.CosmosHubThetaTestnet,
       ChainId.CosmosHubProviderTestnet,
 
       ChainId.JunoMainnet,
@@ -330,7 +342,6 @@ export const chainIdToIndexerGroupVarsName: Record<string, string> = {
   [ChainId.BitsongTestnet]: 'bitsong_testnet',
   [ChainId.CosmosHubMainnet]: 'cosmosHub_mainnet',
   [ChainId.CosmosHubProviderTestnet]: 'cosmosHubProvider_testnet',
-  [ChainId.CosmosHubThetaTestnet]: 'cosmosHubTheta_testnet',
   [ChainId.JunoMainnet]: 'juno_mainnet',
   [ChainId.JunoTestnet]: 'juno_testnet',
   [ChainId.KujiraMainnet]: 'kujira_mainnet',
@@ -348,4 +359,26 @@ export const chainIdToIndexerGroupVarsName: Record<string, string> = {
   [ChainId.StargazeTestnet]: 'stargaze_testnet',
   [ChainId.TerraMainnet]: 'terra_mainnet',
   [ChainId.TerraClassicMainnet]: 'terraClassic_mainnet',
+}
+
+/**
+ * Map chain ID to deployment argument overrides.
+ */
+export const chainIdToDeploymentArgs: Record<string, Record<string, any>> = {
+  [ChainId.StargazeMainnet]: {
+    authz: 'stars1565xc6aq0ycfx5zwusevpmwx6f5uzp93zuutfp',
+  },
+  [ChainId.KujiraMainnet]: {
+    mnemonic: 'df_operator',
+    authz: 'kujira1ss7avjjlzrmnp2m3thges80vetpq4nr8tjk20f0arweke8r840ss58v6yh',
+    restrictInstantiation: true,
+    instantiateAdminFactory: false,
+  },
+  [ChainId.OmniflixHubMainnet]: {
+    mnemonic: 'df_operator',
+    authz: 'omniflix1kr6t4gg33kfuc26rz4xxkv0ftlxq5j09pndcf9ndk450rrevgf8sy59urv',
+  },
+  [ChainId.BitsongTestnet]: {
+    mnemonic: 'bitsong_testnet',
+  },
 }

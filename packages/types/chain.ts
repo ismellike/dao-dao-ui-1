@@ -74,7 +74,6 @@ export type NativeDelegationInfo = {
 
 export enum ChainId {
   CosmosHubMainnet = 'cosmoshub-4',
-  CosmosHubThetaTestnet = 'theta-testnet-001',
   CosmosHubProviderTestnet = 'provider',
   JunoMainnet = 'juno-1',
   JunoTestnet = 'uni-6',

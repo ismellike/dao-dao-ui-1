@@ -27,7 +27,11 @@ import {
 
 import { instantiateContract } from '../utils'
 import { CodeIdConfig } from './CodeIdConfig'
-import { DeploySetContract, deploySets } from './config'
+import {
+  DeploySetContract,
+  chainIdToDeploymentArgs,
+  deploySets,
+} from './config'
 
 const { log } = console
 
@@ -50,15 +54,12 @@ try {
 }
 
 const {
-  mnemonic,
-  contract_dirs: contractDirs,
-  indexer_ansible_group_vars_path: indexerAnsibleGroupVarsPath,
+  default: {
+    contract_dirs: contractDirs,
+    indexer_ansible_group_vars_path: indexerAnsibleGroupVarsPath,
+  },
+  mnemonics,
 } = config
-
-if (!mnemonic) {
-  log(chalk.red('mnemonic not set'))
-  process.exit(1)
-}
 
 if (!indexerAnsibleGroupVarsPath) {
   log(chalk.red('indexer_ansible_group_vars_path not set'))
@@ -90,15 +91,52 @@ program.option(
   '-r, --restrict-instantiation',
   'restrict instantiation to only the uploader; this must be used on some chains to upload contracts, like Kujira'
 )
+program.option(
+  '-p, --mnemonic <name>',
+  'use this configured mnemonic name for signing transactions',
+  'default'
+)
+program.option(
+  '--no-instantiate-admin-factory',
+  'do not instantiate the admin factory'
+)
 
 program.parse(process.argv)
-const {
+let {
   chain: chainId,
   mode,
   version,
   authz,
   restrictInstantiation,
+  mnemonic: mnemonicName,
+  instantiateAdminFactory,
 } = program.opts()
+
+// Add deployment arguments if they exist.
+const deploymentArgs = chainIdToDeploymentArgs[chainId]
+if (deploymentArgs) {
+  if (deploymentArgs.mode !== undefined) {
+    mode = deploymentArgs.mode
+  }
+  if (deploymentArgs.authz !== undefined) {
+    authz = deploymentArgs.authz
+  }
+  if (deploymentArgs.restrictInstantiation !== undefined) {
+    restrictInstantiation = deploymentArgs.restrictInstantiation
+  }
+  if (deploymentArgs.mnemonic !== undefined) {
+    mnemonicName = deploymentArgs.mnemonic
+  }
+  if (deploymentArgs.instantiateAdminFactory !== undefined) {
+    instantiateAdminFactory = deploymentArgs.instantiateAdminFactory
+  }
+}
+
+const mnemonic = mnemonics[mnemonicName]
+if (!mnemonic) {
+  log(chalk.red(`Mnemonic with name "${mnemonicName}" not found in config.`))
+  process.exit(1)
+}
 
 if (!Object.values(Mode).includes(mode)) {
   log(
@@ -218,7 +256,7 @@ const main = async () => {
 
     // Poll for TX.
     let events
-    let tries = 15
+    let tries = 50
     while (tries > 0) {
       try {
         events = (await client.getTx(transactionHash))?.events
@@ -228,7 +266,7 @@ const main = async () => {
       } catch {}
 
       tries--
-      await new Promise((resolve) => setTimeout(resolve, 200))
+      await new Promise((resolve) => setTimeout(resolve, 300))
     }
 
     if (!events) {
@@ -476,7 +514,7 @@ const main = async () => {
   }
 
   const adminFactoryAddress =
-    cwAdminFactoryCodeId !== null
+    instantiateAdminFactory && cwAdminFactoryCodeId !== null
       ? await instantiateContract({
           client,
           sender,
@@ -512,7 +550,7 @@ const main = async () => {
         govProp: `https://${explorerUrlDomain}/${chainName}/gov/REPLACE`,
         wallet: `https://${explorerUrlDomain}/${chainName}/account/REPLACE`,
       },
-      latestVersion: ContractVersion.Unknown,
+      latestVersion: version || ContractVersion.Unknown,
     }
 
     log(JSON.stringify(config, null, 2))

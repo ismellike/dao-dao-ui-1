@@ -93,8 +93,7 @@ export const ProposalExecutionMetadataEditor = ({
 
           {/* Gaia Metaprotocols Extension Data only supported on Cosmos Hub */}
           {(chainId === ChainId.CosmosHubMainnet ||
-            chainId === ChainId.CosmosHubProviderTestnet ||
-            chainId === ChainId.CosmosHubThetaTestnet) && (
+            chainId === ChainId.CosmosHubProviderTestnet) && (
             <div
               className={clsx(
                 'flex flex-col gap-4 px-6 pt-4 sm:gap-4 border-t border-border-secondary',
