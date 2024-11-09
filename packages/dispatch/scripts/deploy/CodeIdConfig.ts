@@ -39,7 +39,7 @@ export class CodeIdConfig {
   }
 
   private save() {
-    fs.writeFileSync(codeIdsPath, JSON.stringify(this._codeIds, null, 2))
+    fs.writeFileSync(codeIdsPath, JSON.stringify(this._codeIds, null, 2) + '\n')
   }
 
   /**

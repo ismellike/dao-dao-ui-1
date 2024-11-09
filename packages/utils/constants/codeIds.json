@@ -47,12 +47,15 @@
     },
     "2.6.0": {
       "Cw1Whitelist": 1546,
-      "Cw4Group": 1547,
       "Cw20Base": 1595,
+      "Cw20Stake": 3236,
+      "Cw4Group": 1547,
       "Cw721Base": 1548,
       "CwAdminFactory": 3221,
       "CwPayrollFactory": 3222,
       "CwTokenSwap": 3223,
+      "CwTokenfactoryIssuer": 3239,
+      "CwVesting": 3235,
       "DaoDaoCore": 3224,
       "DaoPreProposeApprovalMultiple": 3225,
       "DaoPreProposeApprovalSingle": 3227,
@@ -62,12 +65,9 @@
       "DaoProposalMultiple": 3231,
       "DaoProposalSingle": 3232,
       "DaoRewardsDistributor": 3233,
-      "DaoVotingCw4": 3234,
-      "CwVesting": 3235,
-      "Cw20Stake": 3236,
       "DaoVotingCw20Staked": 3237,
+      "DaoVotingCw4": 3234,
       "DaoVotingCw721Staked": 3238,
-      "CwTokenfactoryIssuer": 3239,
       "DaoVotingTokenStaked": 3240
     }
   },
@@ -92,11 +92,13 @@
       "DaoVotingTokenStaked": 43
     },
     "2.6.0": {
+      "BtsgFtFactory": 61,
       "Cw1Whitelist": 7,
       "Cw4Group": 8,
       "CwAdminFactory": 45,
       "CwPayrollFactory": 46,
       "CwTokenSwap": 47,
+      "CwVesting": 58,
       "DaoDaoCore": 48,
       "DaoPreProposeApprovalMultiple": 49,
       "DaoPreProposeApprovalSingle": 50,
@@ -107,10 +109,8 @@
       "DaoProposalSingle": 55,
       "DaoRewardsDistributor": 56,
       "DaoVotingCw4": 57,
-      "CwVesting": 58,
       "DaoVotingCw721Staked": 59,
-      "DaoVotingTokenStaked": 60,
-      "BtsgFtFactory": 61
+      "DaoVotingTokenStaked": 60
     }
   },
   "bobnet": {
@@ -153,11 +153,13 @@
       "DaoVotingTokenStaked": 103
     },
     "2.6.0": {
+      "BtsgFtFactory": 120,
       "Cw1Whitelist": 30,
       "Cw4Group": 31,
       "CwAdminFactory": 104,
       "CwPayrollFactory": 105,
       "CwTokenSwap": 106,
+      "CwVesting": 117,
       "DaoDaoCore": 107,
       "DaoPreProposeApprovalMultiple": 108,
       "DaoPreProposeApprovalSingle": 109,
@@ -168,10 +170,8 @@
       "DaoProposalSingle": 114,
       "DaoRewardsDistributor": 115,
       "DaoVotingCw4": 116,
-      "CwVesting": 117,
       "DaoVotingCw721Staked": 118,
-      "DaoVotingTokenStaked": 119,
-      "BtsgFtFactory": 120
+      "DaoVotingTokenStaked": 119
     }
   },
   "columbus-5": {
@@ -217,11 +217,13 @@
     },
     "2.6.0": {
       "Cw1Whitelist": 8725,
-      "Cw4Group": 8726,
       "Cw20Base": 8785,
+      "Cw20Stake": 9473,
+      "Cw4Group": 8726,
       "Cw721Base": 8727,
       "CwPayrollFactory": 9460,
       "CwTokenSwap": 9461,
+      "CwVesting": 9472,
       "DaoDaoCore": 9462,
       "DaoPreProposeApprovalMultiple": 9463,
       "DaoPreProposeApprovalSingle": 9464,
@@ -231,10 +233,8 @@
       "DaoProposalMultiple": 9468,
       "DaoProposalSingle": 9469,
       "DaoRewardsDistributor": 9470,
-      "DaoVotingCw4": 9471,
-      "CwVesting": 9472,
-      "Cw20Stake": 9473,
       "DaoVotingCw20Staked": 9474,
+      "DaoVotingCw4": 9471,
       "DaoVotingCw721Staked": 9475
     }
   },
@@ -262,6 +262,7 @@
       "CwAdminFactory": 22,
       "CwPayrollFactory": 23,
       "CwTokenSwap": 24,
+      "CwVesting": 35,
       "DaoDaoCore": 25,
       "DaoPreProposeApprovalMultiple": 26,
       "DaoPreProposeApprovalSingle": 27,
@@ -272,7 +273,6 @@
       "DaoProposalSingle": 32,
       "DaoRewardsDistributor": 33,
       "DaoVotingCw4": 34,
-      "CwVesting": 35,
       "DaoVotingTokenStaked": 36
     }
   },
@@ -349,6 +349,8 @@
       "CwAdminFactory": 4850,
       "CwPayrollFactory": 4852,
       "CwTokenSwap": 4853,
+      "CwTokenfactoryIssuer": 4866,
+      "CwVesting": 4864,
       "DaoDaoCore": 4854,
       "DaoPreProposeApprovalMultiple": 4855,
       "DaoPreProposeApprovalSingle": 4856,
@@ -359,9 +361,7 @@
       "DaoProposalSingle": 4861,
       "DaoRewardsDistributor": 4862,
       "DaoVotingCw4": 4863,
-      "CwVesting": 4864,
       "DaoVotingCw721Staked": 4865,
-      "CwTokenfactoryIssuer": 4866,
       "DaoVotingTokenStaked": 4867
     }
   },
@@ -408,6 +408,8 @@
       "CwAdminFactory": 231,
       "CwPayrollFactory": 232,
       "CwTokenSwap": 233,
+      "CwTokenfactoryIssuer": 245,
+      "CwVesting": 244,
       "DaoDaoCore": 234,
       "DaoPreProposeApprovalMultiple": 235,
       "DaoPreProposeApprovalSingle": 236,
@@ -418,10 +420,8 @@
       "DaoProposalSingle": 241,
       "DaoRewardsDistributor": 242,
       "DaoVotingCw4": 243,
-      "CwVesting": 244,
-      "CwTokenfactoryIssuer": 245,
-      "DaoVotingTokenStaked": 246,
-      "DaoVotingOnftStaked": 247
+      "DaoVotingOnftStaked": 247,
+      "DaoVotingTokenStaked": 246
     }
   },
   "harpoon-4": {
@@ -471,6 +471,8 @@
       "CwAdminFactory": 3781,
       "CwPayrollFactory": 3782,
       "CwTokenSwap": 3783,
+      "CwTokenfactoryIssuer": 3796,
+      "CwVesting": 3794,
       "DaoDaoCore": 3784,
       "DaoPreProposeApprovalMultiple": 3785,
       "DaoPreProposeApprovalSingle": 3786,
@@ -481,9 +483,7 @@
       "DaoProposalSingle": 3791,
       "DaoRewardsDistributor": 3792,
       "DaoVotingCw4": 3793,
-      "CwVesting": 3794,
       "DaoVotingCw721Staked": 3795,
-      "CwTokenfactoryIssuer": 3796,
       "DaoVotingTokenStaked": 3797
     }
   },
@@ -569,13 +569,17 @@
     },
     "2.6.0": {
       "Cw1Whitelist": 3914,
-      "Cw4Group": 1992,
       "Cw20Base": 1993,
+      "Cw20Stake": 4591,
+      "Cw4Group": 1992,
       "Cw721Base": 1994,
       "CwAdminFactory": 4575,
       "CwPayrollFactory": 4576,
       "CwTokenSwap": 4577,
+      "CwTokenfactoryIssuer": 4594,
+      "CwVesting": 4590,
       "DaoDaoCore": 4578,
+      "DaoMigrator": 4589,
       "DaoPreProposeApprovalMultiple": 4579,
       "DaoPreProposeApprovalSingle": 4580,
       "DaoPreProposeApprover": 4581,
@@ -584,13 +588,9 @@
       "DaoProposalMultiple": 4584,
       "DaoProposalSingle": 4585,
       "DaoRewardsDistributor": 4587,
-      "DaoVotingCw4": 4588,
-      "DaoMigrator": 4589,
-      "CwVesting": 4590,
-      "Cw20Stake": 4591,
       "DaoVotingCw20Staked": 4592,
+      "DaoVotingCw4": 4588,
       "DaoVotingCw721Staked": 4593,
-      "CwTokenfactoryIssuer": 4594,
       "DaoVotingTokenStaked": 4595
     }
   },
@@ -641,6 +641,8 @@
       "CwAdminFactory": 415,
       "CwPayrollFactory": 416,
       "CwTokenSwap": 417,
+      "CwTokenfactoryIssuer": 430,
+      "CwVesting": 428,
       "DaoDaoCore": 418,
       "DaoPreProposeApprovalMultiple": 419,
       "DaoPreProposeApprovalSingle": 420,
@@ -651,9 +653,7 @@
       "DaoProposalSingle": 425,
       "DaoRewardsDistributor": 426,
       "DaoVotingCw4": 427,
-      "CwVesting": 428,
       "DaoVotingCw721Staked": 429,
-      "CwTokenfactoryIssuer": 430,
       "DaoVotingTokenStaked": 431
     }
   },
@@ -705,6 +705,8 @@
       "CwAdminFactory": 741,
       "CwPayrollFactory": 742,
       "CwTokenSwap": 743,
+      "CwTokenfactoryIssuer": 756,
+      "CwVesting": 754,
       "DaoDaoCore": 744,
       "DaoPreProposeApprovalMultiple": 745,
       "DaoPreProposeApprovalSingle": 746,
@@ -715,9 +717,7 @@
       "DaoProposalSingle": 751,
       "DaoRewardsDistributor": 752,
       "DaoVotingCw4": 753,
-      "CwVesting": 754,
       "DaoVotingCw721Staked": 755,
-      "CwTokenfactoryIssuer": 756,
       "DaoVotingTokenStaked": 757
     }
   },
@@ -769,6 +769,8 @@
       "CwAdminFactory": 729,
       "CwPayrollFactory": 731,
       "CwTokenSwap": 732,
+      "CwTokenfactoryIssuer": 748,
+      "CwVesting": 746,
       "DaoDaoCore": 733,
       "DaoPreProposeApprovalMultiple": 734,
       "DaoPreProposeApprovalSingle": 738,
@@ -779,9 +781,7 @@
       "DaoProposalSingle": 743,
       "DaoRewardsDistributor": 744,
       "DaoVotingCw4": 745,
-      "CwVesting": 746,
       "DaoVotingCw721Staked": 747,
-      "CwTokenfactoryIssuer": 748,
       "DaoVotingTokenStaked": 749
     }
   },
@@ -847,6 +847,8 @@
       "CwAdminFactory": 2343,
       "CwPayrollFactory": 2344,
       "CwTokenSwap": 2345,
+      "CwTokenfactoryIssuer": 2358,
+      "CwVesting": 2356,
       "DaoDaoCore": 2346,
       "DaoPreProposeApprovalMultiple": 2347,
       "DaoPreProposeApprovalSingle": 2348,
@@ -857,9 +859,7 @@
       "DaoProposalSingle": 2353,
       "DaoRewardsDistributor": 2354,
       "DaoVotingCw4": 2355,
-      "CwVesting": 2356,
       "DaoVotingCw721Staked": 2357,
-      "CwTokenfactoryIssuer": 2358,
       "DaoVotingTokenStaked": 2359
     }
   },
@@ -889,6 +889,8 @@
       "CwAdminFactory": 44,
       "CwPayrollFactory": 45,
       "CwTokenSwap": 46,
+      "CwTokenfactoryIssuer": 58,
+      "CwVesting": 57,
       "DaoDaoCore": 47,
       "DaoPreProposeApprovalMultiple": 48,
       "DaoPreProposeApprovalSingle": 49,
@@ -899,10 +901,8 @@
       "DaoProposalSingle": 54,
       "DaoRewardsDistributor": 55,
       "DaoVotingCw4": 56,
-      "CwVesting": 57,
-      "CwTokenfactoryIssuer": 58,
-      "DaoVotingTokenStaked": 59,
-      "DaoVotingOnftStaked": 60
+      "DaoVotingOnftStaked": 60,
+      "DaoVotingTokenStaked": 59
     }
   },
   "osmo-test-5": {
@@ -966,6 +966,8 @@
       "CwAdminFactory": 11436,
       "CwPayrollFactory": 11437,
       "CwTokenSwap": 11438,
+      "CwTokenfactoryIssuer": 11452,
+      "CwVesting": 11450,
       "DaoDaoCore": 11439,
       "DaoPreProposeApprovalMultiple": 11440,
       "DaoPreProposeApprovalSingle": 11441,
@@ -976,9 +978,7 @@
       "DaoProposalSingle": 11447,
       "DaoRewardsDistributor": 11448,
       "DaoVotingCw4": 11449,
-      "CwVesting": 11450,
       "DaoVotingCw721Staked": 11451,
-      "CwTokenfactoryIssuer": 11452,
       "DaoVotingTokenStaked": 11453
     }
   },
@@ -1059,6 +1059,8 @@
       "CwAdminFactory": 1242,
       "CwPayrollFactory": 1243,
       "CwTokenSwap": 1244,
+      "CwTokenfactoryIssuer": 1257,
+      "CwVesting": 1255,
       "DaoDaoCore": 1245,
       "DaoPreProposeApprovalMultiple": 1246,
       "DaoPreProposeApprovalSingle": 1247,
@@ -1069,9 +1071,7 @@
       "DaoProposalSingle": 1252,
       "DaoRewardsDistributor": 1253,
       "DaoVotingCw4": 1254,
-      "CwVesting": 1255,
       "DaoVotingCw721Staked": 1256,
-      "CwTokenfactoryIssuer": 1257,
       "DaoVotingTokenStaked": 1258
     }
   },
@@ -1120,12 +1120,15 @@
     },
     "2.6.0": {
       "Cw1Whitelist": 2627,
-      "Cw4Group": 2628,
       "Cw20Base": 3217,
+      "Cw20Stake": 3342,
+      "Cw4Group": 2628,
       "Cw721Base": 2629,
       "CwAdminFactory": 3327,
       "CwPayrollFactory": 3328,
       "CwTokenSwap": 3329,
+      "CwTokenfactoryIssuer": 3345,
+      "CwVesting": 3341,
       "DaoDaoCore": 3330,
       "DaoPreProposeApprovalMultiple": 3332,
       "DaoPreProposeApprovalSingle": 3333,
@@ -1135,12 +1138,9 @@
       "DaoProposalMultiple": 3337,
       "DaoProposalSingle": 3338,
       "DaoRewardsDistributor": 3339,
-      "DaoVotingCw4": 3340,
-      "CwVesting": 3341,
-      "Cw20Stake": 3342,
       "DaoVotingCw20Staked": 3343,
+      "DaoVotingCw4": 3340,
       "DaoVotingCw721Staked": 3344,
-      "CwTokenfactoryIssuer": 3345,
       "DaoVotingTokenStaked": 3346
     }
   },
@@ -1172,6 +1172,8 @@
       "CwAdminFactory": 8015,
       "CwPayrollFactory": 8016,
       "CwTokenSwap": 8017,
+      "CwTokenfactoryIssuer": 8031,
+      "CwVesting": 8029,
       "DaoDaoCore": 8018,
       "DaoPreProposeApprovalMultiple": 8019,
       "DaoPreProposeApprovalSingle": 8021,
@@ -1182,9 +1184,7 @@
       "DaoProposalSingle": 8026,
       "DaoRewardsDistributor": 8027,
       "DaoVotingCw4": 8028,
-      "CwVesting": 8029,
       "DaoVotingCw721Staked": 8030,
-      "CwTokenfactoryIssuer": 8031,
       "DaoVotingTokenStaked": 8032
     }
   },
@@ -1212,6 +1212,7 @@
       "CwAdminFactory": 45,
       "CwPayrollFactory": 46,
       "CwTokenSwap": 47,
+      "CwVesting": 58,
       "DaoDaoCore": 48,
       "DaoPreProposeApprovalMultiple": 49,
       "DaoPreProposeApprovalSingle": 50,
@@ -1222,7 +1223,6 @@
       "DaoProposalSingle": 55,
       "DaoRewardsDistributor": 56,
       "DaoVotingCw4": 57,
-      "CwVesting": 58,
       "DaoVotingTokenStaked": 59
     }
   },
@@ -1323,6 +1323,8 @@
       "CwAdminFactory": 427,
       "CwPayrollFactory": 428,
       "CwTokenSwap": 429,
+      "CwTokenfactoryIssuer": 442,
+      "CwVesting": 440,
       "DaoDaoCore": 430,
       "DaoPreProposeApprovalMultiple": 431,
       "DaoPreProposeApprovalSingle": 432,
@@ -1333,9 +1335,7 @@
       "DaoProposalSingle": 437,
       "DaoRewardsDistributor": 438,
       "DaoVotingCw4": 439,
-      "CwVesting": 440,
       "DaoVotingCw721Staked": 441,
-      "CwTokenfactoryIssuer": 442,
       "DaoVotingTokenStaked": 443
     }
   },
@@ -1441,13 +1441,17 @@
     },
     "2.6.0": {
       "Cw1Whitelist": 4060,
-      "Cw4Group": 178,
       "Cw20Base": 177,
+      "Cw20Stake": 4665,
+      "Cw4Group": 178,
       "Cw721Base": 179,
       "CwAdminFactory": 4651,
       "CwPayrollFactory": 4652,
       "CwTokenSwap": 4653,
+      "CwTokenfactoryIssuer": 4668,
+      "CwVesting": 4664,
       "DaoDaoCore": 4654,
+      "DaoMigrator": 4663,
       "DaoPreProposeApprovalMultiple": 4670,
       "DaoPreProposeApprovalSingle": 4655,
       "DaoPreProposeApprover": 4656,
@@ -1456,13 +1460,9 @@
       "DaoProposalMultiple": 4659,
       "DaoProposalSingle": 4660,
       "DaoRewardsDistributor": 4661,
-      "DaoVotingCw4": 4662,
-      "DaoMigrator": 4663,
-      "CwVesting": 4664,
-      "Cw20Stake": 4665,
       "DaoVotingCw20Staked": 4666,
+      "DaoVotingCw4": 4662,
       "DaoVotingCw721Staked": 4667,
-      "CwTokenfactoryIssuer": 4668,
       "DaoVotingTokenStaked": 4669
     }
   }

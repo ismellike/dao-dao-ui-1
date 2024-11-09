@@ -376,7 +376,8 @@ export const chainIdToDeploymentArgs: Record<string, Record<string, any>> = {
   },
   [ChainId.OmniflixHubMainnet]: {
     mnemonic: 'df_operator',
-    authz: 'omniflix1kr6t4gg33kfuc26rz4xxkv0ftlxq5j09pndcf9ndk450rrevgf8sy59urv',
+    authz:
+      'omniflix1kr6t4gg33kfuc26rz4xxkv0ftlxq5j09pndcf9ndk450rrevgf8sy59urv',
   },
   [ChainId.BitsongTestnet]: {
     mnemonic: 'bitsong_testnet',
