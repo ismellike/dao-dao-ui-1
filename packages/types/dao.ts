@@ -40,7 +40,10 @@ import {
   ProposalResponse as SingleChoiceProposalResponse,
   VetoConfig,
 } from './contracts/DaoProposalSingle.v2'
-import { DistributionState } from './contracts/DaoRewardsDistributor'
+import {
+  DistributionState,
+  EmissionRate,
+} from './contracts/DaoRewardsDistributor'
 import { Config as NeutronCwdSubdaoTimelockSingleConfig } from './contracts/NeutronCwdSubdaoTimelockSingle'
 import { VotingVault } from './contracts/NeutronVotingRegistry'
 import { InstantiateMsg as SecretDaoDaoCoreInstantiateMsg } from './contracts/SecretDaoDaoCore'
@@ -664,4 +667,129 @@ export type PendingDaoRewards = {
    * Total pending rewards across all distributions, merged by token.
    */
   rewards: GenericTokenBalanceAndValue[]
+}
+
+/**
+ * A reward distribution with v2.5.0 recovery information.
+ */
+export type DistributionWithV250RecoveryInfo = {
+  /**
+   * Distributor.
+   */
+  distributor: DaoRewardDistributor
+  /**
+   * Distribution.
+   */
+  distribution: DaoRewardDistribution
+  /**
+   * Distributed rewards that have not yet been claimed (i.e. pending /
+   * claimable).
+   */
+  claimable: HugeDecimal
+  /**
+   * Undistributed rewards.
+   */
+  undistributed: HugeDecimal
+}
+
+/**
+ * A token with its v2.5.0 recovery information aggregated over all reward
+ * distributions.
+ */
+export type TokenWithV250RecoveryInfo = {
+  /**
+   * Distributor.
+   */
+  distributor: DaoRewardDistributor
+  /**
+   * Token.
+   */
+  token: GenericToken
+  /**
+   * Distributor contract balance.
+   */
+  balance: HugeDecimal
+  /**
+   * Distributed rewards that have not yet been claimed (i.e. pending /
+   * claimable).
+   */
+  claimable: HugeDecimal
+  /**
+   * Undistributed rewards.
+   */
+  undistributed: HugeDecimal
+  /**
+   * Missed rewards.
+   */
+  missed: HugeDecimal
+}
+
+/**
+ * v2.5.0 reward distributor recovery information.
+ */
+export type V250RewardDistributorRecoveryInfo = {
+  /**
+   * Aggregated recovery information for all reward distributors.
+   */
+  data: {
+    /**
+     * Distributor contract on v2.5.0.
+     */
+    distributor: DaoRewardDistributor
+    /**
+     * Reward distributions with their v2.5.0 recovery information.
+     */
+    distributions: DistributionWithV250RecoveryInfo[]
+    /**
+     * Tokens with their v2.5.0 recovery information aggregated over all reward
+     * distributions.
+     */
+    tokens: TokenWithV250RecoveryInfo[]
+  }[]
+  /**
+   * Which step the recovery is on.
+   *
+   * Step 1: All linearly emitting distributions are paused and undistributed
+   * funds are withdrawn.
+   *
+   * Step 2: All distributor contracts are upgraded, the missed rewards are
+   * force withdrawn, the distributions are re-funded with the missed rewards,
+   * and all distributions are resumed. Optionally, the resumed distributions
+   * can be re-funded.
+   */
+  step:
+    | {
+        step: 1
+        /**
+         * All linearly emitting distributions that need to be paused.
+         */
+        needsPause: DistributionWithV250RecoveryInfo[]
+        /**
+         * All distributions with undistributed funds.
+         */
+        needsWithdraw: DistributionWithV250RecoveryInfo[]
+      }
+    | {
+        step: 2
+        /**
+         * All distributor contracts that need to be upgraded.
+         */
+        needsUpgrade: DaoRewardDistributor[]
+        /**
+         * All tokens with missed rewards.
+         */
+        needsForceWithdraw: TokenWithV250RecoveryInfo[]
+        /**
+         * Which distributions can be resumed.
+         */
+        canBeResumed: (DistributionWithV250RecoveryInfo & {
+          /**
+           * Emission rate of the distribution that will be resumed.
+           */
+          savedEmissionRate: EmissionRate
+        })[]
+      }
+    | {
+        step: 'done'
+      }
 }
