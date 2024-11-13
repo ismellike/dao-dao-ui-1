@@ -173,12 +173,14 @@ export class BurnNftAction extends ActionBase<BurnNftData> {
 
         // All messages must be burns for this to match. Otherwise, we may match
         // a cross-chain execute and accidentally conceal other messages.
-        const allAreBurns = burns.every((b) => !!b)
-
-        return allAreBurns
+        return burns.every(Boolean)
           ? {
               isWrapped,
-              burns,
+              burns: burns as {
+                chainId: string
+                collection: any
+                tokenId: any
+              }[],
             }
           : null
       }
