@@ -232,28 +232,21 @@ export class TransferNftAction extends ActionBase<TransferNftData> {
 
     // Select all identical adjacent transfers starting with the first. Once one
     // does not match, stop.
-    const transfers = []
-    for (const transfer of all) {
-      if (!transfer) {
-        continue
-      }
-
-      // If this is the first transfer, add it.
-      if (!transfers.length) {
-        transfers.push(transfer)
-      } else if (
-        // If the chainId, recipient, executeSmartContract, and smartContractMsg
-        // match, add it.
-        transfer.chainId === transfers[0].chainId &&
-        transfer.recipient === transfers[0].recipient &&
-        transfer.executeSmartContract === transfers[0].executeSmartContract &&
-        transfer.smartContractMsg === transfers[0].smartContractMsg
+    const transfers = [all[0]]
+    for (const transfer of all.slice(1)) {
+      // If the chainId, recipient, executeSmartContract, and smartContractMsg
+      // don't match the first transfer, stop.
+      if (
+        !transfer ||
+        transfer.chainId !== transfers[0].chainId ||
+        transfer.recipient !== transfers[0].recipient ||
+        transfer.executeSmartContract !== transfers[0].executeSmartContract ||
+        transfer.smartContractMsg !== transfers[0].smartContractMsg
       ) {
-        transfers.push(transfer)
-      } else {
-        // If it doesn't match, stop.
         break
       }
+
+      transfers.push(transfer)
     }
 
     return transfers
