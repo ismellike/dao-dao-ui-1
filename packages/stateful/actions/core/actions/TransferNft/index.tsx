@@ -253,7 +253,13 @@ export class TransferNftAction extends ActionBase<TransferNftData> {
   }
 
   match(messages: ProcessedMessage[]): ActionMatch {
-    return this.handleMessages(messages).length
+    const transfers = this.handleMessages(messages)
+    // If wrapped cross-chain execute, only match the cross-chain execute, and
+    // only if all messages are transfers.
+    return messages[0].isCrossChain &&
+      transfers.length === messages[0].wrappedMessages.length
+      ? 1
+      : transfers.length
   }
 
   decode(messages: ProcessedMessage[]): TransferNftData {
