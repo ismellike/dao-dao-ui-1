@@ -1,4 +1,4 @@
-import { useQueryClient } from '@tanstack/react-query'
+import { useQueries, useQueryClient } from '@tanstack/react-query'
 import JSON5 from 'json5'
 import { useFormContext } from 'react-hook-form'
 
@@ -29,13 +29,13 @@ import {
   decodeJsonFromBase64,
   encodeJsonToBase64,
   getChainAddressForActionOptions,
+  makeCombineQueryResultsIntoLoadingDataWithError,
   makeExecuteSmartContractMessage,
   maybeMakePolytoneExecuteMessages,
   objectMatchesStructure,
 } from '@dao-dao/utils'
 
 import { AddressInput, NftSelectionModal } from '../../../../components'
-import { useQueryLoadingDataWithError } from '../../../../hooks'
 import { useCw721CommonGovernanceTokenInfoIfExists } from '../../../../voting-module-adapter'
 import { TransferNftComponent, TransferNftData } from './Component'
 
@@ -51,10 +51,7 @@ const Component: ActionComponent = (props) => {
     useCw721CommonGovernanceTokenInfoIfExists() ?? {}
 
   const chainId = watch((props.fieldNamePrefix + 'chainId') as 'chainId')
-  const tokenId = watch((props.fieldNamePrefix + 'tokenId') as 'tokenId')
-  const collection = watch(
-    (props.fieldNamePrefix + 'collection') as 'collection'
-  )
+  const nfts = watch((props.fieldNamePrefix + 'nfts') as 'nfts')
 
   const options = useCachedLoadingWithError(
     props.isCreating
@@ -70,11 +67,15 @@ const Component: ActionComponent = (props) => {
           })
       : undefined
   )
-  const nftInfo = useQueryLoadingDataWithError(
-    chainId && collection && tokenId
-      ? nftQueries.cardInfo(queryClient, { chainId, collection, tokenId })
-      : undefined
-  )
+  const nftInfos = useQueries({
+    queries:
+      chainId && nfts.length
+        ? nfts.map(({ collection, tokenId }) =>
+            nftQueries.cardInfo(queryClient, { chainId, collection, tokenId })
+          )
+        : [],
+    combine: makeCombineQueryResultsIntoLoadingDataWithError(),
+  })
 
   const allChainOptions =
     options.loading || options.errored
@@ -90,7 +91,7 @@ const Component: ActionComponent = (props) => {
       {...props}
       options={{
         options: allChainOptions,
-        nftInfo: chainId && tokenId && collection ? nftInfo : undefined,
+        nftInfos: chainId && nfts.length ? nftInfos : undefined,
         AddressInput,
         NftSelectionModal,
       }}
@@ -105,18 +106,16 @@ export class TransferNftAction extends ActionBase<TransferNftData> {
   constructor(options: ActionOptions) {
     super(options, {
       Icon: BoxEmoji,
-      label: options.t('title.transferNft'),
-      description: options.t('info.transferNftDescription', {
+      label: options.t('title.transferNfts'),
+      description: options.t('info.transferNftsDescription', {
         context: options.context.type,
       }),
     })
 
     this.defaults = {
       chainId: options.chain.chainId,
-      collection: '',
-      tokenId: '',
+      nfts: [],
       recipient: '',
-
       executeSmartContract: false,
       smartContractMsg: '{}',
     }
@@ -124,8 +123,7 @@ export class TransferNftAction extends ActionBase<TransferNftData> {
 
   encode({
     chainId,
-    collection,
-    tokenId,
+    nfts,
     recipient,
     executeSmartContract,
     smartContractMsg,
@@ -138,30 +136,40 @@ export class TransferNftAction extends ActionBase<TransferNftData> {
     return maybeMakePolytoneExecuteMessages(
       this.options.chain.chainId,
       chainId,
-      makeExecuteSmartContractMessage({
-        chainId,
-        sender,
-        contractAddress: collection,
-        msg: executeSmartContract
-          ? {
-              send_nft: {
-                contract: recipient,
-                msg: encodeJsonToBase64(JSON5.parse(smartContractMsg)),
-                token_id: tokenId,
+      nfts.map(({ collection, tokenId }) =>
+        makeExecuteSmartContractMessage({
+          chainId,
+          sender,
+          contractAddress: collection,
+          msg: executeSmartContract
+            ? {
+                send_nft: {
+                  contract: recipient,
+                  msg: encodeJsonToBase64(JSON5.parse(smartContractMsg)),
+                  token_id: tokenId,
+                },
+              }
+            : {
+                transfer_nft: {
+                  recipient,
+                  token_id: tokenId,
+                },
               },
-            }
-          : {
-              transfer_nft: {
-                recipient,
-                token_id: tokenId,
-              },
-            },
-      })
+        })
+      )
     )
   }
 
-  match([{ decodedMessage }]: ProcessedMessage[]): ActionMatch {
-    return (
+  // This should match one or more identical same-chain transfers or one
+  // cross-chain message with one or more idential transfers. The only thing
+  // that can differ is the NFT being transferred.
+  handleMessages(_messages: ProcessedMessage[]) {
+    const messages = _messages[0].isCrossChain
+      ? _messages[0].wrappedMessages
+      : _messages
+
+    // Detect all transfers.
+    const all = messages.map(({ decodedMessage, account: { chainId } }) =>
       objectMatchesStructure(decodedMessage, {
         wasm: {
           execute: {
@@ -175,63 +183,97 @@ export class TransferNftAction extends ActionBase<TransferNftData> {
             },
           },
         },
-      }) ||
-      objectMatchesStructure(decodedMessage, {
-        wasm: {
-          execute: {
-            contract_addr: {},
-            funds: {},
-            msg: {
-              send_nft: {
-                contract: {},
-                msg: {},
-                token_id: {},
+      })
+        ? {
+            chainId,
+            collection: decodedMessage.wasm.execute.contract_addr,
+            tokenId: decodedMessage.wasm.execute.msg.transfer_nft.token_id,
+            recipient: decodedMessage.wasm.execute.msg.transfer_nft.recipient,
+            executeSmartContract: false,
+            smartContractMsg: '{}',
+          }
+        : objectMatchesStructure(decodedMessage, {
+            wasm: {
+              execute: {
+                contract_addr: {},
+                funds: {},
+                msg: {
+                  send_nft: {
+                    contract: {},
+                    msg: {},
+                    token_id: {},
+                  },
+                },
               },
             },
-          },
-        },
-      })
+          })
+        ? {
+            chainId,
+            collection: decodedMessage.wasm.execute.contract_addr,
+            tokenId: decodedMessage.wasm.execute.msg.send_nft.token_id,
+            recipient: decodedMessage.wasm.execute.msg.send_nft.contract,
+            executeSmartContract: true,
+            smartContractMsg: JSON.stringify(
+              decodeJsonFromBase64(
+                decodedMessage.wasm.execute.msg.send_nft.msg,
+                true
+              ),
+              null,
+              2
+            ),
+          }
+        : null
     )
+
+    // If the first is not a transfer, match none.
+    if (!all.length || !all[0]) {
+      return []
+    }
+
+    // Select all identical adjacent transfers starting with the first. Once one
+    // does not match, stop.
+    const transfers = []
+    for (const transfer of all) {
+      if (!transfer) {
+        continue
+      }
+
+      // If this is the first transfer, add it.
+      if (!transfers.length) {
+        transfers.push(transfer)
+      } else if (
+        // If the chainId, recipient, executeSmartContract, and smartContractMsg
+        // match, add it.
+        transfer.chainId === transfers[0].chainId &&
+        transfer.recipient === transfers[0].recipient &&
+        transfer.executeSmartContract === transfers[0].executeSmartContract &&
+        transfer.smartContractMsg === transfers[0].smartContractMsg
+      ) {
+        transfers.push(transfer)
+      } else {
+        // If it doesn't match, stop.
+        break
+      }
+    }
+
+    return transfers
   }
 
-  decode([
-    {
-      decodedMessage,
-      account: { chainId },
-    },
-  ]: ProcessedMessage[]): TransferNftData {
-    return objectMatchesStructure(decodedMessage, {
-      wasm: {
-        execute: {
-          msg: {
-            transfer_nft: {},
-          },
-        },
-      },
-    })
-      ? {
-          chainId,
-          collection: decodedMessage.wasm.execute.contract_addr,
-          tokenId: decodedMessage.wasm.execute.msg.transfer_nft.token_id,
-          recipient: decodedMessage.wasm.execute.msg.transfer_nft.recipient,
-          executeSmartContract: false,
-          smartContractMsg: '{}',
-        }
-      : // send_nft
-        {
-          chainId,
-          collection: decodedMessage.wasm.execute.contract_addr,
-          tokenId: decodedMessage.wasm.execute.msg.send_nft.token_id,
-          recipient: decodedMessage.wasm.execute.msg.send_nft.contract,
-          executeSmartContract: true,
-          smartContractMsg: JSON.stringify(
-            decodeJsonFromBase64(
-              decodedMessage.wasm.execute.msg.send_nft.msg,
-              true
-            ),
-            null,
-            2
-          ),
-        }
+  match(messages: ProcessedMessage[]): ActionMatch {
+    return this.handleMessages(messages).length
+  }
+
+  decode(messages: ProcessedMessage[]): TransferNftData {
+    const transfers = this.handleMessages(messages)
+    return {
+      chainId: transfers[0].chainId,
+      nfts: transfers.map(({ collection, tokenId }) => ({
+        collection,
+        tokenId,
+      })),
+      recipient: transfers[0].recipient,
+      executeSmartContract: transfers[0].executeSmartContract,
+      smartContractMsg: transfers[0].smartContractMsg,
+    }
   }
 }
