@@ -160,11 +160,11 @@ export class TransferNftAction extends ActionBase<TransferNftData> {
     )
   }
 
-  // This should match one or more identical same-chain transfers or one
-  // cross-chain message with one or more idential transfers. The only thing
-  // that can differ is the NFT being transferred.
+  // This should match one or more identical transfers or one
+  // wrapped/cross-chain message with one or more idential transfers. The only
+  // thing that can differ is the NFT being transferred.
   handleMessages(_messages: ProcessedMessage[]) {
-    const messages = _messages[0].isCrossChain
+    const messages = _messages[0].isWrapped
       ? _messages[0].wrappedMessages
       : _messages
 
@@ -254,9 +254,9 @@ export class TransferNftAction extends ActionBase<TransferNftData> {
 
   match(messages: ProcessedMessage[]): ActionMatch {
     const transfers = this.handleMessages(messages)
-    // If wrapped cross-chain execute, only match the cross-chain execute, and
-    // only if all messages are transfers.
-    return messages[0].isCrossChain &&
+    // If wrapped execute, only match the one wrapped execute that contains the
+    // other transfers, and only if all messages are transfers.
+    return messages[0].isWrapped &&
       transfers.length === messages[0].wrappedMessages.length
       ? 1
       : transfers.length

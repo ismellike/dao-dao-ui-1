@@ -74,7 +74,8 @@ export const MintNft: ActionComponent = (props) => {
       creatingCollectionInfo.loading
       ? undefined
       : {
-          key: chainId + collectionAddress + mintMsg.token_id,
+          key:
+            mintMsg.token_uri || chainId + collectionAddress + mintMsg.token_id,
           collectionAddress,
           collectionName:
             (!creatingCollectionInfo.errored &&

@@ -79,16 +79,20 @@ export class DeletePostAction extends ActionBase<DeletePostData> {
 
   encode({ id }: DeletePostData): UnifiedCosmosMsg[] {
     return this.burnNftAction.encode({
-      chainId: this.pressChainId,
-      collection: this.pressData.contract,
-      tokenId: id,
+      nfts: [
+        {
+          chainId: this.pressChainId,
+          collection: this.pressData.contract,
+          tokenId: id,
+        },
+      ],
     })
   }
 
-  match(messages: ProcessedMessage[]): ActionMatch {
+  match([message]: ProcessedMessage[]): ActionMatch {
     return (
-      this.burnNftAction.match(messages) &&
-      messages[0].decodedMessage.wasm.execute.contract_addr ===
+      this.burnNftAction.match([message]) &&
+      message.decodedMessage.wasm.execute.contract_addr ===
         this.pressData.contract
     )
   }
