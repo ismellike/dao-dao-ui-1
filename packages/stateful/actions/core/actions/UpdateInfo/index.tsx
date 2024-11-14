@@ -52,11 +52,28 @@ export class UpdateInfoAction extends ActionBase<UpdateInfoData> {
     }
   }
 
-  encode({ banner, ...data }: UpdateInfoData): UnifiedCosmosMsg[] {
+  async encode({
+    banner,
+    ...data
+  }: UpdateInfoData): Promise<UnifiedCosmosMsg[]> {
     // Type-check. Should be validated in the constructor.
     if (this.options.context.type !== ActionContextType.Dao) {
       throw new Error('Only DAOs can update info.')
     }
+
+    const isSettingBanner = !!banner
+
+    const hasBanner = !!(
+      await this.options.queryClient.fetchQuery(
+        daoDaoCoreQueries.getItem(this.options.queryClient, {
+          chainId: this.options.chain.chainId,
+          contractAddress: this.options.address,
+          args: {
+            key: 'banner',
+          },
+        })
+      )
+    ).item
 
     return [
       makeExecuteSmartContractMessage({
@@ -82,11 +99,16 @@ export class UpdateInfoAction extends ActionBase<UpdateInfoData> {
           },
         },
       }),
-      this.manageStorageItemsAction.encode({
-        setting: !!banner,
-        key: 'banner',
-        value: banner || '',
-      }),
+      // Only unset banner if it is currently set.
+      ...(isSettingBanner || hasBanner
+        ? [
+            this.manageStorageItemsAction.encode({
+              setting: isSettingBanner,
+              key: 'banner',
+              value: banner || '',
+            }),
+          ]
+        : []),
     ]
   }
 
