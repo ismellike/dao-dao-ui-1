@@ -237,10 +237,10 @@ const BASE_SUPPORTED_CHAINS: Omit<
       'juno1mjsgk02jyn72jm2x7fgw72uu9wj7xy0v6pnuj2jd3aq7rgeqg5qq4dnhes',
     ],
     explorerUrlTemplates: {
-      tx: 'https://ping.pub/juno/tx/REPLACE',
-      gov: 'https://ping.pub/juno/gov',
-      govProp: 'https://ping.pub/juno/gov/REPLACE',
-      wallet: 'https://ping.pub/juno/account/REPLACE',
+      tx: 'https://mintscan.io/juno/txs/REPLACE',
+      gov: 'https://mintscan.io/juno/proposals',
+      govProp: 'https://mintscan.io/juno/proposals/REPLACE',
+      wallet: 'https://mintscan.io/juno/account/REPLACE',
     },
     latestVersion: ContractVersion.V260,
   },
@@ -255,10 +255,10 @@ const BASE_SUPPORTED_CHAINS: Omit<
       network: 'OSMOSIS',
     },
     explorerUrlTemplates: {
-      tx: 'https://ping.pub/osmosis/tx/REPLACE',
-      gov: 'https://ping.pub/osmosis/gov',
-      govProp: 'https://ping.pub/osmosis/gov/REPLACE',
-      wallet: 'https://ping.pub/osmosis/account/REPLACE',
+      tx: 'https://mintscan.io/osmosis/txs/REPLACE',
+      gov: 'https://mintscan.io/osmosis/proposals',
+      govProp: 'https://mintscan.io/osmosis/proposals/REPLACE',
+      wallet: 'https://mintscan.io/osmosis/account/REPLACE',
     },
     latestVersion: ContractVersion.V260,
   },
@@ -294,10 +294,10 @@ const BASE_SUPPORTED_CHAINS: Omit<
     factoryContractAddress:
       'stars1tfqwhhnus2u39kdlhhp93k9z7qvkhty65wvyt6snymejeyftkt5qlzq269',
     explorerUrlTemplates: {
-      tx: 'https://ping.pub/stargaze/tx/REPLACE',
-      gov: 'https://ping.pub/stargaze/gov',
-      govProp: 'https://ping.pub/stargaze/gov/REPLACE',
-      wallet: 'https://ping.pub/stargaze/account/REPLACE',
+      tx: 'https://mintscan.io/stargaze/txs/REPLACE',
+      gov: 'https://mintscan.io/stargaze/proposals',
+      govProp: 'https://mintscan.io/stargaze/proposals/REPLACE',
+      wallet: 'https://mintscan.io/stargaze/account/REPLACE',
     },
     latestVersion: ContractVersion.V260,
   },
@@ -326,8 +326,8 @@ const BASE_SUPPORTED_CHAINS: Omit<
       'terra14nx6mwk3jn595tya24tdjqze2xmrdf0dnh86wyevjyl2ujz6n8qq55wuh4',
     explorerUrlTemplates: {
       tx: 'https://finder.terra.money/mainnet/tx/REPLACE',
-      gov: 'https://ping.pub/terra/gov',
-      govProp: 'https://ping.pub/terra/gov/REPLACE',
+      gov: 'https://mintscan.io/terra/proposals',
+      govProp: 'https://mintscan.io/terra/proposals/REPLACE',
       wallet: 'https://finder.terra.money/mainnet/address/REPLACE',
     },
     tokenDaoType: 'both',
@@ -402,10 +402,10 @@ const BASE_SUPPORTED_CHAINS: Omit<
       'bitsong1qfwdjcmxgjr9jwa2grhf7pce87afx57j2664tvhh29j7r68a9tgqj9kuf3',
     ],
     explorerUrlTemplates: {
-      tx: 'https://ping.pub/bitsong/tx/REPLACE',
-      gov: 'https://ping.pub/bitsong/gov',
-      govProp: 'https://ping.pub/bitsong/gov/REPLACE',
-      wallet: 'https://ping.pub/bitsong/account/REPLACE',
+      tx: 'https://mintscan.io/bitsong/txs/REPLACE',
+      gov: 'https://mintscan.io/bitsong/proposals',
+      govProp: 'https://mintscan.io/bitsong/proposals/REPLACE',
+      wallet: 'https://mintscan.io/bitsong/account/REPLACE',
     },
     latestVersion: ContractVersion.V260,
   },
@@ -417,10 +417,10 @@ const BASE_SUPPORTED_CHAINS: Omit<
     factoryContractAddress:
       'omniflix1yxxxv35e0jwaakzv64l97z43msuw8vqn8cay8amvd0zckhra6h2qmfrzmx',
     explorerUrlTemplates: {
-      tx: 'https://ping.pub/omniflixhub/tx/REPLACE',
-      gov: 'https://ping.pub/omniflixhub/gov',
-      govProp: 'https://ping.pub/omniflixhub/gov/REPLACE',
-      wallet: 'https://ping.pub/omniflixhub/account/REPLACE',
+      tx: 'https://mintscan.io/omniflix/txs/REPLACE',
+      gov: 'https://mintscan.io/omniflix/proposals',
+      govProp: 'https://mintscan.io/omniflix/proposals/REPLACE',
+      wallet: 'https://mintscan.io/omniflix/account/REPLACE',
     },
     latestVersion: ContractVersion.V260,
   },
@@ -770,24 +770,34 @@ export const CONFIGURED_CHAINS: BaseChainConfig[] = [
         undefined
       const explorers = chain.chainRegistry?.explorers
       if (explorers) {
-        const pingPubOrMintscanExplorer =
-          explorers.find(
+        const mintscanExplorer = explorers.find(
+          (explorer) =>
+            explorer.kind?.toLowerCase() === 'mintscan' &&
+            explorer.url?.includes('mintscan.io')
+        )
+        if (mintscanExplorer) {
+          explorerUrlTemplates = {
+            tx: mintscanExplorer.url + '/txs/REPLACE',
+            gov: mintscanExplorer.url + '/proposals',
+            govProp: mintscanExplorer.url + '/proposals/REPLACE',
+            wallet: mintscanExplorer.url + '/account/REPLACE',
+          }
+        }
+
+        if (!explorerUrlTemplates) {
+          const pingPubExplorer = explorers.find(
             (explorer) =>
               explorer.kind?.toLowerCase() === 'ping.pub' &&
               // Some explorers have kind = 'ping.pub' but the wrong URL.
               explorer.url?.includes('ping.pub')
-          ) ||
-          explorers.find(
-            (explorer) =>
-              explorer.kind?.toLowerCase() === 'mintscan' &&
-              explorer.url?.includes('mintscan.io')
           )
-        if (pingPubOrMintscanExplorer) {
-          explorerUrlTemplates = {
-            tx: pingPubOrMintscanExplorer.url + '/tx/REPLACE',
-            gov: pingPubOrMintscanExplorer.url + '/gov',
-            govProp: pingPubOrMintscanExplorer.url + '/gov/REPLACE',
-            wallet: pingPubOrMintscanExplorer.url + '/account/REPLACE',
+          if (pingPubExplorer) {
+            explorerUrlTemplates = {
+              tx: pingPubExplorer.url + '/tx/REPLACE',
+              gov: pingPubExplorer.url + '/gov',
+              govProp: pingPubExplorer.url + '/gov/REPLACE',
+              wallet: pingPubExplorer.url + '/account/REPLACE',
+            }
           }
         }
 
