@@ -245,7 +245,7 @@ export const makeUsePublishProposal =
 
           // Request to increase the contract's allowance for the proposal
           // deposit if needed.
-          if (remainingAllowanceNeeded) {
+          if (remainingAllowanceNeeded.isPositive()) {
             try {
               await increaseCw20DepositAllowance({
                 amount: remainingAllowanceNeeded.toString(),
