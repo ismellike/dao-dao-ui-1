@@ -5,6 +5,7 @@ import * as _117 from "./protobuf/descriptor";
 import * as _118 from "./protobuf/duration";
 import * as _119 from "./protobuf/empty";
 import * as _120 from "./protobuf/timestamp";
+import * as _121 from "./protobuf/wrappers";
 export namespace google {
   export const api = {
     ..._114,
@@ -15,6 +16,7 @@ export namespace google {
     ..._117,
     ..._118,
     ..._119,
-    ..._120
+    ..._120,
+    ..._121
   };
 }
