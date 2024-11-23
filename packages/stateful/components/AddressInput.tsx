@@ -3,14 +3,11 @@ import Fuse from 'fuse.js'
 import { useMemo } from 'react'
 import { FieldValues, Path, useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
-import { waitForNone } from 'recoil'
 import { useDeepCompareMemoize } from 'use-deep-compare-effect'
 
-import { profileQueries } from '@dao-dao/state/query'
-import { searchDaosSelector } from '@dao-dao/state/recoil'
+import { indexerQueries, profileQueries } from '@dao-dao/state/query'
 import {
   AddressInput as StatelessAddressInput,
-  useCachedLoadable,
   useChain,
 } from '@dao-dao/stateless'
 import { AddressInputProps, Entity, EntityType } from '@dao-dao/types'
@@ -58,10 +55,10 @@ export const AddressInput = <
 
   // Search DAOs on current chains and all polytone-connected chains so we can
   // find polytone accounts.
-  const searchDaosLoadable = useCachedLoadable(
-    hasFormValue && props.type !== 'wallet'
-      ? waitForNone(
-          [
+  const searchedDaos = useQueries({
+    queries:
+      hasFormValue && props.type !== 'wallet'
+        ? [
             // Current chain.
             currentChain.chainId,
             // Chains that have polytone connections with the current chain.
@@ -69,15 +66,18 @@ export const AddressInput = <
               Object.keys(destChains).includes(currentChain.chainId)
             ).map(([chainId]) => chainId),
           ].map((chainId) =>
-            searchDaosSelector({
+            indexerQueries.searchDaos({
               chainId,
               query: formValue,
               limit: 5,
             })
           )
-        )
-      : undefined
-  )
+        : [],
+    combine: makeCombineQueryResultsIntoLoadingData({
+      firstLoad: 'none',
+      transform: (results) => results.flatMap((r) => r.hits),
+    }),
+  })
 
   const queryClient = useQueryClient()
   const loadingEntities = useQueries({
@@ -90,16 +90,12 @@ export const AddressInput = <
             })
           )
         : []),
-      ...(searchDaosLoadable.state === 'hasValue'
-        ? searchDaosLoadable.contents.flatMap((loadable) =>
-            loadable.state === 'hasValue'
-              ? loadable.contents.map(({ chainId, id: address }) =>
-                  entityQueries.info(queryClient, {
-                    chainId,
-                    address,
-                  })
-                )
-              : []
+      ...(!searchedDaos.loading
+        ? searchedDaos.data.flatMap(({ chainId, id: address }) =>
+            entityQueries.info(queryClient, {
+              chainId,
+              address,
+            })
           )
         : []),
     ],
@@ -151,12 +147,7 @@ export const AddressInput = <
                     (!searchProfilesLoading.errored &&
                       searchProfilesLoading.updating))) ||
                 (props.type !== 'wallet' &&
-                  (searchDaosLoadable.state === 'loading' ||
-                    (searchDaosLoadable.state === 'hasValue' &&
-                      (searchDaosLoadable.updating ||
-                        searchDaosLoadable.contents.some(
-                          (loadable) => loadable.state === 'loading'
-                        ))))) ||
+                  (searchedDaos.loading || searchedDaos.updating)) ||
                 loadingEntities.loading ||
                 !!loadingEntities.updating,
             }

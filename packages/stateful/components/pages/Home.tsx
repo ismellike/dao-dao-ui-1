@@ -1,5 +1,4 @@
-import { DehydratedState } from '@tanstack/react-query'
-import clsx from 'clsx'
+import { DehydratedState, useInfiniteQuery } from '@tanstack/react-query'
 import { NextPage } from 'next'
 import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
@@ -7,24 +6,34 @@ import { useCallback, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSetRecoilState } from 'recoil'
 
-import { commandModalVisibleAtom, walletChainIdAtom } from '@dao-dao/state'
+import {
+  SearchDaosOptions,
+  commandModalVisibleAtom,
+  indexerQueries,
+  walletChainIdAtom,
+} from '@dao-dao/state'
 import {
   ChainPickerPopup,
   Logo,
   Home as StatelessHome,
+  useInfiniteScroll,
+  useQuerySyncedState,
 } from '@dao-dao/stateless'
 import {
   DaoDaoIndexerAllStats,
   DaoInfo,
   DaoSource,
+  LazyDaoCardProps,
   LoadingData,
+  LoadingDataWithError,
   StatefulDaoCardProps,
 } from '@dao-dao/types'
 import {
   SITE_TITLE,
   SITE_URL,
-  UNDO_PAGE_PADDING_TOP_CLASSES,
+  getFallbackImage,
   getSupportedChainConfig,
+  parseContractVersion,
 } from '@dao-dao/utils'
 
 import {
@@ -32,7 +41,7 @@ import {
   useLoadingFeaturedDaoCards,
   useWallet,
 } from '../../hooks'
-import { DaoCard } from '../dao'
+import { DaoCard, LazyDaoCard } from '../dao'
 import { LinkWrapper } from '../LinkWrapper'
 import { PageHeaderContent } from '../PageHeaderContent'
 import { ProfileHome } from './ProfileHome'
@@ -82,6 +91,84 @@ export const Home: NextPage<StatefulHomeProps> = ({
     () => setCommandModalVisible(true),
     [setCommandModalVisible]
   )
+
+  const [search, setSearch] = useQuerySyncedState({
+    param: 'q',
+    defaultValue: '',
+  })
+  const searchOptions: SearchDaosOptions = {
+    chainId: chainId || '',
+    query: search,
+    hitsPerPage: 18,
+  }
+  const searchQuery = useInfiniteQuery({
+    queryKey: indexerQueries.searchDaos(searchOptions).queryKey,
+    queryFn: (ctx) => {
+      const { queryFn } = indexerQueries.searchDaos({
+        ...searchOptions,
+        page: ctx.pageParam,
+      })
+      return typeof queryFn === 'function' ? queryFn(ctx) : queryFn
+    },
+    enabled: !!chainId,
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) =>
+      lastPage &&
+      typeof lastPage === 'object' &&
+      lastPage.totalPages !== undefined &&
+      lastPage.page !== undefined
+        ? lastPage.totalPages > lastPage.page
+          ? lastPage.page + 1
+          : undefined
+        : undefined,
+  })
+  const totalHits =
+    searchQuery.data &&
+    searchQuery.data.pages.length &&
+    typeof searchQuery.data.pages[0] === 'object' &&
+    typeof searchQuery.data.pages[0].totalHits === 'number'
+      ? searchQuery.data.pages[0].totalHits
+      : undefined
+  const infiniteScrollOptions = useInfiniteScroll({
+    loadMore: searchQuery.fetchNextPage,
+    disabled: !chainId || !searchQuery.hasNextPage || searchQuery.isFetching,
+  })
+  const searchedDaos: LoadingDataWithError<LazyDaoCardProps[]> =
+    searchQuery.isPending
+      ? { loading: true, errored: false }
+      : searchQuery.isError
+      ? { loading: false, errored: true, error: searchQuery.error }
+      : {
+          loading: false,
+          errored: false,
+          updating: searchQuery.isRefetching,
+          data:
+            searchQuery.data?.pages.flatMap((page) =>
+              page && typeof page === 'object'
+                ? page.hits
+                    .filter(({ value }) => !!value?.config)
+                    .flatMap(
+                      ({
+                        chainId,
+                        id,
+                        value: {
+                          config,
+                          version: { version },
+                        },
+                      }): LazyDaoCardProps => ({
+                        info: {
+                          chainId,
+                          coreAddress: id,
+                          coreVersion: parseContractVersion(version),
+                          name: config.name,
+                          description: config.description,
+                          imageUrl: config.image_url || getFallbackImage(id),
+                        },
+                      })
+                    )
+                : []
+            ) ?? [],
+        }
 
   const selectedChain = chainId ? getSupportedChainConfig(chainId) : undefined
   const selectedChainHasSubDaos = !!selectedChain?.subDaos?.length
@@ -223,15 +310,26 @@ export const Home: NextPage<StatefulHomeProps> = ({
             }
           />
 
-          <div className={clsx('pt-6', UNDO_PAGE_PADDING_TOP_CLASSES)}>
-            <StatelessHome
-              DaoCard={DaoCard}
-              chainGovDaos={chainGovDaos}
-              featuredDaos={featuredDaos}
-              openSearch={openSearch}
-              stats={stats}
-            />
-          </div>
+          <StatelessHome
+            DaoCard={DaoCard}
+            chainGovDaos={chainGovDaos}
+            featuredDaos={featuredDaos}
+            openSearch={openSearch}
+            search={
+              chainId
+                ? {
+                    LazyDaoCard,
+                    searchedDaos,
+                    hasMore: searchQuery.hasNextPage,
+                    totalHits,
+                    query: search,
+                    setQuery: setSearch,
+                    ...infiniteScrollOptions,
+                  }
+                : undefined
+            }
+            stats={stats}
+          />
         </>
       )}
     </>
