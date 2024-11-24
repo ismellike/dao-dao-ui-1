@@ -256,7 +256,13 @@ export class UpgradeV1ToV2Action extends ActionBase<UpgradeV1ToV2Data> {
                       }
                     : null,
                   extension: {},
-                  open_proposal_submission: false,
+                  submission_policy: {
+                    specific: {
+                      dao_members: true,
+                      allowlist: [],
+                      denylist: [],
+                    },
+                  },
                 }),
               },
             },
