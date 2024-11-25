@@ -1,7 +1,9 @@
 import { BigNumber } from 'bignumber.js'
 
 const valueToBigNumber = (n: HugeDecimal.Value): BigNumber =>
-  n instanceof BigNumber
+  n === null || n === undefined
+    ? new BigNumber(NaN)
+    : n instanceof BigNumber
     ? n
     : n instanceof HugeDecimal
     ? n['value']
