@@ -1,4 +1,5 @@
 import { BookOutlined, FlagOutlined, Timelapse } from '@mui/icons-material'
+import { usePlausible } from 'next-plausible'
 import { useFormContext } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
@@ -15,11 +16,14 @@ import {
   NewProposalProps as StatelessNewProposalProps,
   useActionsContext,
   useCachedLoadable,
-  useChain,
   useDao,
   useProcessTQ,
 } from '@dao-dao/stateless'
-import { BaseNewProposalProps, IProposalModuleBase } from '@dao-dao/types'
+import {
+  BaseNewProposalProps,
+  IProposalModuleBase,
+  PlausibleEvents,
+} from '@dao-dao/types'
 import {
   convertExpirationToDate,
   dateToWdhms,
@@ -51,14 +55,13 @@ export const NewProposal = ({
   ...props
 }: NewProposalProps) => {
   const { t } = useTranslation()
-  const { chainId } = useChain()
   const {
     name: daoName,
     imageUrl: daoImageUrl,
     coreAddress,
     info: { isActive, activeThreshold },
   } = useDao()
-  const { isWalletConnecting, isWalletConnected, getStargateClient } =
+  const { address, isWalletConnecting, isWalletConnected, getStargateClient } =
     useWallet()
 
   const { watch } = useFormContext<NewProposalForm>()
@@ -71,7 +74,7 @@ export const NewProposal = ({
   // re-renders.
   const pauseInfo = useCachedLoadable(
     DaoDaoCoreSelectors.pauseInfoSelector({
-      chainId,
+      chainId: proposalModule.chainId,
       contractAddress: coreAddress,
       params: [],
     })
@@ -84,7 +87,7 @@ export const NewProposal = ({
 
   const blocksPerYearLoadable = useRecoilValueLoadable(
     blocksPerYearSelector({
-      chainId,
+      chainId: proposalModule.chainId,
     })
   )
 
@@ -96,10 +99,11 @@ export const NewProposal = ({
     simulationBypassExpiration,
   } = usePublishProposal()
 
+  const plausible = usePlausible<PlausibleEvents>()
   const createProposal = useRecoilCallback(
     ({ snapshot }) =>
       async (newProposalData: NewProposalData) => {
-        if (!isWalletConnected) {
+        if (!isWalletConnected || !address) {
           toast.error(t('error.logInToContinue'))
           return
         }
@@ -117,6 +121,19 @@ export const NewProposal = ({
               // and create the proposal anyway for 3 seconds.
               failedSimulationBypassSeconds: 3,
             })
+
+          plausible('daoProposalCreate', {
+            props: {
+              chainId: proposalModule.chainId,
+              dao: proposalModule.dao.coreAddress,
+              walletAddress: address,
+              proposalModule: proposalModule.address,
+              proposalModuleType: proposalModule.contractName,
+              proposalNumber,
+              proposalId,
+              approval: isPreProposeApprovalProposal,
+            },
+          })
 
           // Get proposal info to display card.
           const proposalInfo = await makeGetProposalInfo({
@@ -137,7 +154,7 @@ export const NewProposal = ({
 
           const config = await snapshot.getPromise(
             DaoProposalSingleCommonSelectors.configSelector({
-              chainId,
+              chainId: proposalModule.chainId,
               contractAddress: proposalModule.address,
             })
           )
@@ -201,13 +218,14 @@ export const NewProposal = ({
       proposalModule,
       blocksPerYearLoadable,
       getStargateClient,
-      chainId,
       processTQ,
       onCreateSuccess,
       t,
       daoName,
       coreAddress,
       daoImageUrl,
+      plausible,
+      address,
     ]
   )
 

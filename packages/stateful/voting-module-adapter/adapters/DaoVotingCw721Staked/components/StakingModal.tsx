@@ -1,3 +1,4 @@
+import { usePlausible } from 'next-plausible'
 import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
@@ -17,6 +18,7 @@ import {
   BaseStakingModalProps,
   LazyNftCardInfo,
   LoadingDataWithError,
+  PlausibleEvents,
   StakingMode,
 } from '@dao-dao/types'
 import { getNftKey, processError } from '@dao-dao/utils'
@@ -45,7 +47,8 @@ const InnerStakingModal = ({
 }: BaseStakingModalProps) => {
   const { t } = useTranslation()
   const votingModule = useVotingModule()
-  const { address: walletAddress, isWalletConnected } = useWallet()
+  const { address: walletAddress = '', isWalletConnected } = useWallet()
+  const plausible = usePlausible<PlausibleEvents>()
 
   const setRefreshWalletNftsId = useSetRecoilState(
     refreshWalletBalancesIdAtom(walletAddress)
@@ -84,11 +87,11 @@ const InnerStakingModal = ({
 
   const doStakeMultiple = Cw721BaseHooks.useSendNftMultiple({
     contractAddress: collectionAddress,
-    sender: walletAddress ?? '',
+    sender: walletAddress,
   })
   const doUnstake = DaoVotingCw721StakedHooks.useUnstake({
     contractAddress: stakingContractAddress,
-    sender: walletAddress ?? '',
+    sender: walletAddress,
   })
 
   const setRefreshDaoVotingPower = useSetRecoilState(
@@ -115,6 +118,16 @@ const InnerStakingModal = ({
             contract: stakingContractAddress,
             msg: btoa('{"stake": {}}'),
             tokenIds: stakeTokenIds,
+          })
+
+          plausible('daoVotingStake', {
+            props: {
+              chainId: votingModule.chainId,
+              dao: votingModule.dao.coreAddress,
+              walletAddress,
+              votingModule: votingModule.address,
+              votingModuleType: votingModule.contractName,
+            },
           })
 
           // New balances will not appear until the next block.
@@ -149,6 +162,16 @@ const InnerStakingModal = ({
         try {
           await doUnstake({
             tokenIds: unstakeTokenIds,
+          })
+
+          plausible('daoVotingUnstake', {
+            props: {
+              chainId: votingModule.chainId,
+              dao: votingModule.dao.coreAddress,
+              walletAddress,
+              votingModule: votingModule.address,
+              votingModuleType: votingModule.contractName,
+            },
           })
 
           // New balances will not appear until the next block.

@@ -1,3 +1,4 @@
+import { usePlausible } from 'next-plausible'
 import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
@@ -9,15 +10,11 @@ import {
   blocksPerYearSelector,
   stakingLoadingAtom,
 } from '@dao-dao/state'
-import {
-  useCachedLoadable,
-  useChain,
-  useDao,
-  useUpdatingRef,
-} from '@dao-dao/stateless'
+import { useCachedLoadable, useDao, useUpdatingRef } from '@dao-dao/stateless'
 import {
   BaseProfileCardMemberInfoProps,
   Feature,
+  PlausibleEvents,
   UnstakingTask,
   UnstakingTaskStatus,
 } from '@dao-dao/types'
@@ -39,10 +36,9 @@ export const ProfileCardMemberInfo = ({
   ...props
 }: BaseProfileCardMemberInfoProps) => {
   const { t } = useTranslation()
-  const { chainId } = useChain()
-  const { name: daoName, votingModule } = useDao()
+  const { chainId, name: daoName, coreAddress, votingModule } = useDao()
   const {
-    address: walletAddress,
+    address: walletAddress = '',
     isWalletConnected,
     refreshBalances,
     getSigningClient,
@@ -50,6 +46,7 @@ export const ProfileCardMemberInfo = ({
   const [showStakingModal, setShowStakingModal] = useState(false)
   const [claimingLoading, setClaimingLoading] = useState(false)
   const stakingLoading = useRecoilValue(stakingLoadingAtom)
+  const plausible = usePlausible<PlausibleEvents>()
 
   const {
     collectionInfo,
@@ -137,6 +134,16 @@ export const ProfileCardMemberInfo = ({
             ],
       })
 
+      plausible('daoVotingClaim', {
+        props: {
+          chainId,
+          dao: coreAddress,
+          walletAddress,
+          votingModule: votingModule.address,
+          votingModuleType: votingModule.contractName,
+        },
+      })
+
       // New balances will not appear until the next block.
       await awaitNextBlock()
 
@@ -161,16 +168,21 @@ export const ProfileCardMemberInfo = ({
   }, [
     isWalletConnected,
     walletAddress,
+    claimsAvailableRef,
     t,
     getSigningClient,
     votingModule.version,
+    votingModule.address,
+    votingModule.contractName,
     stakingContractAddress,
+    plausible,
+    chainId,
+    coreAddress,
     awaitNextBlock,
     refreshBalances,
     refreshTotals,
     refreshClaims,
     collectionInfo.symbol,
-    claimsAvailableRef,
   ])
 
   const blockHeightLoadable = useCachedLoadable(

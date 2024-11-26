@@ -5,6 +5,7 @@ import clsx from 'clsx'
 import cloneDeep from 'lodash.clonedeep'
 import merge from 'lodash.merge'
 import { nanoid } from 'nanoid'
+import { usePlausible } from 'next-plausible'
 import { useEffect, useMemo, useState } from 'react'
 import {
   FormProvider,
@@ -53,6 +54,7 @@ import {
   DaoTabId,
   GovernanceProposalActionData,
   NewDao,
+  PlausibleEvents,
   ProposalModuleAdapter,
   SecretModuleInstantiateInfo,
 } from '@dao-dao/types'
@@ -177,6 +179,7 @@ export const InnerCreateDaoForm = ({
   const { t } = useTranslation()
   const dao = useDaoIfAvailable()
   const queryClient = useQueryClient()
+  const plausible = usePlausible<PlausibleEvents>()
 
   const chainContext = useSupportedChainContext()
   const {
@@ -777,7 +780,7 @@ export const InnerCreateDaoForm = ({
                 ],
           } as Partial<GovernanceProposalActionData>),
         })
-      } else if (isWalletConnected) {
+      } else if (isWalletConnected && walletAddress) {
         setCreating(true)
         try {
           const coreAddress = await toast.promise(doCreateDao(), {
@@ -798,6 +801,15 @@ export const InnerCreateDaoForm = ({
               }
 
               return processError(err)
+            },
+          })
+
+          plausible('daoCreate', {
+            props: {
+              chainId,
+              dao: coreAddress,
+              daoType: values.creator.id,
+              walletAddress,
             },
           })
 

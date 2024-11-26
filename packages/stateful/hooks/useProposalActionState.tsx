@@ -3,6 +3,7 @@ import { toUtf8 } from '@cosmjs/encoding'
 import { OfflineSigner } from '@cosmjs/proto-signing'
 import { CancelOutlined, Key, Send } from '@mui/icons-material'
 import { useQueryClient } from '@tanstack/react-query'
+import { usePlausible } from 'next-plausible'
 import { useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
@@ -16,12 +17,12 @@ import {
   ProposalCrossChainRelayStatus,
   ProposalStatusAndInfoProps,
   TextInput,
-  useConfiguredChainContext,
   useDao,
 } from '@dao-dao/stateless'
 import {
   ChainId,
   LoadingData,
+  PlausibleEvents,
   PreProposeModuleType,
   ProposalStatusEnum,
   ProposalStatusKey,
@@ -72,14 +73,8 @@ export const useProposalActionState = ({
   onCloseSuccess,
 }: UseProposalActionStateOptions): UseProposalActionStateReturn => {
   const { t } = useTranslation()
-  const {
-    chain: { chainId, chainName },
-  } = useConfiguredChainContext()
   const queryClient = useQueryClient()
-  const {
-    coreAddress,
-    info: { items },
-  } = useDao()
+  const dao = useDao()
   const {
     options: { proposalNumber },
     proposalModule,
@@ -92,10 +87,11 @@ export const useProposalActionState = ({
     getOfflineSigner,
   } = useWallet()
   const { isMember = false } = useMembership()
+  const plausible = usePlausible<PlausibleEvents>()
 
   const config = useRecoilValue(
     DaoProposalSingleCommonSelectors.configSelector({
-      chainId,
+      chainId: proposalModule.chainId,
       contractAddress: proposalModule.address,
     })
   )
@@ -113,7 +109,7 @@ export const useProposalActionState = ({
   // execution transaction, unless a memo is already set in the metadata.
   const allowMemoOnExecute = metadata?.memo
     ? false
-    : !!items[DAO_CORE_ALLOW_MEMO_ON_EXECUTE_ITEM_KEY]
+    : !!dao.info.items[DAO_CORE_ALLOW_MEMO_ON_EXECUTE_ITEM_KEY]
   const [memo, setMemo] = useState('')
 
   const onExecute = useCallback(async () => {
@@ -144,9 +140,11 @@ export const useProposalActionState = ({
 
           signingClientGetter = async () =>
             await SigningCosmWasmClient.connectWithSigner(
-              getRpcForChainId(chainId),
+              getRpcForChainId(proposalModule.chainId),
               signer,
-              makeGetSignerOptions(queryClient)(chainName)
+              makeGetSignerOptions(queryClient)(
+                proposalModule.dao.chain.chainName
+              )
             )
         } catch (err) {
           console.error(
@@ -178,6 +176,17 @@ export const useProposalActionState = ({
           ),
       })
 
+      plausible('daoProposalExecute', {
+        props: {
+          chainId: dao.chainId,
+          dao: dao.coreAddress,
+          walletAddress,
+          proposalModule: proposalModule.address,
+          proposalModuleType: proposalModule.contractName,
+          proposalNumber: proposalNumber,
+        },
+      })
+
       await onExecuteSuccess()
     } catch (err) {
       console.error(err)
@@ -200,10 +209,10 @@ export const useProposalActionState = ({
     onExecuteSuccess,
     getOfflineSignerDirect,
     getOfflineSigner,
-    chainId,
     queryClient,
-    chainName,
     t,
+    plausible,
+    dao,
   ])
 
   const onClose = useCallback(async () => {
@@ -218,6 +227,17 @@ export const useProposalActionState = ({
         proposalId: proposalNumber,
         getSigningClient,
         sender: walletAddress,
+      })
+
+      plausible('daoProposalClose', {
+        props: {
+          chainId: dao.chainId,
+          dao: dao.coreAddress,
+          walletAddress,
+          proposalModule: proposalModule.address,
+          proposalModuleType: proposalModule.contractName,
+          proposalNumber: proposalNumber,
+        },
       })
 
       await onCloseSuccess()
@@ -237,6 +257,8 @@ export const useProposalActionState = ({
     getSigningClient,
     walletAddress,
     onCloseSuccess,
+    plausible,
+    dao,
   ])
 
   const showRelayStatus =
@@ -269,8 +291,8 @@ export const useProposalActionState = ({
         : statusKey === ProposalStatusEnum.Rejected &&
           // Don't show for Neutron overrule proposals.
           !(
-            chainId === ChainId.NeutronMainnet &&
-            coreAddress === NEUTRON_GOVERNANCE_DAO &&
+            dao.chainId === ChainId.NeutronMainnet &&
+            dao.coreAddress === NEUTRON_GOVERNANCE_DAO &&
             proposalModule.prePropose?.type ===
               PreProposeModuleType.NeutronOverruleSingle
           )
