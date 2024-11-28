@@ -617,8 +617,9 @@ export class SpendAction extends ActionBase<SpendData> {
     if (!cw20 && toChainId !== fromChainId) {
       // Load voting period so we can add the IBC timeout to it.
       const maxVotingPeriod: Duration =
-        // If in a DAO, load voting period from proposal module.
+        // If in a DAO proposal, load voting period from proposal module.
         (encodeContext.type === ActionContextType.Dao &&
+          encodeContext.proposalModule &&
           (await encodeContext.proposalModule.getMaxVotingPeriod())) ||
         (encodeContext.type === ActionContextType.Gov
           ? {

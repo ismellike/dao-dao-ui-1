@@ -387,7 +387,12 @@ export type ActionEncodeContext =
   | {
       type: ActionContextType.Dao
       dao: IDaoBase
-      proposalModule: IProposalModuleBase
+      /**
+       * Proposal module if being used in a DAO proposal. This is undefined, for
+       * example, when a wallet uses AuthzExec to execute something on behalf of
+       * a DAO.
+       */
+      proposalModule?: IProposalModuleBase
     }
   | {
       type: ActionContextType.Wallet
