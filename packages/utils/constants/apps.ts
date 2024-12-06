@@ -28,6 +28,11 @@ export const DAO_APPS: DaoApp[] = [
       : 'https://studio.publicawesome.dev',
   },
   {
+    name: 'Stardex',
+    imageUrl: '/apps/stardex.jpg',
+    url: 'https://swap.stargaze.zone/swap',
+  },
+  {
     name: 'Mars Protocol',
     imageUrl: '/apps/mars.jpg',
     url: 'https://app.marsprotocol.io',

@@ -11964,11 +11964,6 @@ caniuse-lite@^1.0.30001109, caniuse-lite@^1.0.30001406, caniuse-lite@^1.0.300015
   resolved "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30001687.tgz"
   integrity sha512-0S/FDhf4ZiqrTUiQ39dKeUjYRjkv7lOZU1Dgif2rIqrTzX/1wV2hfKu9TOm1IHkdSijfLswxTFzl/cvir+SLSQ==
 
-caniuse-lite@^1.0.30001687:
-  version "1.0.30001687"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001687.tgz#d0ac634d043648498eedf7a3932836beba90ebae"
-  integrity sha512-0S/FDhf4ZiqrTUiQ39dKeUjYRjkv7lOZU1Dgif2rIqrTzX/1wV2hfKu9TOm1IHkdSijfLswxTFzl/cvir+SLSQ==
-
 capital-case@^1.0.4:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/capital-case/-/capital-case-1.0.4.tgz#9d130292353c9249f6b00fa5852bee38a717e669"
