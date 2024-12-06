@@ -78,7 +78,7 @@ export const ProposalContentDisplay = ({
               />
             )}
 
-            <p className="header-text sm:hero-text break-words">{title}</p>
+            <p className="header-text sm:hero-text break-all">{title}</p>
           </div>
 
           {approvalContext &&
