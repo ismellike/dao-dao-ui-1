@@ -4,6 +4,11 @@ import { MAINNET } from './env'
 
 export const DAO_APPS: DaoApp[] = [
   {
+    name: 'DAO DAO',
+    imageUrl: '/apps/daodao.png',
+    url: 'https://daodao.zone',
+  },
+  {
     name: 'Osmosis',
     imageUrl: 'https://app.osmosis.zone/images/preview.jpg',
     url: 'https://app.osmosis.zone',
