@@ -676,8 +676,8 @@ export const CHAIN_ENDPOINTS: Partial<
     rest: 'https://terra-classic-lcd.publicnode.com',
   },
   [ChainId.MigalooMainnet]: {
-    rpc: 'https://migaloo-rpc.polkachu.com',
-    rest: 'https://migaloo-api.polkachu.com',
+    rpc: 'https://migaloo-rpc.kleomedes.network',
+    rest: 'https://migaloo-api.kleomedes.network',
   },
   [ChainId.MigalooTestnet]: {
     rpc: 'https://migaloo-testnet-rpc.polkachu.com',
