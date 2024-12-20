@@ -2,9 +2,9 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { DaoPageWrapperDecorator } from '@dao-dao/storybook/decorators'
 
+import { NftsTab } from './NftsTab'
 import { NftCard, NftCardProps } from '../../nft/NftCard'
 import { makeProps as makeNftCardProps } from '../../nft/NftCard.stories'
-import { NftsTab } from './NftsTab'
 
 export default {
   title: 'DAO DAO / packages / stateless / components / dao / tabs / NftsTab',
@@ -23,6 +23,7 @@ Default.args = {
   pageSize: 30,
   nfts: {
     loading: false,
+    errored: false,
     data: [
       makeNftCardProps(),
       makeNftCardProps(),
@@ -31,7 +32,11 @@ Default.args = {
       makeNftCardProps(),
     ].map((props) => ({ ...props, key: props.tokenId })),
   },
-  numNfts: { loading: false, data: 5 },
+  numNfts: {
+    loading: false,
+    errored: false,
+    data: 5,
+  },
   NftCard,
   description: 'This is the NFTs tab.',
 }
@@ -39,5 +44,6 @@ Default.args = {
 export const Loading = Template.bind({})
 Loading.args = {
   ...Default.args,
-  nfts: { loading: true },
+  nfts: { loading: true, errored: false },
+  numNfts: { loading: true, errored: false },
 }
