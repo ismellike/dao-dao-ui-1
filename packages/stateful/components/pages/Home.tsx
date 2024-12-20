@@ -1,4 +1,8 @@
-import { DehydratedState, useInfiniteQuery } from '@tanstack/react-query'
+import {
+  DehydratedState,
+  useInfiniteQuery,
+  useQueryClient,
+} from '@tanstack/react-query'
 import { NextPage } from 'next'
 import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
@@ -10,6 +14,7 @@ import {
   SearchDaosOptions,
   commandModalVisibleAtom,
   indexerQueries,
+  miscQueries,
   walletChainIdAtom,
 } from '@dao-dao/state'
 import {
@@ -39,6 +44,7 @@ import {
 import {
   useLoadingDaos,
   useLoadingFeaturedDaoCards,
+  useQueryLoadingDataWithError,
   useWallet,
 } from '../../hooks'
 import { DaoCard, LazyDaoCard } from '../dao'
@@ -68,7 +74,7 @@ export type StatefulHomeProps = {
 
 export const Home: NextPage<StatefulHomeProps> = ({
   chainId,
-  stats,
+  stats: _stats,
   chainGovDaos: _chainGovDaos,
 }) => {
   const { t } = useTranslation()
@@ -235,6 +241,16 @@ export const Home: NextPage<StatefulHomeProps> = ({
               )
           ),
         }
+
+  const queryClient = useQueryClient()
+  const freshStats = useQueryLoadingDataWithError(
+    miscQueries.homePageStats(queryClient, {
+      chainId,
+    })
+  )
+
+  const stats =
+    freshStats.loading || freshStats.errored ? _stats : freshStats.data
 
   return (
     <>
