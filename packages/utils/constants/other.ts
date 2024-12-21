@@ -106,7 +106,7 @@ export const ASTROPORT_PRICES_API =
 export const INDEXER_URL = 'https://indexer.daodao.zone'
 
 // Snapper API
-export const SNAPPER_API_BASE = 'https://snapper.daodao.zone'
+export const SNAPPER_API_BASE = 'https://snapper.indexer.zone'
 
 // KVPK prefix for saved Me page transactions.
 export const ME_SAVED_TX_PREFIX = 'savedTx:'
