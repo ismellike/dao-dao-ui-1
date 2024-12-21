@@ -280,7 +280,9 @@ const InnerGovProposalStatusAndInfo = ({
     <StatelessProposalStatusAndInfo
       {...props}
       Voter={
-        status === ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD
+        status === ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD &&
+        // Will be loading if not logged in. Only show if logged in.
+        !proposal.walletVoteInfo.loading
           ? Voter
           : undefined
       }
