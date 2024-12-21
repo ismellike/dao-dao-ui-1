@@ -2,9 +2,9 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { DaoPageWrapperDecorator } from '@dao-dao/storybook/decorators'
 
-import { NftsTab } from './NftsTab'
 import { NftCard, NftCardProps } from '../../nft/NftCard'
 import { makeProps as makeNftCardProps } from '../../nft/NftCard.stories'
+import { NftsTab } from './NftsTab'
 
 export default {
   title: 'DAO DAO / packages / stateless / components / dao / tabs / NftsTab',
