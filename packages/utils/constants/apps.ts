@@ -9,11 +9,6 @@ export const DAO_APPS: DaoApp[] = [
     url: 'https://daodao.zone',
   },
   {
-    name: 'Skip Go',
-    imageUrl: '/apps/skipgo.png',
-    url: 'https://go.skip.build',
-  },
-  {
     name: 'Osmosis',
     imageUrl: 'https://app.osmosis.zone/images/preview.jpg',
     url: 'https://app.osmosis.zone',
