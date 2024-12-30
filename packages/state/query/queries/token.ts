@@ -504,7 +504,7 @@ export const fetchUsdPrice = async (
   const usdPrice =
     (await queryClient.fetchQuery(
       indexerQueries.snapper({
-        query: 'daodao-price',
+        query: 'token-price',
         parameters: {
           chainId: options.chainId,
           denom: options.denomOrAddress,
