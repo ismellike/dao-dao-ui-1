@@ -287,12 +287,12 @@ export class HugeDecimal {
     // Get the decimal separator for the current locale.
     const decimalSeparator = (1.1).toLocaleString()[1]
 
+    const human = this.toHumanReadable(decimals)
+
     // Use BigInt for integer part of the number, and add the decimals manually.
     // If the number is too large to fit within the size of Number, must use
     // this BigInt approach even when not showing the full amount.
-    if (showFullAmount || this.gte(Number.MAX_SAFE_INTEGER)) {
-      const human = this.toHumanReadable(decimals)
-
+    if (showFullAmount || human.gte(Number.MAX_SAFE_INTEGER)) {
       const int = human.trunc()
       const dec = human.minus(int)
 
