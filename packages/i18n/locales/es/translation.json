@@ -207,7 +207,6 @@
     "prepareUpdate": "Preparar actualización",
     "preview": "Vista previa",
     "propose": "Proponer",
-    "proposeUpgrade": "Proponer actualización",
     "publish": "Publicar",
     "publishAnywayWithCountdown": "¿Publicar de todos modos? ({{secondsRemaining}})",
     "publishProposal": "Publicar propuesta",
@@ -428,7 +427,6 @@
     "daoAccountNotFound": "No se pudo encontrar la cuenta de la DAO para esta cadena.",
     "daoAndSubDaosAlreadyOnV2": "Esta DAO (y todas sus SubDAOs, si tiene alguna) ya se han actualizado.",
     "daoCreationIncomplete": "La creación de la DAO está incompleta. Asegúrate de que todos los campos requeridos estén llenos.",
-    "daoFeatureUnsupported": "{{name}} aún no es compatible con {{feature}}.",
     "daoIsInactive_absolute_one": "Esta DAO está inactiva. No se pueden crear propuestas hasta que se apueste {{count}} token.",
     "daoIsInactive_absolute_other": "Esta DAO está inactiva. No se pueden crear propuestas hasta que se apuesten {{count}} tokens.",
     "daoIsInactive_percent": "Esta DAO está inactiva. No se pueden crear propuestas hasta que se apueste el {{percent}} del poder de voto.",
@@ -576,7 +574,8 @@
     "unsupportedApprovalFailedRender": "Error al renderizar la propuesta de aprobación. Módulo no soportado.",
     "unsupportedChains_one": "Cadena no soportada: {{chains}}.",
     "unsupportedChains_other": "Cadenas no soportadas: {{chains}}.",
-    "unsupportedValenceChain": "Las cuentas de Valence no son compatibles con esta cadena."
+    "unsupportedValenceChain": "Las cuentas de Valence no son compatibles con esta cadena.",
+    "v1DaoFeatureUnsupported": "{{name}} aún no es compatible con {{feature}}."
   },
   "form": {
     "acceptSubDaoAddressInputLabel": "SubDAO a aceptar",

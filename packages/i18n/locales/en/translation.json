@@ -208,7 +208,6 @@
     "prepareUpdate": "Prepare update",
     "preview": "Preview",
     "propose": "Propose",
-    "proposeUpgrade": "Propose upgrade",
     "publish": "Publish",
     "publishAnywayWithCountdown": "Publish anyway? ({{secondsRemaining}})",
     "publishProposal": "Publish proposal",
@@ -428,7 +427,6 @@
     "daoAndSubDaosAlreadyOnV2": "This DAO (and all of its SubDAOs, if it has any) have already been upgraded.",
     "daoCreationCollision": "An unexpected DAO creation error occurred due to a stale cache. Click the X button in the top right to reset the DAO creation flow and start over. We apologize for the inconvenience.",
     "daoCreationIncomplete": "DAO creation is incomplete. Ensure all required fields have been filled out.",
-    "daoFeatureUnsupported": "{{name}} does not support {{feature}} yet.",
     "daoIsInactive_absolute_one": "This DAO is inactive. Proposals cannot be created until {{count}} token is staked.",
     "daoIsInactive_absolute_other": "This DAO is inactive. Proposals cannot be created until {{count}} tokens are staked.",
     "daoIsInactive_percent": "This DAO is inactive. Proposals cannot be created until {{percent}} of voting power is staked.",
@@ -577,7 +575,8 @@
     "unsupportedChains_one": "Unsupported chain: {{chains}}.",
     "unsupportedChains_other": "Unsupported chains: {{chains}}.",
     "unsupportedValenceChain": "Valence accounts are not supported on this chain.",
-    "unsupportedWallet": "{{name}} does not support this action. Please try a different wallet."
+    "unsupportedWallet": "{{name}} does not support this action. Please try a different wallet.",
+    "v1DaoFeatureUnsupported": "{{name}} is on V1 and does not support {{feature}}."
   },
   "form": {
     "acceptSubDaoAddressInputLabel": "SubDAO to accept",

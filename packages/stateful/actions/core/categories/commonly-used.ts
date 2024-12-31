@@ -10,7 +10,6 @@ export const makeCommonlyUsedCategory: ActionCategoryMaker = ({ t }) => ({
   description: t('actionCategory.commonlyUsedDescription'),
   actionKeys: [
     ActionKey.FixRewardDistributor,
-    ActionKey.UpgradeV1ToV2,
     ActionKey.Spend,
     ActionKey.ManageStaking,
     ActionKey.CreateCrossChainAccount,

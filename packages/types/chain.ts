@@ -283,7 +283,6 @@ export type CodeIdConfig = {
   CwTokenfactoryIssuer: number
   CwVesting: number
   DaoDaoCore: number
-  DaoMigrator?: number
   DaoPreProposeApprovalSingle: number
   DaoPreProposeApprover: number
   DaoPreProposeMultiple: number

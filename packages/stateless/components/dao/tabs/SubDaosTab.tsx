@@ -24,7 +24,6 @@ export interface SubDaosTabProps {
   subDaos: LoadingDataWithError<DaoInfo[]>
   isMember: boolean
   createSubDaoHref?: string
-  upgradeToV2Href?: string
   ButtonLink: ComponentType<ButtonLinkProps>
 }
 
@@ -33,7 +32,6 @@ export const SubDaosTab = ({
   subDaos,
   isMember,
   createSubDaoHref,
-  upgradeToV2Href,
   ButtonLink,
 }: SubDaosTabProps) => {
   const { t } = useTranslation()
@@ -55,7 +53,7 @@ export const SubDaosTab = ({
         <Tooltip
           title={
             !subDaosSupported
-              ? t('error.daoFeatureUnsupported', {
+              ? t('error.v1DaoFeatureUnsupported', {
                   name: dao.name,
                   feature: t('title.subDaos'),
                 })
@@ -79,13 +77,10 @@ export const SubDaosTab = ({
       {!subDaosSupported ? (
         <NoContent
           Icon={Upgrade}
-          actionNudge={t('info.submitUpgradeProposal')}
-          body={t('error.daoFeatureUnsupported', {
+          body={t('error.v1DaoFeatureUnsupported', {
             name: dao.name,
             feature: t('title.subDaos'),
           })}
-          buttonLabel={t('button.proposeUpgrade')}
-          href={isMember ? upgradeToV2Href : undefined}
         />
       ) : subDaos.errored ? (
         <ErrorPage error={subDaos.error} />

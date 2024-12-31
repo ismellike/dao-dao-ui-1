@@ -164,7 +164,6 @@
     "prepareUpdate": "bad bad",
     "preview": "bad",
     "propose": "bad",
-    "proposeUpgrade": "bad bad",
     "publish": "bad",
     "publishAnywayWithCountdown": "bad bad bad",
     "publishProposal": "bad bad",
@@ -361,7 +360,6 @@
     "daoAccountNotFound": "bad bad bad bad bad bad bad bad bad bad",
     "daoAndSubDaosAlreadyOnV2": "bad bad bad bad bad bad bad bad bad bad bad bad bad bad bad",
     "daoCreationIncomplete": "bad bad bad bad bad bad bad bad bad bad bad bad",
-    "daoFeatureUnsupported": "bad bad bad bad bad bad",
     "daoIsInactive_absolute_one": "bad bad bad bad bad bad bad bad bad bad bad bad bad",
     "daoIsInactive_absolute_other": "bad bad bad bad bad bad bad bad bad bad bad bad bad",
     "daoIsInactive_percent": "bad bad bad bad bad bad bad bad bad bad bad bad bad bad bad",
@@ -479,7 +477,8 @@
     "unknownDenom": "bad bad bad",
     "unknownError": "bad bad bad bad",
     "unknownInboxType": "bad bad bad bad",
-    "unsupportedApprovalFailedRender": "bad bad bad bad bad bad bad"
+    "unsupportedApprovalFailedRender": "bad bad bad bad bad bad bad",
+    "v1DaoFeatureUnsupported": "bad bad bad bad bad bad"
   },
   "form": {
     "addAnImage": "bad bad bad",
