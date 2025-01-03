@@ -147,6 +147,14 @@ export const AppsTab = () => {
         protobufToCwMsg(getChainForChainId(chainId), msg, false).msg
       )
     )
+
+    console.log('APP DIRECT DECODING', {
+      chainId,
+      sender,
+      encodedMessages,
+      messages,
+    })
+
     setMsgs(messages)
   }
   const decodeAmino = (sender: string, signDoc: StdSignDoc) => {
@@ -166,6 +174,14 @@ export const AppsTab = () => {
         ).msg
       )
     )
+
+    console.log('APP AMINO DECODING', {
+      chainId,
+      sender,
+      signDoc,
+      messages,
+    })
+
     setMsgs(messages)
   }
 
