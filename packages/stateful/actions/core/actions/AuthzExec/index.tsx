@@ -1,5 +1,6 @@
 import { useQueryClient } from '@tanstack/react-query'
 import { useFormContext } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
 
 import { contractQueries, processMessage } from '@dao-dao/state'
 import {
@@ -7,6 +8,7 @@ import {
   ActionsContext,
   ChainProvider,
   DaoSupportedChainPickerInput,
+  InputLabel,
   LockWithKeyEmoji,
   useActionOptions,
   useChain,
@@ -29,6 +31,8 @@ import {
   getChainForChainId,
   isDecodedStargateMsg,
   isValidBech32Address,
+  makeEmptyUnifiedProfile,
+  makeValidateAddress,
   maybeMakePolytoneExecuteMessages,
 } from '@dao-dao/utils'
 
@@ -40,6 +44,7 @@ import {
 } from '../../../../components'
 import { useQueryLoadingData } from '../../../../hooks'
 import { useActionEncodeContext } from '../../../context'
+import { BaseActionsProvider } from '../../../providers/base'
 import { WalletActionsProvider } from '../../../providers/wallet'
 import {
   AuthzExecData,
@@ -65,7 +70,6 @@ const InnerComponentLoading: ActionComponent<InnerOptions> = (props) => (
       options={{
         msgPerSenderIndex: props.options.msgPerSenderIndex,
         encodeContext: useActionEncodeContext(),
-        AddressInput,
         EntityDisplay,
         SuspenseLoader,
       }}
@@ -79,7 +83,6 @@ const InnerComponent: ActionComponent<InnerOptions> = (props) => (
     options={{
       msgPerSenderIndex: props.options.msgPerSenderIndex,
       encodeContext: useActionEncodeContext(),
-      AddressInput,
       EntityDisplay,
       SuspenseLoader,
     }}
@@ -90,14 +93,17 @@ const InnerComponentWrapper: ActionComponent<
   InnerOptions & { address: string }
 > = (props) => {
   const {
+    isCreating,
     options: { address },
   } = props
   const { chainId, bech32Prefix } = useChain()
+  const queryClient = useQueryClient()
 
+  const validAddress = !!address && isValidBech32Address(address, bech32Prefix)
   const isDao = useQueryLoadingData(
     contractQueries.isDao(
-      useQueryClient(),
-      address && isValidBech32Address(address, bech32Prefix)
+      queryClient,
+      validAddress
         ? {
             chainId,
             address,
@@ -107,9 +113,9 @@ const InnerComponentWrapper: ActionComponent<
     false
   )
 
-  return isDao.loading || isDao.updating ? (
+  return (validAddress || isCreating) && (isDao.loading || isDao.updating) ? (
     <InnerComponentLoading {...props} />
-  ) : isDao.data ? (
+  ) : !isDao.loading && !isDao.updating && isDao.data ? (
     <DaoProviders
       key={
         // Make sure to re-render (reset state inside the contexts) when the
@@ -122,23 +128,40 @@ const InnerComponentWrapper: ActionComponent<
     >
       <InnerComponent {...props} />
     </DaoProviders>
-  ) : (
+  ) : validAddress || isCreating ? (
     <WalletActionsProvider address={address}>
       <InnerComponent {...props} />
     </WalletActionsProvider>
+  ) : (
+    // If no address is defined and we're not creating, that means the component
+    // failed to detect the sender, likely due to not knowing how to decode the
+    // message which would contain the sender. Use an empty profile and accounts
+    // so the component can still render.
+    <BaseActionsProvider
+      actionContext={{
+        type: ActionContextType.Wallet,
+        profile: makeEmptyUnifiedProfile(chainId, address),
+        accounts: [],
+      }}
+      address={address}
+    >
+      <InnerComponent {...props} />
+    </BaseActionsProvider>
   )
 }
 
 const Component: ActionComponent = (props) => {
+  const { t } = useTranslation()
   const { context } = useActionOptions()
 
   // Load DAO info for chosen DAO.
-  const { watch } = useFormContext<AuthzExecData>()
+  const { register, watch } = useFormContext<AuthzExecData>()
   const address = watch((props.fieldNamePrefix + 'address') as 'address') || ''
   const msgsPerSender =
     watch((props.fieldNamePrefix + '_msgs') as '_msgs') ?? []
 
   const chainId = watch((props.fieldNamePrefix + 'chainId') as 'chainId')
+  const { bech32Prefix } = getChainForChainId(chainId)
 
   // When creating, just show one form for the chosen address. When not
   // creating, render a form for each sender message group since the component
@@ -155,6 +178,21 @@ const Component: ActionComponent = (props) => {
 
       {/* Re-render when chain changes so hooks and state reset. */}
       <ChainProvider key={chainId} chainId={chainId}>
+        {/* When creating, show common address field for all messages. When not creating, msgs will be grouped by sender and displayed in order, which if created via this action, will look the same with one address at the top and many actions below it. */}
+        {props.isCreating && (
+          <>
+            <InputLabel className="-mb-3" name={t('title.account')} />
+
+            <AddressInput
+              autoFocus
+              error={props.errors?.address}
+              fieldName={(props.fieldNamePrefix + 'address') as 'address'}
+              register={register}
+              validation={[makeValidateAddress(bech32Prefix)]}
+            />
+          </>
+        )}
+
         {props.isCreating ? (
           <InnerComponentWrapper
             {...props}

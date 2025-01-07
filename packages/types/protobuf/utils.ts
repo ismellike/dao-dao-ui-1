@@ -617,6 +617,11 @@ export const decodedStargateMsgToCw = (
           value,
         },
       })
+      // Attempt to decode the sender from the message.
+      if ('sender' in value && typeof value.sender === 'string') {
+        sender = value.sender
+      }
+      // Cannot decode the sender from any arbitrary message.
       break
   }
 
