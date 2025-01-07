@@ -135,7 +135,7 @@ export const AppsRenderer = ({ mode, ...props }: AppsRendererProps) => {
   const appAddress = validOtherAddress || executorAddress
 
   // This is the entity we will use for the app.
-  const appEntity = useQueryLoadingDataWithError(
+  const loadingAppEntity = useQueryLoadingDataWithError(
     appAddress
       ? entityQueries.info(queryClient, {
           chainId: appChainId,
@@ -143,6 +143,10 @@ export const AppsRenderer = ({ mode, ...props }: AppsRendererProps) => {
         })
       : undefined
   )
+  const appEntity =
+    loadingAppEntity.loading || loadingAppEntity.errored
+      ? undefined
+      : loadingAppEntity.data
 
   const authzExecAction = useActionForKey(ActionKey.AuthzExec) as
     | AuthzExecAction
@@ -157,7 +161,7 @@ export const AppsRenderer = ({ mode, ...props }: AppsRendererProps) => {
     sender: string,
     msgs: UnifiedCosmosMsg[]
   ) => {
-    if (appEntity.loading || appEntity.errored) {
+    if (!appEntity) {
       throw new Error('Entity not yet loaded.')
     }
 
@@ -406,15 +410,15 @@ export const AppsRenderer = ({ mode, ...props }: AppsRendererProps) => {
             })
           : undefined,
       getAccount: async (chainId: string) => {
-        if (appEntity.loading || appEntity.errored) {
+        if (!appEntity) {
           return {
             type: 'error',
             error: 'Entity not yet loaded.',
           }
         }
 
-        if (appEntity.data.type === EntityType.Wallet) {
-          if (chainId !== appEntity.data.chainId) {
+        if (appEntity.type === EntityType.Wallet) {
+          if (chainId !== appEntity.chainId) {
             return {
               type: 'error',
               error:
@@ -425,7 +429,7 @@ export const AppsRenderer = ({ mode, ...props }: AppsRendererProps) => {
             }
           }
 
-          if (appEntity.data.address === walletAddress && account) {
+          if (appEntity.address === walletAddress && account) {
             return {
               type: 'success',
               value: {
@@ -433,9 +437,7 @@ export const AppsRenderer = ({ mode, ...props }: AppsRendererProps) => {
                 algo: account.algo,
                 pubkey: account.pubkey,
                 username:
-                  appEntity.data.name ||
-                  account.username ||
-                  appEntity.data.address,
+                  appEntity.name || account.username || appEntity.address,
                 isNanoLedger: false,
                 isSmartContract: false,
               } satisfies WalletAccount,
@@ -446,7 +448,7 @@ export const AppsRenderer = ({ mode, ...props }: AppsRendererProps) => {
             await queryClient.fetchQuery(
               chainQueries.walletHexPublicKey({
                 chainId,
-                address: appEntity.data.address,
+                address: appEntity.address,
               })
             )
           )
@@ -461,22 +463,22 @@ export const AppsRenderer = ({ mode, ...props }: AppsRendererProps) => {
           return {
             type: 'success',
             value: {
-              address: appEntity.data.address,
+              address: appEntity.address,
               algo: 'secp256k1',
               pubkey,
-              username: appEntity.data.name || appEntity.data.address,
+              username: appEntity.name || appEntity.address,
               isNanoLedger: false,
               isSmartContract: false,
             } satisfies WalletAccount,
           }
-        } else if (appEntity.data.type === EntityType.Dao) {
+        } else if (appEntity.type === EntityType.Dao) {
           return {
             type: 'success',
             value: {
-              address: getDaoAddressForChainId(appEntity.data.daoInfo, chainId),
+              address: getDaoAddressForChainId(appEntity.daoInfo, chainId),
               algo: 'secp256k1',
               pubkey: EMPTY_PUB_KEY,
-              username: appEntity.data.name || appEntity.data.address,
+              username: appEntity.name || appEntity.address,
               isNanoLedger: false,
               isSmartContract: false,
             } satisfies WalletAccount,
@@ -489,15 +491,15 @@ export const AppsRenderer = ({ mode, ...props }: AppsRendererProps) => {
         }
       },
       getSimpleAccount: (chainId: string) => {
-        if (appEntity.loading || appEntity.errored) {
+        if (!appEntity) {
           return {
             type: 'error',
             error: 'Entity not yet loaded.',
           }
         }
 
-        if (appEntity.data.type === EntityType.Wallet) {
-          if (chainId !== appEntity.data.chainId) {
+        if (appEntity.type === EntityType.Wallet) {
+          if (chainId !== appEntity.chainId) {
             return {
               type: 'error',
               error:
@@ -513,18 +515,18 @@ export const AppsRenderer = ({ mode, ...props }: AppsRendererProps) => {
             value: {
               namespace: 'cosmos',
               chainId,
-              address: appEntity.data.address,
-              username: appEntity.data.name || appEntity.data.address,
+              address: appEntity.address,
+              username: appEntity.name || appEntity.address,
             } satisfies SimpleAccount,
           }
-        } else if (appEntity.data.type === EntityType.Dao) {
+        } else if (appEntity.type === EntityType.Dao) {
           return {
             type: 'success',
             value: {
               namespace: 'cosmos',
               chainId,
-              address: getDaoAddressForChainId(appEntity.data.daoInfo, chainId),
-              username: appEntity.data.name || appEntity.data.address,
+              address: getDaoAddressForChainId(appEntity.daoInfo, chainId),
+              username: appEntity.name || appEntity.address,
             } satisfies SimpleAccount,
           }
         }
@@ -536,15 +538,15 @@ export const AppsRenderer = ({ mode, ...props }: AppsRendererProps) => {
       },
       // Needed by Graz and other Keplr clients.
       getKey: async (chainId: string) => {
-        if (appEntity.loading || appEntity.errored) {
+        if (!appEntity) {
           return {
             type: 'error',
             error: 'Entity not yet loaded.',
           }
         }
 
-        if (appEntity.data.type === EntityType.Wallet) {
-          if (chainId !== appEntity.data.chainId) {
+        if (appEntity.type === EntityType.Wallet) {
+          if (chainId !== appEntity.chainId) {
             return {
               type: 'error',
               error:
@@ -555,19 +557,16 @@ export const AppsRenderer = ({ mode, ...props }: AppsRendererProps) => {
             }
           }
 
-          if (appEntity.data.address === walletAddress && account) {
+          if (appEntity.address === walletAddress && account) {
             return {
               type: 'success',
               value: {
-                name:
-                  appEntity.data.name ||
-                  account.username ||
-                  appEntity.data.address,
+                name: appEntity.name || account.username || appEntity.address,
                 algo: 'secp256k1',
                 pubkey: account.pubkey,
                 pubKey: account.pubkey,
-                address: fromBech32(appEntity.data.address).data,
-                bech32Address: appEntity.data.address,
+                address: fromBech32(appEntity.address).data,
+                bech32Address: appEntity.address,
                 isNanoLedger: false,
                 isSmartContract: false,
                 isKeystone: false,
@@ -579,7 +578,7 @@ export const AppsRenderer = ({ mode, ...props }: AppsRendererProps) => {
             await queryClient.fetchQuery(
               chainQueries.walletHexPublicKey({
                 chainId,
-                address: appEntity.data.address,
+                address: appEntity.address,
               })
             )
           )
@@ -594,31 +593,28 @@ export const AppsRenderer = ({ mode, ...props }: AppsRendererProps) => {
           return {
             type: 'success',
             value: {
-              name: appEntity.data.name || appEntity.data.address,
+              name: appEntity.name || appEntity.address,
               algo: 'secp256k1',
               pubkey,
               pubKey: pubkey,
-              address: fromBech32(appEntity.data.address).data,
-              bech32Address: appEntity.data.address,
+              address: fromBech32(appEntity.address).data,
+              bech32Address: appEntity.address,
               isNanoLedger: false,
               isSmartContract: false,
               isKeystone: false,
             },
           }
-        } else if (appEntity.data.type === EntityType.Dao) {
+        } else if (appEntity.type === EntityType.Dao) {
           // Ignore invalid chains for now.
           let bech32Address = ''
           try {
-            bech32Address = getDaoAddressForChainId(
-              appEntity.data.daoInfo,
-              chainId
-            )
+            bech32Address = getDaoAddressForChainId(appEntity.daoInfo, chainId)
           } catch {}
 
           return {
             type: 'success',
             value: {
-              name: appEntity.data.name,
+              name: appEntity.name,
               algo: 'secp256k1',
               pubkey: EMPTY_PUB_KEY,
               pubKey: EMPTY_PUB_KEY,
@@ -655,15 +651,15 @@ export const AppsRenderer = ({ mode, ...props }: AppsRendererProps) => {
         }
       },
       getAccounts: async () => {
-        if (appEntity.loading || appEntity.errored) {
+        if (!appEntity) {
           return {
             type: 'error',
             error: 'Entity not yet loaded.',
           }
         }
 
-        if (appEntity.data.type === EntityType.Wallet) {
-          if (appEntity.data.address === walletAddress && account) {
+        if (appEntity.type === EntityType.Wallet) {
+          if (appEntity.address === walletAddress && account) {
             return {
               type: 'success',
               value: [
@@ -679,8 +675,8 @@ export const AppsRenderer = ({ mode, ...props }: AppsRendererProps) => {
           const pubkey = fromHex(
             await queryClient.fetchQuery(
               chainQueries.walletHexPublicKey({
-                chainId: appEntity.data.chainId,
-                address: appEntity.data.address,
+                chainId: appEntity.chainId,
+                address: appEntity.address,
               })
             )
           )
@@ -696,7 +692,7 @@ export const AppsRenderer = ({ mode, ...props }: AppsRendererProps) => {
             type: 'success',
             value: [
               {
-                address: appEntity.data.address,
+                address: appEntity.address,
                 algo: 'secp256k1',
                 pubkey,
               } satisfies AccountData,
@@ -705,13 +701,23 @@ export const AppsRenderer = ({ mode, ...props }: AppsRendererProps) => {
         } else {
           return {
             type: 'success',
-            value: [
-              {
-                address: appEntity.data.address,
-                algo: 'secp256k1',
-                pubkey: EMPTY_PUB_KEY,
-              } satisfies AccountData,
-            ],
+            value:
+              appEntity.type === EntityType.Dao
+                ? // Add all DAO accounts. Needed when signing transactions, CosmJS fetches all accounts and matches by address. It's weird that we're including accounts from different chains here, but that's just what we have to do since we don't know which chain ID this signer is in this functions.
+                  appEntity.daoInfo.accounts.map(
+                    ({ address }): AccountData => ({
+                      address,
+                      algo: 'secp256k1',
+                      pubkey: EMPTY_PUB_KEY,
+                    })
+                  )
+                : [
+                    {
+                      address: appEntity.address,
+                      algo: 'secp256k1',
+                      pubkey: EMPTY_PUB_KEY,
+                    } satisfies AccountData,
+                  ],
           }
         }
       },
@@ -741,8 +747,6 @@ export const AppsRenderer = ({ mode, ...props }: AppsRendererProps) => {
   )
 
   // If app entity changes, refresh iframe app wallet.
-  const appEntityData =
-    appEntity.loading || appEntity.errored ? undefined : appEntity.data
   useEffect(() => {
     if (iframe?.contentWindow) {
       iframe.contentWindow.postMessage(
@@ -752,7 +756,7 @@ export const AppsRenderer = ({ mode, ...props }: AppsRendererProps) => {
         '*'
       )
     }
-  }, [appEntityData, iframe])
+  }, [appEntity, iframe])
 
   return (
     <>
