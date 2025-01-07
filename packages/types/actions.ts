@@ -184,6 +184,11 @@ export type ActionComponent<O = undefined, D = any> = ComponentType<
  */
 export type ActionMatch = boolean | number
 
+/**
+ * A successful match result.
+ */
+export type ActionMatchSuccess = true | number
+
 export interface Action<
   Data extends Record<string, any> = Record<string, any>,
 > {
