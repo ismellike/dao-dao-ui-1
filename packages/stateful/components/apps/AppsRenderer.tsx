@@ -412,7 +412,7 @@ export const AppsRenderer = ({ mode, ...props }: AppsRendererProps) => {
             return {
               type: 'error',
               error:
-                `Failed to connect to chain ${getDisplayNameForChainId(chainId)} (${chainId}).` +
+                `Failed to connect to ${getDisplayNameForChainId(chainId)} (${chainId}).` +
                 (executionType !== 'normal'
                   ? ' Ensure the chain picker is set to the correct chain for the target address.'
                   : ''),
@@ -495,7 +495,7 @@ export const AppsRenderer = ({ mode, ...props }: AppsRendererProps) => {
             return {
               type: 'error',
               error:
-                `Failed to connect to chain ${getDisplayNameForChainId(chainId)} (${chainId}).` +
+                `Failed to connect to ${getDisplayNameForChainId(chainId)} (${chainId}).` +
                 (executionType !== 'normal'
                   ? ' Ensure the chain picker is set to the correct chain for the target address.'
                   : ''),
@@ -542,7 +542,7 @@ export const AppsRenderer = ({ mode, ...props }: AppsRendererProps) => {
             return {
               type: 'error',
               error:
-                `Failed to connect to chain ${getDisplayNameForChainId(chainId)} (${chainId}).` +
+                `Failed to connect to ${getDisplayNameForChainId(chainId)} (${chainId}).` +
                 (executionType !== 'normal'
                   ? ' Ensure the chain picker is set to the correct chain for the target address.'
                   : ''),
