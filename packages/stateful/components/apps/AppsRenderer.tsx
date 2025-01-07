@@ -53,6 +53,8 @@ import {
   getDaoAddressForChainId,
   getDisplayNameForChainId,
   isValidBech32Address,
+  maybeMakeIcaExecuteMessages,
+  maybeMakePolytoneExecuteMessages,
 } from '@dao-dao/utils'
 
 import { AuthzExecAction, DaoAdminExecAction } from '../../actions/core/actions'
@@ -184,6 +186,7 @@ export const AppsRenderer = ({ mode, ...props }: AppsRendererProps) => {
         address: sender,
         msgs,
       })
+      sender = executor
     } else if (executionType === 'daoAdminExec') {
       if (!daoAdminExecAction) {
         throw new Error('DAO admin exec action not found.')
@@ -203,38 +206,39 @@ export const AppsRenderer = ({ mode, ...props }: AppsRendererProps) => {
         coreAddress: sender,
         msgs,
       })
+      sender = executor
     }
 
-    // // Potentially wrap in a cross-chain execute action for DAOs.
-    // if (mode === 'dao' && dao) {
-    //   const account = dao.accounts.find(
-    //     (a) => a.chainId === chainId && a.address === sender
-    //   )
-    //   // Should never happen.
-    //   if (!account) {
-    //     throw new Error(
-    //       `DAO account not found for sender ${sender} on chain ${chainId}.`
-    //     )
-    //   }
+    // Potentially wrap in a cross-chain execute action for DAOs.
+    if (mode === 'dao' && dao) {
+      const account = dao.accounts.find(
+        (a) => a.chainId === chainId && a.address === sender
+      )
+      // Should never happen.
+      if (!account) {
+        throw new Error(
+          `DAO account not found for sender ${sender} on chain ${chainId}.`
+        )
+      }
 
-    //   if (account.type === AccountType.Polytone) {
-    //     sender = dao.coreAddress
-    //     msgs = maybeMakePolytoneExecuteMessages(dao.chainId, chainId, msgs)
-    //   } else if (account.type === AccountType.Ica) {
-    //     sender = dao.coreAddress
-    //     msgs = maybeMakeIcaExecuteMessages(
-    //       dao.chainId,
-    //       chainId,
-    //       sender,
-    //       account.address,
-    //       msgs
-    //     )
-    //   } else if (account.type !== AccountType.Base) {
-    //     throw new Error(
-    //       `Cannot execute with DAO account of type '${account.type}' (${sender} on chain ${chainId}).`
-    //     )
-    //   }
-    // }
+      if (account.type === AccountType.Polytone) {
+        sender = dao.coreAddress
+        msgs = maybeMakePolytoneExecuteMessages(dao.chainId, chainId, msgs)
+      } else if (account.type === AccountType.Ica) {
+        sender = dao.coreAddress
+        msgs = maybeMakeIcaExecuteMessages(
+          dao.chainId,
+          chainId,
+          sender,
+          account.address,
+          msgs
+        )
+      } else if (account.type !== AccountType.Base) {
+        throw new Error(
+          `Cannot execute with DAO account of type '${account.type}' (${sender} on chain ${chainId}).`
+        )
+      }
+    }
 
     setFinalMessages(msgs)
   }
