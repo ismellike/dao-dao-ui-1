@@ -747,6 +747,7 @@ export const AppsRenderer = ({ mode, ...props }: AppsRendererProps) => {
                 accountTypes={[AccountType.Polytone, AccountType.Ica]}
                 hideFormLabel
                 onChange={setOtherChainId}
+                onlyDaoChainIds
                 selected={otherChainId}
               />
             ) : (
