@@ -186,7 +186,9 @@ export const AppsRenderer = ({ mode, ...props }: AppsRendererProps) => {
         address: sender,
         msgs,
       })
-      sender = executor
+
+      chainId = authzExecAction.options.chain.chainId
+      sender = authzExecAction.options.address
     } else if (executionType === 'daoAdminExec') {
       if (!daoAdminExecAction) {
         throw new Error('DAO admin exec action not found.')
@@ -206,7 +208,9 @@ export const AppsRenderer = ({ mode, ...props }: AppsRendererProps) => {
         coreAddress: sender,
         msgs,
       })
-      sender = executor
+
+      chainId = daoAdminExecAction.options.chain.chainId
+      sender = daoAdminExecAction.options.address
     }
 
     // Potentially wrap in a cross-chain execute action for DAOs.
@@ -760,7 +764,6 @@ export const AppsRenderer = ({ mode, ...props }: AppsRendererProps) => {
           chainPicker={
             mode === 'dao' ? (
               <DaoSupportedChainPickerInput
-                accountTypes={[AccountType.Polytone, AccountType.Ica]}
                 buttonClassName="h-full"
                 hideFormLabel
                 onChange={setOtherChainId}
