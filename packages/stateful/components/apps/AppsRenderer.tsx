@@ -114,16 +114,18 @@ export const AppsRenderer = ({ mode, ...props }: AppsRendererProps) => {
   // This is the chain we will use for the app. For a wallet, the chain switcher
   // will set the wallet chain ID atom which affects the whole app context, so
   // this shouldn't matter. For a DAO, this can differ from the DAO's chain ID
-  // if the target address is on a different chain.
+  // if the other address is on a different chain.
   const appChainId = executionType === 'normal' ? contextChainId : otherChainId
-  const appChain = getChainForChainId(appChainId)
 
   // This is the other address for non-normal execution types (authz and DAO
   // admin execute).
   const validOtherAddress =
     executionType !== 'normal' &&
     otherAddress &&
-    isValidBech32Address(otherAddress, appChain.bech32Prefix)
+    isValidBech32Address(
+      otherAddress,
+      getChainForChainId(otherChainId).bech32Prefix
+    )
       ? otherAddress
       : undefined
 
@@ -163,10 +165,6 @@ export const AppsRenderer = ({ mode, ...props }: AppsRendererProps) => {
   ) => {
     if (!appEntity) {
       throw new Error('Entity not yet loaded.')
-    }
-
-    if (chainId !== appChainId) {
-      throw new Error('App chain ID mismatch.')
     }
 
     // Potentially wrap in authz execute or DAO admin execute based on the
