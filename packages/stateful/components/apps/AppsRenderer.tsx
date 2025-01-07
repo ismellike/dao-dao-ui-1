@@ -226,10 +226,8 @@ export const AppsRenderer = ({ mode, ...props }: AppsRendererProps) => {
       }
 
       if (account.type === AccountType.Polytone) {
-        sender = dao.coreAddress
         msgs = maybeMakePolytoneExecuteMessages(dao.chainId, chainId, msgs)
       } else if (account.type === AccountType.Ica) {
-        sender = dao.coreAddress
         msgs = maybeMakeIcaExecuteMessages(
           dao.chainId,
           chainId,
