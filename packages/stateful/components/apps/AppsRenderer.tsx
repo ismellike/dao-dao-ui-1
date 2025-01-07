@@ -757,6 +757,7 @@ export const AppsRenderer = ({ mode, ...props }: AppsRendererProps) => {
             mode === 'dao' ? (
               <DaoSupportedChainPickerInput
                 accountTypes={[AccountType.Polytone, AccountType.Ica]}
+                buttonClassName="h-full"
                 hideFormLabel
                 onChange={setOtherChainId}
                 onlyDaoChainIds
