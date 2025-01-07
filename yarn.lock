@@ -2088,11 +2088,6 @@
     "@keplr-wallet/crypto" "0.12.28"
     semver "^7.5.0"
 
-"@chain-registry/types@0.45.1":
-  version "0.45.1"
-  resolved "https://registry.yarnpkg.com/@chain-registry/types/-/types-0.45.1.tgz#bbe8cb65d80cf6be658f9eb0840eb72648d8cd08"
-  integrity sha512-xDq3RZwLM6VZt7Bwrilm588xTce7mOZIpLIjpwaT/V6HD3TuzJC3FWMRAxUtMuhQldcjW8b8em5HdFY467FRhA==
-
 "@chain-registry/types@0.45.86", "@chain-registry/types@^0.45.1", "@chain-registry/types@^0.45.86":
   version "0.45.86"
   resolved "https://registry.yarnpkg.com/@chain-registry/types/-/types-0.45.86.tgz#a5eef445f0456968d6acc8a0e95aaf8df01e99b1"
@@ -2111,16 +2106,6 @@
     "@chain-registry/types" "^0.46.9"
     bignumber.js "9.1.2"
     sha.js "^2.4.11"
-
-"@classic-terra/terra.proto@^1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@classic-terra/terra.proto/-/terra.proto-1.1.0.tgz#e314d89f59b49e79a04db25f66f658e5e5aa1890"
-  integrity sha512-bYhQG5LUaGF0KPRY9hYT/HEcd1QExZPQd6zLV/rQkCe/eDxfwFRLzZHpaaAdfWoAAZjsRWqJbUCqCg7gXBbJpw==
-  dependencies:
-    "@improbable-eng/grpc-web" "^0.14.1"
-    google-protobuf "^3.17.3"
-    long "^4.0.0"
-    protobufjs "~6.11.2"
 
 "@cnakazawa/watch@^1.0.3":
   version "1.0.4"
@@ -2585,23 +2570,6 @@
   integrity sha512-Vo2dKG4vgW0D8Uk5jfStdjoUgdAXg8rCeZ6yxsQaRkJlhVbZ7XPjU28IF4vPVmQ3zh4wGDya/zywSL/1XYNZkw==
   dependencies:
     "@cosmos-kit/frontier-extension" "^2.10.2"
-
-"@cosmos-kit/galaxy-station-extension@^2.11.2":
-  version "2.11.2"
-  resolved "https://registry.yarnpkg.com/@cosmos-kit/galaxy-station-extension/-/galaxy-station-extension-2.11.2.tgz#511dd7b058bee83c999b88476b840cc0f298aa18"
-  integrity sha512-iKVDWFc37793HGaULAEpBDX5lQ9PmJ2JWDQB0bSQMyFeCIjN58RQlfJ2Mac+jE53UVO1B4HkMfIo1T/zTAVc+g==
-  dependencies:
-    "@chain-registry/types" "0.45.1"
-    "@cosmos-kit/core" "^2.13.1"
-    "@hexxagon/feather.js" "^1.0.9-beta.8"
-    "@hexxagon/station-connector" "^1.0.17"
-
-"@cosmos-kit/galaxy-station@^2.10.2":
-  version "2.10.2"
-  resolved "https://registry.yarnpkg.com/@cosmos-kit/galaxy-station/-/galaxy-station-2.10.2.tgz#6fb9dd88029c69d49f4598dc2687517f200d911a"
-  integrity sha512-pj8J2KlK1/P1ePzih/nHdkRFK6DyzJgAQAPSF78vjYbOPPExOf08Q4hYK4pSXTJZSDvAX+ILOH6+LKS6KlHs1g==
-  dependencies:
-    "@cosmos-kit/galaxy-station-extension" "^2.11.2"
 
 "@cosmos-kit/keplr-extension@^2.12.2":
   version "2.12.2"
@@ -4132,34 +4100,6 @@
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/@graphql-typed-document-node/core/-/core-3.2.0.tgz#5f3d96ec6b2354ad6d8a28bf216a1d97b5426861"
   integrity sha512-mB9oAsNCm9aM3/SOv4YtBMqZbYj10R7dkq8byBqxGY/ncFwhf2oQzMV+LCRlWoDSEBJ3COiR1yeDvMtsoOsuFQ==
-
-"@hexxagon/feather.js@^1.0.9-beta.8":
-  version "1.0.9-beta.8"
-  resolved "https://registry.yarnpkg.com/@hexxagon/feather.js/-/feather.js-1.0.9-beta.8.tgz#c0a67624f845a0da91232de2afe3c274b2a527e4"
-  integrity sha512-jkwwZOKGlEj72eAXO4dsLsMy8ySQJppnVMVIqyfFJuZ8w3uLe3yzS9cztv+A/pA8dcrrxf9ekXaFTA2J/FImxg==
-  dependencies:
-    "@classic-terra/terra.proto" "^1.1.0"
-    "@terra-money/legacy.proto" "npm:@terra-money/terra.proto@^0.1.7"
-    "@terra-money/terra.proto" "3.0.5"
-    axios "^0.27.2"
-    bech32 "^2.0.0"
-    bip32 "^2.0.6"
-    bip39 "^3.0.3"
-    bufferutil "^4.0.3"
-    decimal.js "^10.2.1"
-    jscrypto "^1.0.1"
-    readable-stream "^3.6.0"
-    secp256k1 "^4.0.2"
-    tmp "^0.2.1"
-    utf-8-validate "^5.0.5"
-    ws "^7.5.9"
-
-"@hexxagon/station-connector@^1.0.17":
-  version "1.0.17"
-  resolved "https://registry.yarnpkg.com/@hexxagon/station-connector/-/station-connector-1.0.17.tgz#59734345a2c84437622e6f100a9498f8d99bd470"
-  integrity sha512-VrwCSHUvLtJB93vyJeY1qI6zrDQC7RsxCylYMTU3QL7IJEAOVOdHkj29UmW+HdfrgiVnJhZx9yKuc/582DSZYw==
-  dependencies:
-    bech32 "^2.0.0"
 
 "@humanwhocodes/config-array@^0.10.4":
   version "0.10.4"
@@ -6340,6 +6280,11 @@
   version "0.11.0"
   resolved "https://registry.yarnpkg.com/@pkgjs/parseargs/-/parseargs-0.11.0.tgz#a77ea742fab25775145434eb1d2328cf5013ac33"
   integrity sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==
+
+"@pkgr/core@^0.1.0":
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/@pkgr/core/-/core-0.1.1.tgz#1ec17e2edbec25c8306d424ecfbf13c7de1aaa31"
+  integrity sha512-cq8o4cWH0ibXh9VGi5P20Tu9XF/0fFXl9EUinr9QfTM7a7p0oTA4iJRCQWppXR1Pg8dSM0UCItCkPwsk9qWWYA==
 
 "@playwright/test@^1.49.1":
   version "1.49.1"
@@ -8582,16 +8527,6 @@
   integrity sha512-0xQ1haSJnY6ltjhptFoVa1yhNUIBsbCAEQCUukSY93GSo6tt+DN4RAku9i1ulfY/UizXnxH/mn+6aJyTCZGGcg==
   dependencies:
     bech32 "^2.0.0"
-
-"@terra-money/terra.proto@3.0.5":
-  version "3.0.5"
-  resolved "https://registry.yarnpkg.com/@terra-money/terra.proto/-/terra.proto-3.0.5.tgz#96f17410a044459412491959b615c52faa2eb338"
-  integrity sha512-8tvT41qte2mpiNoHq2dMmV7soMxwf4ckuJ+F2pMrb7iVcqaBo30/dIfyTdFm5mEH5i5P6cTJggm+UlIZBSPhwQ==
-  dependencies:
-    "@improbable-eng/grpc-web" "^0.14.1"
-    google-protobuf "^3.17.3"
-    long "^4.0.0"
-    protobufjs "~6.11.2"
 
 "@terra-money/terra.proto@^4.0.3":
   version "4.0.10"
@@ -14185,10 +14120,10 @@ eslint-config-next@^12.1.5:
     eslint-plugin-react "^7.29.4"
     eslint-plugin-react-hooks "^4.5.0"
 
-eslint-config-prettier@^8.5.0:
-  version "8.5.0"
-  resolved "https://registry.yarnpkg.com/eslint-config-prettier/-/eslint-config-prettier-8.5.0.tgz#5a81680ec934beca02c7b1a61cf8ca34b66feab1"
-  integrity sha512-obmWKLUNCnhtQRKc+tmnYuQl0pFU1ibYJQ5BGhTVB08bHe9wC8qUeG7c08dj9XX+AuPj1YSGSQIHl1pnDHZR0Q==
+eslint-config-prettier@^9.1.0:
+  version "9.1.0"
+  resolved "https://registry.yarnpkg.com/eslint-config-prettier/-/eslint-config-prettier-9.1.0.tgz#31af3d94578645966c082fcb71a5846d3c94867f"
+  integrity sha512-NSWl5BFQWEPi1j4TjVNItzYV7dZXZ+wP6I6ZhrBGpChQhZRUaElihE9uRRkcbRnNb76UMKDF3r+WTmNcGPKsqw==
 
 eslint-import-resolver-node@^0.3.6:
   version "0.3.6"
@@ -14286,12 +14221,13 @@ eslint-plugin-jsx-a11y@^6.5.1:
     minimatch "^3.1.2"
     semver "^6.3.0"
 
-eslint-plugin-prettier@^4.0.0:
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-prettier/-/eslint-plugin-prettier-4.1.0.tgz#1cd4b3fadf3b3cdb30b1874b55e7f93f85eb43ad"
-  integrity sha512-A3AXIEfTnq3D5qDFjWJdQ9c4BLhw/TqhSR+6+SVaoPJBAWciFEuJiNQh275OnjRrAi7yssZzuWBRw66VG2g6UA==
+eslint-plugin-prettier@^5.2.1:
+  version "5.2.1"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-prettier/-/eslint-plugin-prettier-5.2.1.tgz#d1c8f972d8f60e414c25465c163d16f209411f95"
+  integrity sha512-gH3iR3g4JfF+yYPaJYkN7jEl9QbweL/YfkoRlNnuIEHEz1vHVlCmWOS+eGGiRuzHQXdJFCOTxRgvju9b8VUmrw==
   dependencies:
     prettier-linter-helpers "^1.0.0"
+    synckit "^0.9.1"
 
 eslint-plugin-react-hooks@^4.5.0:
   version "4.6.0"
@@ -21692,6 +21628,11 @@ prettier@^2.6.2:
   resolved "https://registry.yarnpkg.com/prettier/-/prettier-2.7.1.tgz#e235806850d057f97bb08368a4f7d899f7760c64"
   integrity sha512-ujppO+MkdPqoVINuDFDRLClm7D78qbDt0/NR+wp5FqEZOoTNAjPHWj17QRhu7geIHJfcNhRk1XVQmF8Bp3ye+g==
 
+prettier@^3.4.2:
+  version "3.4.2"
+  resolved "https://registry.yarnpkg.com/prettier/-/prettier-3.4.2.tgz#a5ce1fb522a588bf2b78ca44c6e6fe5aa5a2b13f"
+  integrity sha512-e9MewbtFo+Fevyuxn/4rrcDAaq0IYxPGLvObpQjiZBMAzB9IGmzlnG9RZy3FFas+eBMu2vA0CszMeduow5dIuQ==
+
 pretty-error@^2.1.1:
   version "2.1.2"
   resolved "https://registry.yarnpkg.com/pretty-error/-/pretty-error-2.1.2.tgz#be89f82d81b1c86ec8fdfbc385045882727f93b6"
@@ -24445,6 +24386,14 @@ synchronous-promise@^2.0.15:
   version "2.0.15"
   resolved "https://registry.yarnpkg.com/synchronous-promise/-/synchronous-promise-2.0.15.tgz#07ca1822b9de0001f5ff73595f3d08c4f720eb8e"
   integrity sha512-k8uzYIkIVwmT+TcglpdN50pS2y1BDcUnBPK9iJeGu0Pl1lOI8pD6wtzgw91Pjpe+RxtTncw32tLxs/R0yNL2Mg==
+
+synckit@^0.9.1:
+  version "0.9.2"
+  resolved "https://registry.yarnpkg.com/synckit/-/synckit-0.9.2.tgz#a3a935eca7922d48b9e7d6c61822ee6c3ae4ec62"
+  integrity sha512-vrozgXDQwYO72vHjUb/HnFbQx1exDjoKzqx23aXEg2a9VIg2TSFZ8FmeZpTjUCFMYw7mpX4BE2SFu8wI7asYsw==
+  dependencies:
+    "@pkgr/core" "^0.1.0"
+    tslib "^2.6.2"
 
 system-architecture@^0.1.0:
   version "0.1.0"

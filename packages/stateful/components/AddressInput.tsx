@@ -24,7 +24,7 @@ import { EntityDisplay } from './EntityDisplay'
 
 export const AddressInput = <
   FV extends FieldValues,
-  FieldName extends Path<FV>
+  FieldName extends Path<FV>,
 >(
   props: AddressInputProps<FV, FieldName>
 ) => {
@@ -34,7 +34,9 @@ export const AddressInput = <
   // Null if not within a FormProvider.
   const formContext = useFormContext<FV>()
   const watch = props.watch || formContext?.watch
-  const formValue = watch?.(props.fieldName) as string | undefined
+  const formValue = (
+    props.fieldName ? watch?.(props.fieldName) : props.value
+  ) as string | undefined
 
   const hasFormValue =
     formValue &&
