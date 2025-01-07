@@ -2,13 +2,13 @@ import { useQueryClient } from '@tanstack/react-query'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import { contractQueries, processMessage } from '@dao-dao/state'
+import { contractQueries } from '@dao-dao/state'
 import {
   ActionBase,
-  ActionsContext,
   ChainProvider,
   DaoSupportedChainPickerInput,
   InputLabel,
+  Loader,
   LockWithKeyEmoji,
   useActionOptions,
   useChain,
@@ -54,29 +54,6 @@ import {
 
 type InnerOptions = Pick<AuthzExecOptions, 'msgPerSenderIndex'>
 
-const InnerComponentLoading: ActionComponent<InnerOptions> = (props) => (
-  <ActionsContext.Provider
-    value={{
-      // Just pass the same options down for now since they aren't used.
-      options: useActionOptions(),
-      actions: [],
-      actionMap: {} as any,
-      categories: [],
-      messageProcessor: processMessage,
-    }}
-  >
-    <StatelessAuthzExecComponent
-      {...props}
-      options={{
-        msgPerSenderIndex: props.options.msgPerSenderIndex,
-        encodeContext: useActionEncodeContext(),
-        EntityDisplay,
-        SuspenseLoader,
-      }}
-    />
-  </ActionsContext.Provider>
-)
-
 const InnerComponent: ActionComponent<InnerOptions> = (props) => (
   <StatelessAuthzExecComponent
     {...props}
@@ -113,9 +90,16 @@ const InnerComponentWrapper: ActionComponent<
     false
   )
 
-  return (validAddress || isCreating) && (isDao.loading || isDao.updating) ? (
-    <InnerComponentLoading {...props} />
-  ) : !isDao.loading && !isDao.updating && isDao.data ? (
+  if (isCreating && !validAddress) {
+    return null
+  }
+
+  // Load until we know it's a DAO or not. If not creating and not a valid
+  // address, no need to show loading.
+  return (isCreating || validAddress) && (isDao.loading || isDao.updating) ? (
+    <Loader />
+  ) : // If a DAO, wrap in necessary DAO context.
+  !isDao.loading && !isDao.updating && isDao.data ? (
     <DaoProviders
       key={
         // Make sure to re-render (reset state inside the contexts) when the
@@ -124,19 +108,21 @@ const InnerComponentWrapper: ActionComponent<
       }
       chainId={chainId}
       coreAddress={address}
-      loaderFallback={<InnerComponentLoading {...props} />}
     >
       <InnerComponent {...props} />
     </DaoProviders>
-  ) : validAddress || isCreating ? (
+  ) : // If not a DAO, and either we're creating OR we're not creating but the address is valid, wrap in necessary wallet context.
+  isCreating || validAddress ? (
     <WalletActionsProvider address={address}>
       <InnerComponent {...props} />
     </WalletActionsProvider>
   ) : (
-    // If no address is defined and we're not creating, that means the component
-    // failed to detect the sender, likely due to not knowing how to decode the
-    // message which would contain the sender. Use an empty profile and accounts
-    // so the component can still render.
+    // !isCreating && !validAddress
+    //
+    // If no valid address is set and we're not creating, that means the
+    // component failed to detect the sender, likely due to not knowing how to
+    // decode the messages contained which would contain the sender. Use an
+    // empty profile and accounts so the component can still render.
     <BaseActionsProvider
       actionContext={{
         type: ActionContextType.Wallet,
