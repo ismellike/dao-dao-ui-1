@@ -287,12 +287,14 @@ export const AppsRenderer = ({ mode, ...props }: AppsRendererProps) => {
     onDecode(signDoc.chain_id, sender, messages)
   }
 
-  const daoEnableAndConnect = (chainIds: string | string[]): OverrideHandler =>
-    [chainIds].flat().some((chainId) => {
-      if (!dao) {
-        throw new Error('DAO context not loaded.')
-      }
+  const daoEnableAndConnect = (
+    chainIds: string | string[]
+  ): OverrideHandler => {
+    if (!dao) {
+      throw new Error('DAO context not loaded.')
+    }
 
+    return [chainIds].flat().some((chainId) => {
       try {
         // Throws error if account not found.
         getDaoAddressForChainId(dao.info, chainId)
@@ -308,7 +310,7 @@ export const AppsRenderer = ({ mode, ...props }: AppsRendererProps) => {
       : {
           type: 'error',
           error: t('error.daoMissingAccountsOnChains', {
-            daoName: name,
+            daoName: dao.name,
             chains: [chainIds]
               .flat()
               .map(
@@ -318,6 +320,7 @@ export const AppsRenderer = ({ mode, ...props }: AppsRendererProps) => {
             count: [chainIds].flat().length,
           }),
         }
+  }
 
   const walletConnect = async (_chainIds: string | string[]) => {
     if (!chainWallet) {
