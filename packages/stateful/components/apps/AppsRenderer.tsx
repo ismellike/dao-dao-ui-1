@@ -619,7 +619,9 @@ export const AppsRenderer = ({ mode, ...props }: AppsRendererProps) => {
               algo: 'secp256k1',
               pubkey: EMPTY_PUB_KEY,
               pubKey: EMPTY_PUB_KEY,
-              address: fromBech32(bech32Address).data,
+              address: bech32Address
+                ? fromBech32(bech32Address).data
+                : new Uint8Array([]),
               bech32Address,
               isNanoLedger: false,
               isSmartContract: false,
