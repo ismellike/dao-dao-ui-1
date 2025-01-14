@@ -3,11 +3,10 @@ import {
   DirectSignResponse,
   OfflineDirectSigner,
 } from '@cosmjs/proto-signing'
-import { Widget } from '@skip-go/widget'
 import clsx from 'clsx'
 import { nanoid } from 'nanoid'
 import Image from 'next/image'
-import { useState } from 'react'
+import { lazy, useState } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
@@ -15,6 +14,7 @@ import {
   Button,
   InputLabel,
   InputThemedText,
+  Loader,
   RawActionsRendererMessages,
   useActionOptions,
 } from '@dao-dao/stateless'
@@ -26,6 +26,8 @@ import {
 } from '@dao-dao/types/protobuf/codegen/cosmos/tx/v1beta1/tx'
 import { EMPTY_PUB_KEY, getChainForChainId } from '@dao-dao/utils'
 
+import { SuspenseLoader } from '../../../../components'
+
 export type SkipGoData = {
   chainId: string
   message: string
@@ -34,6 +36,12 @@ export type SkipGoData = {
 export const SkipGoIcon = () => (
   // eslint-disable-next-line i18next/no-literal-string
   <Image alt="Skip Go" height={32} src="/skipgo.png" width={32} />
+)
+
+const LazyWidget = lazy(() =>
+  import('@skip-go/widget').then(({ Widget }) => ({
+    default: Widget,
+  }))
 )
 
 export const SkipGoComponent: ActionComponent = ({ fieldNamePrefix }) => {
@@ -55,80 +63,82 @@ export const SkipGoComponent: ActionComponent = ({ fieldNamePrefix }) => {
     <>
       {visible ? (
         <div className="self-start animate-fade-in max-w-md">
-          <Widget
-            key={visible}
-            brandColor="var(--color-brand)"
-            connectedAddresses={Object.fromEntries(
-              accounts.map((a) => [a.chainId, a.address])
-            )}
-            getCosmosSigner={async (chainId) => {
-              const account = accounts.find((a) => a.chainId === chainId)
-              if (!account) {
-                throw new Error('Account not found')
-              }
-
-              const { address } = account
-
-              class SkipGoCosmosSigner implements OfflineDirectSigner {
-                async getAccounts(): Promise<AccountData[]> {
-                  return [
-                    {
-                      address,
-                      algo: 'secp256k1',
-                      pubkey: EMPTY_PUB_KEY,
-                    },
-                  ]
+          <SuspenseLoader fallback={<Loader />}>
+            <LazyWidget
+              key={visible}
+              brandColor="var(--color-brand)"
+              connectedAddresses={Object.fromEntries(
+                accounts.map((a) => [a.chainId, a.address])
+              )}
+              getCosmosSigner={async (chainId) => {
+                const account = accounts.find((a) => a.chainId === chainId)
+                if (!account) {
+                  throw new Error('Account not found')
                 }
 
-                async signDirect(
-                  _signer: string,
-                  signDoc: SignDoc
-                ): Promise<DirectSignResponse> {
-                  if (!signDoc?.bodyBytes || !signDoc?.chainId) {
-                    throw new Error('Invalid sign doc')
+                const { address } = account
+
+                class SkipGoCosmosSigner implements OfflineDirectSigner {
+                  async getAccounts(): Promise<AccountData[]> {
+                    return [
+                      {
+                        address,
+                        algo: 'secp256k1',
+                        pubkey: EMPTY_PUB_KEY,
+                      },
+                    ]
                   }
 
-                  const encodedMessages = TxBody.decode(
-                    signDoc.bodyBytes
-                  ).messages
-                  const messages = encodedMessages.flatMap(
-                    (msg) =>
-                      protobufToCwMsg(
-                        getChainForChainId(signDoc.chainId),
-                        msg,
-                        false
-                      ).msg
-                  )
+                  async signDirect(
+                    _signer: string,
+                    signDoc: SignDoc
+                  ): Promise<DirectSignResponse> {
+                    if (!signDoc?.bodyBytes || !signDoc?.chainId) {
+                      throw new Error('Invalid sign doc')
+                    }
 
-                  setValue(
-                    (fieldNamePrefix + 'chainId') as 'chainId',
-                    signDoc.chainId
-                  )
-                  setValue(
-                    (fieldNamePrefix + 'message') as 'message',
-                    JSON.stringify(
-                      messages.length === 1 ? messages[0] : messages,
-                      null,
-                      2
+                    const encodedMessages = TxBody.decode(
+                      signDoc.bodyBytes
+                    ).messages
+                    const messages = encodedMessages.flatMap(
+                      (msg) =>
+                        protobufToCwMsg(
+                          getChainForChainId(signDoc.chainId),
+                          msg,
+                          false
+                        ).msg
                     )
-                  )
 
-                  setVisible(undefined)
+                    setValue(
+                      (fieldNamePrefix + 'chainId') as 'chainId',
+                      signDoc.chainId
+                    )
+                    setValue(
+                      (fieldNamePrefix + 'message') as 'message',
+                      JSON.stringify(
+                        messages.length === 1 ? messages[0] : messages,
+                        null,
+                        2
+                      )
+                    )
 
-                  throw new Error('Handled by DAO DAO')
+                    setVisible(undefined)
+
+                    throw new Error('Handled by DAO DAO')
+                  }
                 }
-              }
 
-              return new SkipGoCosmosSigner()
-            }}
-            routeConfig={{
-              experimentalFeatures: ['hyperlane', 'cctp', 'stargate'],
-              allowMultiTx: false,
-              allowSwaps: true,
-              allowUnsafe: false,
-              goFast: false,
-            }}
-          />
+                return new SkipGoCosmosSigner()
+              }}
+              routeConfig={{
+                experimentalFeatures: ['hyperlane', 'cctp', 'stargate'],
+                allowMultiTx: false,
+                allowSwaps: true,
+                allowUnsafe: false,
+                goFast: false,
+              }}
+            />
+          </SuspenseLoader>
         </div>
       ) : (
         <>
