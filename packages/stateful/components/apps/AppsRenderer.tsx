@@ -368,9 +368,11 @@ export const AppsRenderer = ({ mode, ...props }: AppsRendererProps) => {
       imageUrl: SITE_URL + '/daodao.png',
     },
     walletClientOverrides: {
+      // @ts-ignore
       signAmino: (_chainId: string, signer: string, signDoc: StdSignDoc) => {
         decodeAmino(signer, signDoc)
       },
+      // @ts-ignore
       signDirect: (_chainId: string, signer: string, signDoc: SignDoc) => {
         decodeDirect(signer, signDoc)
       },

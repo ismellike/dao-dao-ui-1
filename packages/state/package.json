@@ -13,7 +13,9 @@
     "@confio/relayer": "^0.12.0",
     "@cosmjs/amino": "^0.32.3",
     "@cosmjs/cosmwasm-stargate": "^0.32.3",
+    "@cosmjs/crypto": "^0.32.3",
     "@cosmjs/encoding": "^0.32.3",
+    "@cosmjs/math": "^0.32.3",
     "@cosmjs/proto-signing": "^0.32.3",
     "@cosmjs/stargate": "^0.32.3",
     "@cosmjs/tendermint-rpc": "^0.32.3",
@@ -36,7 +38,7 @@
     "@graphql-codegen/client-preset": "^4.1.0",
     "@graphql-typed-document-node/core": "^3.2.0",
     "@types/lodash.uniq": "^4.5.7",
-    "typescript": "5.3.3"
+    "typescript": "5.4.5"
   },
   "prettier": "@dao-dao/config/prettier",
   "gitHead": "d7b959f412c3990123b0e2afb11f32acd9c3764c"
