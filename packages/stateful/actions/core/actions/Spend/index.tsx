@@ -871,6 +871,13 @@ export class SpendAction extends ActionBase<SpendData> {
         ? parseValidPfmMemo(decodedMessage.stargate.value.memo)
         : undefined
 
+    // If has memo but no PFM memo, we cannot properly display the action as it
+    // may do something we don't know about (like a swap or other type of
+    // message).
+    if (isIbcTransfer && decodedMessage.stargate.value.memo && !pfmMemo) {
+      return false
+    }
+
     // If valid PFM memo, validate that all chains (except the receiver) have
     // enabled PFM.
     const pfmChainPath =
