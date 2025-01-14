@@ -57,7 +57,10 @@ export const SkipGoComponent: ActionComponent = ({ fieldNamePrefix }) => {
   const account = accounts.find((a) => a.chainId === chainId)
 
   // Use unique ID to force remount of widget when changing message.
-  const [visible, setVisible] = useState<string>()
+  const [visible, setVisible] = useState<string | undefined>(
+    // Show widget if message is empty.
+    message === '{}' ? undefined : 'first'
+  )
 
   return (
     <>
