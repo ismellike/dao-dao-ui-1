@@ -88,6 +88,7 @@ export enum ActionKey {
   UpdatePreProposeConfig = 'updatePreProposeConfig',
   UpdateProposalConfig = 'updateProposalConfig',
   CreateDao = 'createDao',
+
   // Valence
   CreateValenceAccount = 'createValenceAccount',
   ConfigureRebalancer = 'configureRebalancer',
@@ -95,19 +96,24 @@ export enum ActionKey {
   ResumeRebalancer = 'resumeRebalancer',
   FundRebalancer = 'fundRebalancer',
   WithdrawFromRebalancer = 'withdrawFromRebalancer',
+
   // DaoProposalSingle
   UpdatePreProposeSingleConfig = 'updatePreProposeSingleConfig',
   UpdateProposalSingleConfig = 'updateProposalSingleConfig',
+
   // DaoProposalMultiple
   UpdatePreProposeMultipleConfig = 'updatePreProposeMultipleConfig',
   UpdateProposalMultipleConfig = 'updateProposalMultipleConfig',
+
   // Press
   CreatePost = 'createPost',
   UpdatePost = 'updatePost',
   DeletePost = 'deletePost',
+
   // Become SubDAO
   AcceptSubDao = 'acceptSubDao',
   BecomeSubDao = 'becomeSubDao',
+
   // Rewards
   CreateRewardDistribution = 'createRewardDistribution',
   UpdateRewardDistribution = 'updateRewardDistribution',
@@ -116,6 +122,8 @@ export enum ActionKey {
   PauseRewardDistribution = 'pauseRewardDistribution',
   ResumeRewardDistribution = 'resumeRewardDistribution',
   FixRewardDistributor = 'fixRewardDistributor',
+
+  SkipGo = 'skipGo',
 }
 
 export type ActionAndData<

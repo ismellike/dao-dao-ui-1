@@ -2,7 +2,6 @@ import { AccountData, StdSignDoc } from '@cosmjs/amino'
 import { fromBech32, fromHex } from '@cosmjs/encoding'
 import {
   COSMIFRAME_KEYSTORECHANGE_EVENT,
-  DirectSignDoc,
   SimpleAccount,
   WalletAccount,
 } from '@cosmos-kit/core'
@@ -43,7 +42,10 @@ import {
   getAminoTypes,
   protobufToCwMsg,
 } from '@dao-dao/types'
-import { TxBody } from '@dao-dao/types/protobuf/codegen/cosmos/tx/v1beta1/tx'
+import {
+  SignDoc,
+  TxBody,
+} from '@dao-dao/types/protobuf/codegen/cosmos/tx/v1beta1/tx'
 import {
   EMPTY_PUB_KEY,
   SITE_TITLE,
@@ -247,11 +249,7 @@ export const AppsRenderer = ({ mode, ...props }: AppsRendererProps) => {
     setFinalMessages(msgs)
   }
 
-  const decodeDirect = (sender: string, signDoc: DirectSignDoc) => {
-    if (!signDoc?.bodyBytes || !signDoc?.chainId) {
-      return
-    }
-
+  const decodeDirect = (sender: string, signDoc: SignDoc) => {
     const encodedMessages = TxBody.decode(signDoc.bodyBytes).messages
     const messages = encodedMessages.flatMap(
       (msg) =>
@@ -370,16 +368,10 @@ export const AppsRenderer = ({ mode, ...props }: AppsRendererProps) => {
       imageUrl: SITE_URL + '/daodao.png',
     },
     walletClientOverrides: {
-      // @ts-ignore
       signAmino: (_chainId: string, signer: string, signDoc: StdSignDoc) => {
         decodeAmino(signer, signDoc)
       },
-      // @ts-ignore
-      signDirect: (
-        _chainId: string,
-        signer: string,
-        signDoc: DirectSignDoc
-      ) => {
+      signDirect: (_chainId: string, signer: string, signDoc: SignDoc) => {
         decodeDirect(signer, signDoc)
       },
       enable: mode === 'dao' ? daoEnableAndConnect : undefined,
