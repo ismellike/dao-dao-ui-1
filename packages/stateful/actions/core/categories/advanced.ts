@@ -15,6 +15,5 @@ export const makeAdvancedActionCategory: ActionCategoryMaker = ({ t }) => ({
     ActionKey.CreateIca,
     ActionKey.HideIca,
     ActionKey.IcaExecute,
-    ActionKey.SkipGo,
   ],
 })
