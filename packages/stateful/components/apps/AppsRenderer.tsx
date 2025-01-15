@@ -275,6 +275,7 @@ export const AppsRenderer = ({ mode, ...props }: AppsRendererProps) => {
       ).msg
 
       return {
+        msg,
         amino,
         cosmos,
       }
