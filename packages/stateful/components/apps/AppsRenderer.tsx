@@ -267,13 +267,18 @@ export const AppsRenderer = ({ mode, ...props }: AppsRendererProps) => {
   }
 
   const decodeAmino = (sender: string, signDoc: StdSignDoc) => {
-    const messages = signDoc.msgs.flatMap(
-      (msg) =>
-        decodedStargateMsgToCw(
-          getChainForChainId(signDoc.chain_id),
-          getAminoTypes().fromAmino(msg)
-        ).msg
-    )
+    const messages = signDoc.msgs.flatMap((msg) => {
+      const amino = getAminoTypes().fromAmino(msg)
+      const cosmos = decodedStargateMsgToCw(
+        getChainForChainId(signDoc.chain_id),
+        amino
+      ).msg
+
+      return {
+        amino,
+        cosmos,
+      }
+    })
 
     console.log('APP AMINO DECODING', {
       chainId: signDoc.chain_id,
@@ -282,7 +287,11 @@ export const AppsRenderer = ({ mode, ...props }: AppsRendererProps) => {
       messages,
     })
 
-    onDecode(signDoc.chain_id, sender, messages)
+    onDecode(
+      signDoc.chain_id,
+      sender,
+      messages.map((m) => m.cosmos)
+    )
   }
 
   const daoEnableAndConnect = (
