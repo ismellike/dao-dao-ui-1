@@ -108,6 +108,11 @@ export const INDEXER_URL = 'https://indexer.daodao.zone'
 // Snapper API
 export const SNAPPER_API_BASE = 'https://snapper.indexer.zone'
 
+// WebSockets API
+export const WEB_SOCKET_PUSHER_APP_KEY = 'daodao'
+export const WEB_SOCKET_PUSHER_HOST = 'ws.indexer.zone'
+export const WEB_SOCKET_PUSHER_PORT = 443
+
 // KVPK prefix for saved Me page transactions.
 export const ME_SAVED_TX_PREFIX = 'savedTx:'
 
