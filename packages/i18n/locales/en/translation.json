@@ -1392,6 +1392,7 @@
     "realVotingVaultDescription": "Deposit {{tokenSymbol}} to get voting power.",
     "rebalancerDescription": "The Rebalancer enables automated treasury management. Use the Rebalancer to efficiently convert tokens for scheduled payments or manage your asset portfolio.",
     "rebalancerGraphTooltip": "The graph below shows the historical balances of the rebalanced tokens, which are displayed directly underneath the graph.",
+    "rebalancerMainDescription": "The Rebalancer enables automated balance sheet and treasury management. Use the Rebalancer to efficiently convert tokens for scheduled payments or manage your asset portfolio. The Rebalancer is custom-built to address the needs of blockchains, protocols, and DAOs. Check out the <2>user guide</2> for more information.",
     "rebalancerProjectionExplanation": "This projection displays the expected behavior of the system assuming prices remain constant. In reality, prices will fluctuate.",
     "recognizeSubDaoDescription": "{{name}} is a legitimate SubDAO. This adds it to the SubDAOs tab.",
     "redelegate": "Redelegate",
