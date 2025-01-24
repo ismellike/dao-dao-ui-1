@@ -82,7 +82,6 @@ export const ActionCard = ({
             <Tooltip title={t('button.moveUp')}>
               <IconButton
                 Icon={ArrowUpward}
-                className="hidden sm:block"
                 onClick={onMoveUp}
                 size="sm"
                 variant="ghost"
@@ -94,7 +93,6 @@ export const ActionCard = ({
             <Tooltip title={t('button.moveDown')}>
               <IconButton
                 Icon={ArrowDownward}
-                className="hidden sm:block"
                 onClick={onMoveDown}
                 size="sm"
                 variant="ghost"
@@ -121,7 +119,6 @@ export const ActionCard = ({
             <Tooltip title={t('button.duplicate')}>
               <IconButton
                 Icon={CopyAll}
-                className="hidden sm:block"
                 onClick={onDuplicate}
                 size="sm"
                 variant="ghost"
