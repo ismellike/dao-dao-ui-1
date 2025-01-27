@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next'
 import {
   CodeMirrorInput,
   FilterableItemPopup,
+  FormSwitchCard,
   RawActionsRendererMessages,
   useChain,
 } from '@dao-dao/stateless'
@@ -20,6 +21,10 @@ import {
 
 export type CustomData = {
   message: string
+  /**
+   * Decode from Amino before encoding custom message to Stargate.
+   */
+  amino?: boolean
 }
 
 export const CustomComponent: ActionComponent = ({
@@ -107,6 +112,14 @@ export const CustomComponent: ActionComponent = ({
             return true
           },
         ]}
+      />
+
+      <FormSwitchCard
+        containerClassName="self-start"
+        fieldName={(fieldNamePrefix + 'amino') as 'amino'}
+        label={t('form.decodeFromAmino')}
+        setValue={setValue}
+        watch={watch}
       />
 
       {errors?.message ? (

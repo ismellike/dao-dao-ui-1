@@ -653,6 +653,7 @@
     "daosCurrentlyEnabled": "DAOs currently enabled",
     "data": "Data",
     "dates": "Dates",
+    "decodeFromAmino": "Decode from Amino",
     "defaultTierName": "Core contributors",
     "delegatorAddress": "Delegator address",
     "deposit": "Deposit",
