@@ -37,6 +37,8 @@ export const CustomComponent: ActionComponent = ({
   const { chainId } = useChain()
 
   const message = watch((fieldNamePrefix + 'message') as 'message')
+  const amino = watch((fieldNamePrefix + 'amino') as 'amino')
+
   // Parse message for display if not creating.
   const rawMessages = useMemo(() => {
     if (isCreating) {
@@ -99,11 +101,14 @@ export const CustomComponent: ActionComponent = ({
           (value: string) => {
             try {
               const parsed = JSON5.parse(value)
-              const msgs = Array.isArray(parsed) ? parsed : [parsed]
 
-              msgs.forEach((msg) =>
-                validateCosmosMsgForChain(chainId, makeCosmosMsg(msg))
-              )
+              // Validate Cosmos msg if not decoding from Amino.
+              if (!amino) {
+                const msgs = Array.isArray(parsed) ? parsed : [parsed]
+                msgs.forEach((msg) =>
+                  validateCosmosMsgForChain(chainId, makeCosmosMsg(msg))
+                )
+              }
             } catch (err) {
               console.error('Custom error', err)
               return err instanceof Error ? err.message : `${err}`
