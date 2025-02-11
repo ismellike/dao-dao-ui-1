@@ -139,6 +139,8 @@ export const deploySets: DeploySet[] = [
 
       ChainId.TerraMainnet,
       ChainId.TerraClassicMainnet,
+
+      ChainId.BabylonTestnet,
     ],
   },
 
@@ -157,6 +159,8 @@ export const deploySets: DeploySet[] = [
 
       ChainId.TerraMainnet,
       ChainId.TerraClassicMainnet,
+
+      ChainId.BabylonTestnet,
     ],
   },
 
@@ -314,6 +318,8 @@ export const deploySets: DeploySet[] = [
       ChainId.StargazeTestnet,
 
       ChainId.TerraMainnet,
+
+      ChainId.BabylonTestnet,
     ],
   },
 
@@ -359,6 +365,7 @@ export const chainIdToIndexerGroupVarsName: Record<string, string> = {
   [ChainId.StargazeTestnet]: 'stargaze_testnet',
   [ChainId.TerraMainnet]: 'terra_mainnet',
   [ChainId.TerraClassicMainnet]: 'terraClassic_mainnet',
+  [ChainId.BabylonTestnet]: 'babylon_testnet',
 }
 
 /**

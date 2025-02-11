@@ -1465,5 +1465,29 @@
       "DaoVotingCw721Staked": 4667,
       "DaoVotingTokenStaked": 4669
     }
+  },
+  "bbn-test-5": {
+    "2.6.0": {
+      "Cw1Whitelist": 133,
+      "Cw4Group": 134,
+      "Cw20Base": 135,
+      "CwAdminFactory": 136,
+      "CwPayrollFactory": 137,
+      "CwTokenSwap": 138,
+      "DaoDaoCore": 139,
+      "DaoPreProposeApprovalMultiple": 140,
+      "DaoPreProposeApprovalSingle": 141,
+      "DaoPreProposeApprover": 142,
+      "DaoPreProposeMultiple": 143,
+      "DaoPreProposeSingle": 144,
+      "DaoProposalMultiple": 145,
+      "DaoProposalSingle": 146,
+      "DaoRewardsDistributor": 147,
+      "DaoVotingCw4": 148,
+      "CwVesting": 149,
+      "Cw20Stake": 150,
+      "DaoVotingCw20Staked": 151,
+      "DaoVotingTokenStaked": 152
+    }
   }
 }
