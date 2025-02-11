@@ -636,7 +636,6 @@ const BASE_SUPPORTED_CHAINS: Omit<
     accentColor: '#ce6533',
     factoryContractAddress:
       'bbn1jwx9r9hcdmcag2zka3dwsg4ekx965ega3wd9gl90pd46gcp7ecnqh3se4m',
-    noIndexer: true,
     explorerUrlTemplates: {
       tx: 'https://babylon-testnet.l2scan.co/tx/REPLACE',
       gov: 'https://babylon-testnet.l2scan.co/proposals',
