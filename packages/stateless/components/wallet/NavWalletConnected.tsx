@@ -138,8 +138,8 @@ export const NavWalletConnected = ({
                   : t('title.notifications'),
               props: {
                 Icon: NotificationsOutlined,
-                className: 'text-icon-secondary relative',
-                variant: 'ghost',
+                className: 'relative',
+                variant: 'highlight',
                 size: 'sm',
                 // Show badge when notifications exist.
                 children: !inbox.loading && inbox.items.length > 0 && (

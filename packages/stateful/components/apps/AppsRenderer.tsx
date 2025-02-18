@@ -78,6 +78,11 @@ export type AppsRendererProps = {
 
 export type AppsRendererExecutorProps = {
   /**
+   * The number of actions that are being executed. This will be ready
+   * immediately, even before the data is loaded.
+   */
+  actionCount: number
+  /**
    * Callback to close or cancel the execution.
    */
   onClose: () => void
@@ -828,7 +833,11 @@ export const AppsRenderer = ({ mode, ...props }: AppsRendererProps) => {
 
       {finalMessages && (
         <ActionMatcherProvider messages={finalMessages}>
-          <InnerAppsRenderer onClose={close} {...props} />
+          <InnerAppsRenderer
+            count={finalMessages.length}
+            onClose={close}
+            {...props}
+          />
         </ActionMatcherProvider>
       )}
     </>
@@ -836,6 +845,11 @@ export const AppsRenderer = ({ mode, ...props }: AppsRendererProps) => {
 }
 
 type InnerAppsRendererProps = {
+  /**
+   * The number of messages that are being matched. This will be ready
+   * immediately, even before the data is loaded.
+   */
+  count: number
   /**
    * Callback to close or cancel the execution.
    */
@@ -846,7 +860,11 @@ type InnerAppsRendererProps = {
   Executor: ComponentType<AppsRendererExecutorProps>
 }
 
-const InnerAppsRenderer = ({ onClose, Executor }: InnerAppsRendererProps) => {
+const InnerAppsRenderer = ({
+  count,
+  onClose,
+  Executor,
+}: InnerAppsRendererProps) => {
   const matcher = useActionMatcher()
   const data = useLoadingPromise({
     promise: async () =>
@@ -865,5 +883,5 @@ const InnerAppsRenderer = ({ onClose, Executor }: InnerAppsRendererProps) => {
     deps: [matcher.status],
   })
 
-  return <Executor data={data} onClose={onClose} />
+  return <Executor actionCount={count} data={data} onClose={onClose} />
 }
