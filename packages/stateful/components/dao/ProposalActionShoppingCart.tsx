@@ -13,7 +13,12 @@ import {
   Tooltip,
   useDaoNavHelpers,
 } from '@dao-dao/stateless'
-import { ActionMap, IDaoBase } from '@dao-dao/types'
+import {
+  ActionMap,
+  ContractVersion,
+  GovernanceProposalActionData,
+  IDaoBase,
+} from '@dao-dao/types'
 
 import { useUpdateNavigatingHref } from '../../hooks'
 import { NewProposalForm } from '../../proposal-module-adapter/adapters/DaoProposalSingle/types'
@@ -74,13 +79,14 @@ export const ProposalActionShoppingCart = ({
   const createProposalHref = getDaoProposalPath(dao.coreAddress, 'create')
   const navigating = navigatingToHref === createProposalHref
 
-  const proposalSave = useRecoilValue<NewProposalForm>(
-    latestProposalSaveAtom(dao.coreAddress)
-  )
+  const proposalSave = useRecoilValue<
+    NewProposalForm & GovernanceProposalActionData
+  >(latestProposalSaveAtom(dao.proposalSaveLocalStorageKey))
   const actions =
-    proposalSave?.actionData?.flatMap(
-      ({ actionKey }) => actionMap[actionKey] || []
-    ) || []
+    (dao.coreVersion === ContractVersion.Gov
+      ? proposalSave?._actionData
+      : proposalSave?.actionData
+    )?.flatMap(({ actionKey }) => actionMap[actionKey] || []) || []
 
   const content = (
     <div className="flex flex-col gap-2 py-3 grow overflow-y-auto">

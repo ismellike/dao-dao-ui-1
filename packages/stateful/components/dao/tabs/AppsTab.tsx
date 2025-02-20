@@ -48,7 +48,7 @@ const AppsTabExecutor = ({
   const { t } = useTranslation()
   const { actionMap } = useActionsContext()
   const setProposalSave = useSetRecoilState<NewProposalForm>(
-    latestProposalSaveAtom(dao.coreAddress)
+    latestProposalSaveAtom(dao.proposalSaveLocalStorageKey)
   )
 
   // When the data is done loading, add the loaded actions to the proposal save.
