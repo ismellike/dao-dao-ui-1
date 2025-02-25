@@ -54,6 +54,7 @@
       "CwAdminFactory": 3221,
       "CwPayrollFactory": 3222,
       "CwTokenSwap": 3223,
+      "CwTokenfactoryIssuer": 3634,
       "CwVesting": 3235,
       "DaoDaoCore": 3224,
       "DaoPreProposeApprovalMultiple": 3225,
@@ -67,8 +68,7 @@
       "DaoVotingCw20Staked": 3237,
       "DaoVotingCw4": 3234,
       "DaoVotingCw721Staked": 3238,
-      "DaoVotingTokenStaked": 3240,
-      "CwTokenfactoryIssuer": 3634
+      "DaoVotingTokenStaked": 3240
     }
   },
   "bbn-test-5": {
