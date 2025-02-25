@@ -255,8 +255,6 @@ export const deploySets: DeploySet[] = [
       ChainId.OmniflixHubMainnet,
       ChainId.OmniflixHubTestnet,
 
-      ChainId.OraichainMainnet,
-
       ChainId.OsmosisMainnet,
       ChainId.OsmosisTestnet,
 
@@ -278,6 +276,19 @@ export const deploySets: DeploySet[] = [
       },
     ],
     chainIds: [ChainId.KujiraMainnet, ChainId.KujiraTestnet],
+  },
+
+  // token factory cosmwasm contract to deploy every time
+  {
+    name: 'token factory cosmwasm',
+    type: 'always',
+    contracts: [
+      {
+        file: 'cw_tokenfactory_issuer-cosmwasm',
+        alias: 'cw_tokenfactory_issuer',
+      },
+    ],
+    chainIds: [ChainId.OraichainMainnet],
   },
 
   // token staking contract to deploy every time

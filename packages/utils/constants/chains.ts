@@ -417,7 +417,7 @@ const BASE_SUPPORTED_CHAINS: Omit<
       govProp: 'https://scan.orai.io/proposals/REPLACE',
       wallet: 'https://scan.orai.io/account/REPLACE',
     },
-    tokenDaoType: TokenType.Cw20,
+    tokenDaoType: 'both',
     latestVersion: ContractVersion.V260,
   },
   {
