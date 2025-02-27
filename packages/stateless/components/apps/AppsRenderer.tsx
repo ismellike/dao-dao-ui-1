@@ -218,104 +218,95 @@ const InnerAppsRenderer = ({
 
   return (
     <div className={clsx('flex flex-col gap-2', className)}>
-      <div
-        className={clsx(
-          'styled-scrollbar flex shrink-0 flex-row items-stretch gap-2 overflow-x-scroll pb-2',
-          fullScreen && 'px-safe-offset-4'
-        )}
-      >
-        {APPS.map(({ platform, name, imageUrl, url: appUrl }, index) => {
-          const isCustom = !appUrl
-          const selected = index === selectedAppIndex
-
-          return (
-            <Button
-              key={appUrl}
-              className={clsx(
-                'shrink-0 overflow-hidden border-2 !p-0 transition',
-                isCustom && 'border-dashed border-border-primary',
-                selected
-                  ? '!border-border-interactive-active'
-                  : !isCustom && 'border-transparent'
-              )}
-              onClick={() => go(appUrl)}
-              variant="none"
-            >
-              {/* Background. */}
-              {!isCustom && (
-                <div
-                  className="absolute top-0 left-0 bottom-0 right-0 z-0 bg-cover bg-center brightness-50"
-                  style={{
-                    backgroundImage: `url(${toAccessibleImageUrl(imageUrl)})`,
-                  }}
-                ></div>
-              )}
-
-              <div className="relative z-10 flex w-32 flex-col items-center justify-center gap-1 p-4">
-                {platform && (
-                  <p className="caption-text text-color-light-transparent">
-                    {platform}
-                  </p>
-                )}
-
-                <p className="primary-text break-words text-color-light">
-                  {isCustom ? t('title.custom') : name}
-                </p>
-              </div>
-            </Button>
-          )
-        })}
-      </div>
-
-      {customSelected && (
-        <StatusCard
-          className={clsx('mb-2', fullScreen && 'mx-safe-offset-4')}
-          content={t('info.customAppWarning')}
-          style="warning"
-        />
-      )}
-
-      <div
-        className={clsx(
-          'flex shrink-0 flex-row items-stretch gap-2',
-          fullScreen && 'px-safe-offset-4'
-        )}
-      >
-        <div className="flex grow flex-row items-stretch gap-1">
-          <TextInput
-            autoComplete="off"
-            className="grow"
-            onChange={(event) => setInputUrl(event.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                go(inputUrl)
-              }
-            }}
-            placeholder={t('form.url')}
-            type="url"
-            value={inputUrl}
-          />
-
-          <Button
-            className="shrink-0"
-            onClick={() => go(inputUrl)}
-            size="lg"
-            variant="primary"
+      {!fullScreen && (
+        <>
+          <div
+            className={clsx(
+              'styled-scrollbar flex shrink-0 flex-row items-stretch gap-2 overflow-x-scroll pb-2',
+              fullScreen && 'px-safe-offset-4'
+            )}
           >
-            {t('button.go')}
-          </Button>
-        </div>
+            {APPS.map(({ platform, name, imageUrl, url: appUrl }, index) => {
+              const isCustom = !appUrl
+              const selected = index === selectedAppIndex
 
-        <Tooltip title={t('button.toggleFullScreen')}>
-          <IconButton
-            Icon={fullScreen ? CloseFullscreen : OpenInFull}
-            className="!h-auto shrink-0"
-            onClick={() => setFullScreen((f) => !f)}
-            size="sm"
-            variant="ghost"
-          />
-        </Tooltip>
-      </div>
+              return (
+                <Button
+                  key={appUrl}
+                  className={clsx(
+                    'shrink-0 overflow-hidden border-2 !p-0 transition',
+                    isCustom && 'border-dashed border-border-primary',
+                    selected
+                      ? '!border-border-interactive-active'
+                      : !isCustom && 'border-transparent'
+                  )}
+                  onClick={() => go(appUrl)}
+                  variant="none"
+                >
+                  {/* Background. */}
+                  {!isCustom && (
+                    <div
+                      className="absolute top-0 left-0 bottom-0 right-0 z-0 bg-cover bg-center brightness-50"
+                      style={{
+                        backgroundImage: `url(${toAccessibleImageUrl(
+                          imageUrl
+                        )})`,
+                      }}
+                    ></div>
+                  )}
+
+                  <div className="relative z-10 flex w-32 flex-col items-center justify-center gap-1 p-4">
+                    {platform && (
+                      <p className="caption-text text-color-light-transparent">
+                        {platform}
+                      </p>
+                    )}
+
+                    <p className="primary-text break-words text-color-light">
+                      {isCustom ? t('title.custom') : name}
+                    </p>
+                  </div>
+                </Button>
+              )
+            })}
+          </div>
+
+          {customSelected && (
+            <StatusCard
+              className="mb-2"
+              content={t('info.customAppWarning')}
+              style="warning"
+            />
+          )}
+
+          <div className="flex shrink-0 flex-row items-stretch gap-2">
+            <div className="flex grow flex-row items-stretch gap-1">
+              <TextInput
+                autoComplete="off"
+                className="grow"
+                onChange={(event) => setInputUrl(event.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    go(inputUrl)
+                  }
+                }}
+                placeholder={t('form.url')}
+                type="url"
+                value={inputUrl}
+              />
+
+              <Button
+                className="shrink-0"
+                onClick={() => go(inputUrl)}
+                size="lg"
+                variant="primary"
+              >
+                {t('button.go')}
+              </Button>
+            </div>
+          </div>
+        </>
+      )}
 
       <div
         className={clsx(
@@ -323,15 +314,25 @@ const InnerAppsRenderer = ({
           fullScreen && 'mx-safe-offset-4'
         )}
       >
-        <SegmentedControls<AppsRendererExecutionType>
-          onSelect={(value) => setExecutionType(value)}
-          selected={executionType}
-          tabs={[
-            { label: t('title.normal'), value: 'normal' },
-            { label: t('title.authzExec'), value: 'authzExec' },
-            { label: t('title.daoAdminExec'), value: 'daoAdminExec' },
-          ]}
-        />
+        <div className="flex flex-row justify-between items-center">
+          <SegmentedControls<AppsRendererExecutionType>
+            onSelect={(value) => setExecutionType(value)}
+            selected={executionType}
+            tabs={[
+              { label: t('title.normal'), value: 'normal' },
+              { label: t('title.authzExec'), value: 'authzExec' },
+              { label: t('title.daoAdminExec'), value: 'daoAdminExec' },
+            ]}
+          />
+          <Tooltip title={t('button.toggleFullScreen')}>
+            <IconButton
+              Icon={fullScreen ? CloseFullscreen : OpenInFull}
+              className="!h-auto shrink-0 py-2"
+              onClick={() => setFullScreen((f) => !f)}
+              variant="ghost"
+            />
+          </Tooltip>
+        </div>
 
         {executionType !== 'normal' && (
           <div className="flex flex-row gap-2 items-stretch">
